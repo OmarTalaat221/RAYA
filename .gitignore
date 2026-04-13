@@ -1,0 +1,256 @@
+# ========================================
+# Dependencies
+# ========================================
+node_modules/
+.pnp/ 
+.pnp.js
+.yarn/install-state.gz
+  
+# ========================================
+# Next.js Build Output
+# ========================================    
+.next/
+out/ 
+build/ 
+dist/
+
+# ========================================
+# Production
+# ========================================
+*.tsbuildinfo
+next-env.d.ts
+
+# ======================================== 
+# Testing
+# ========================================
+coverage/
+.nyc_output/
+playwright-report/
+test-results/
+
+# ========================================
+# Environment Variables
+# ========================================
+.env
+.env.*
+.env.local
+.env.development
+.env.development.local
+.env.test
+.env.test.local
+.env.production
+.env.production.local
+
+# Keep example env file
+!.env.example
+!.env.local.example
+
+# ========================================
+# Debug Logs
+# ========================================
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+.pnpm-debug.log*
+
+# ========================================
+# IDE / Editor
+# ========================================
+# VS Code
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+!.vscode/*.code-snippets
+.history/
+
+# JetBrains (WebStorm, IntelliJ)
+.idea/
+*.iml
+*.iws
+*.ipr
+
+# Sublime Text
+*.sublime-project
+*.sublime-workspace
+
+# Vim
+*.swp
+*.swo
+*~
+
+# Emacs
+*~
+\#*\#
+/.emacs.desktop
+/.emacs.desktop.lock
+*.elc
+
+# ========================================
+# Operating System
+# ========================================
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+.Spotlight-V100
+.Trashes
+
+# Windows
+Thumbs.db
+Thumbs.db:encryptable
+ehthumbs.db
+ehthumbs_vista.db
+*.stackdump
+[Dd]esktop.ini
+$RECYCLE.BIN/
+
+# Linux
+*~
+.fuse_hidden*
+.directory
+.Trash-*
+.nfs*
+
+# ========================================
+# Package Manager Lock Files (Optional)
+# ========================================
+# Uncomment if you want to ignore lock files
+# package-lock.json
+# yarn.lock
+# pnpm-lock.yaml
+
+# ========================================
+# Vercel
+# ========================================
+.vercel
+
+# ========================================
+# Typescript
+# ========================================
+*.tsbuildinfo
+next-env.d.ts
+
+# ========================================
+# PWA (next-pwa)
+# ========================================
+public/sw.js
+public/sw.js.map
+public/workbox-*.js
+public/workbox-*.js.map
+public/fallback-*.js
+public/worker-*.js
+
+# ========================================
+# Storybook
+# ========================================
+storybook-static/
+.storybook/public/
+
+# ========================================
+# Misc
+# ========================================
+*.pem
+*.log
+logs/
+*.pid
+*.pid.lock
+*.seed
+*.local
+
+# Cache
+.cache/
+.parcel-cache/
+.turbo/
+.eslintcache
+.stylelintcache
+*.cache
+
+# Sentry
+.sentryclirc
+
+# Husky
+.husky/_
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+*.temp
+
+# ========================================
+# Database
+# ========================================
+*.sqlite
+*.sqlite3
+*.db
+prisma/migrations/**/migration_lock.toml
+
+# ========================================
+# Docker (Optional)
+# ========================================
+# Uncomment if not using Docker
+# Dockerfile
+# docker-compose*.yml
+# .docker/
+
+# ========================================
+# Serverless
+# ========================================
+.serverless/
+.netlify/
+.amplify/
+
+# ========================================
+# Bundle Analyzer
+# ========================================
+.next/analyze/
+analyze/
+
+# ========================================
+# Playwright
+# ========================================
+/playwright/.cache/
+
+# ========================================
+# Cypress
+# ========================================
+cypress/videos/
+cypress/screenshots/
+cypress/downloads/
+
+# ========================================
+# GraphQL
+# ========================================
+.graphql.config.yml
+generated/
+
+# ========================================
+# Contentlayer
+# ========================================
+.contentlayer/
+
+# ========================================
+# Sanity
+# ========================================
+.sanity/
+
+# ========================================
+# Upload / Media (Optional)
+# ========================================
+# Uncomment if you don't want to track uploads
+# public/uploads/
+# public/media/
+
+# ========================================
+# Secrets
+# ========================================
+*.key
+*.cert
+*.pem
+secrets/
+credentials/

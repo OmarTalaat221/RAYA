@@ -1,0 +1,78 @@
+/* في globals.css */
+
+/* Footer RTL */
+html[dir="rtl"] .footer-wrapper {
+  text-align: right;
+}
+
+html[dir="rtl"] .widget_title {
+  text-align: right;
+}
+
+html[dir="rtl"] .about-text {
+  text-align: right;
+}
+
+html[dir="rtl"] .footer-text {
+  text-align: right;
+}
+
+html[dir="rtl"] .contact-text {
+  text-align: right;
+}
+
+html[dir="rtl"] .widget_nav_menu .menu li {
+  text-align: right;
+}
+
+/* Newsletter Form RTL */
+html[dir="rtl"] .newsletter-form {
+  flex-direction: row-reverse;
+}
+
+html[dir="rtl"] .newsletter-form .form-control {
+  text-align: right;
+}
+
+/* Phone numbers always LTR */
+.footer-text a[href^="tel:"] {
+  direction: ltr;
+  display: inline-block;
+}
+
+/* Copyright RTL */
+html[dir="rtl"] .copyright-text {
+  text-align: center;
+}
+
+html[dir="rtl"] .footer-links {
+  direction: rtl;
+}
+
+/* Social buttons */
+.social-btn {
+  display: flex;
+  gap: 10px;
+}
+
+.social-btn a {
+  transition: all 0.3s ease;
+}
+
+.social-btn a:hover {
+  transform: translateY(-3px);
+  color: var(--theme-color);
+}
+
+/* Footer Top */
+html[dir="rtl"] .footer-top-1 {
+  flex-direction: row-reverse;
+}
+
+html[dir="rtl"] .subscribe-box {
+  text-align: right;
+}
+
+html[dir="rtl"] .subscribe-box_text {
+  text-align: right;
+}

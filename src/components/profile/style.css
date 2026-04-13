@@ -1,0 +1,56 @@
+         .custom-orders-table * {
+             border: none !important;
+         }
+
+         .custom-orders-table .ant-table {
+             background: #fdebda !important;
+             direction: rtl;
+         }
+
+         .custom-orders-table .ant-table-container {
+             border: none !important;
+         }
+
+         .custom-orders-table .ant-table-content table {
+             border: none !important;
+         }
+
+         .ant-table-measure-row {
+             display: none;
+         }
+
+         .custom-orders-table .ant-table-thead>tr>th {
+             background: transparent !important;
+             color: #222 !important;
+             font-size: 13px !important;
+             font-weight: 500 !important;
+             border-bottom: 1px solid #e6dccf !important;
+             border-inline-end: none !important;
+             padding: 12px 8px !important;
+             text-align: right !important;
+         }
+
+         .custom-orders-table .ant-table-tbody>tr>td {
+             background: transparent !important;
+             border-bottom: 1px solid #e6dccf !important;
+             border-inline-end: none !important;
+             padding: 12px 8px !important;
+             text-align: right !important;
+         }
+
+         .ant-table-placeholder {
+             background-color: #fdebda !important;
+         }
+
+         .custom-orders-table .ant-table-tbody>tr:last-child>td {
+             border-bottom: none !important;
+         }
+
+         .custom-orders-table .ant-table-tbody>tr:hover>td {
+             background: transparent !important;
+         }
+
+         .custom-orders-table .ant-table-cell::before {
+             display: none !important;
+             border: none !important;
+         }
