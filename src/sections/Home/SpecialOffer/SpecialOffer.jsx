@@ -4,13 +4,13 @@ import Link from "next/link";
 
 export default function SpecialOffer() {
   return (
-    <section className="w-full bg-[#f4f3f0] py-16 sm:py-20 md:py-24 lg:py-28 px-6 sm:px-10 md:px-16 lg:px-24 xl:px-32">
+    <section className="w-full bg-[#f4f3f0] py-8 sm:py-10 md:py-12 lg:py-16 px-6 sm:px-10 md:px-16 lg:px-24 xl:px-32">
       <div className="container w-full mx-auto flex flex-col md:flex-row items-center gap-12 md:gap-16 lg:gap-24">
         {/* ===== LEFT: Text Content ===== */}
         <div className="flex-1 flex flex-col items-center md:items-start text-center md:text-left">
           {/* Badge */}
           <span
-            className="inline-block text-[#68bc52] text-sm sm:text-base font-semibold tracking-[0.2em] uppercase mb-4 sm:mb-6 font-poppins!"
+            className="inline-block text-main text-sm sm:text-base font-semibold tracking-[0.2em] uppercase mb-4 sm:mb-6 font-poppins!"
             // style={{ fontFamily: "'Poppins', sans-serif" }}
           >
             Limited Time
@@ -18,23 +18,23 @@ export default function SpecialOffer() {
 
           {/* Heading */}
           <h2
-            className="text-[clamp(3rem,8vw,6.5rem)] font-bold leading-[0.95] tracking-tight text-[#2d2d2d] mb-6 sm:mb-8 font-oswald!"
+            className="text-[clamp(3rem,8vw,6.5rem)] font-bold leading-[0.95] tracking-tight text-soft-black mb-6 sm:mb-8 font-oswald!"
             // style={{ fontFamily: "'Oswald', sans-serif" }}
           >
             Special Offer
           </h2>
 
           {/* Divider */}
-          <div className="w-10 h-[2px] bg-[#68bc52] mb-6 sm:mb-8" />
+          <div className="w-10 h-[2px] bg-main mb-6 sm:mb-8" />
 
           {/* Description */}
           <p
-            className="text-[#93979A] text-sm sm:text-base md:text-lg leading-relaxed w-full font-poppins!"
+            className="text-secondary text-sm sm:text-base md:text-lg leading-relaxed w-full font-poppins!"
             // style={{ fontFamily: "'Poppins', sans-serif" }}
           >
             Boost Your Beauty Routine with
             {/* <br /> */}
-            <span className="text-[#2d2d2d] font-medium">
+            <span className="text-soft-black font-medium">
               {" "}
               Skinage Collagen Prestige{" "}
             </span>
@@ -45,7 +45,7 @@ export default function SpecialOffer() {
           {/* CTA */}
           <Link
             href="/skinage"
-            className="group relative mt-8 sm:mt-10 inline-flex items-center gap-2 bg-[#68bc52] text-white rounded-full px-7 py-3 sm:px-9 sm:py-3.5 text-sm sm:text-base font-semibold tracking-wide overflow-hidden transition-all duration-300 hover:shadow-lg hover:shadow-[#68bc52]/30 hover:scale-105 font-poppins!"
+            className="group relative mt-8 sm:mt-10 inline-flex items-center gap-2 bg-main text-white rounded-full px-7 py-3 sm:px-9 sm:py-3.5 text-sm sm:text-base font-semibold tracking-wide overflow-hidden transition-all duration-300 hover:shadow-lg hover:shadow-main/30 hover:scale-105 font-poppins!"
             // style={{ fontFamily: "'Poppins', sans-serif" }}
           >
             <span

@@ -69,7 +69,7 @@ export default function ProductCard({
     >
       <Link
         href={href || "/catalog"}
-        className="group flex h-full flex-col overflow-hidden rounded-[22px] bg-white shadow-[0_8px_30px_rgba(0,0,0,0.04)] transition-all duration-500 hover:shadow-[0_16px_40px_rgba(0,0,0,0.08)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#68bc52] focus-visible:ring-offset-2"
+        className="group flex h-full flex-col overflow-hidden rounded-[22px] bg-white shadow-[0_8px_30px_rgba(0,0,0,0.04)] transition-all duration-500 hover:shadow-[0_16px_40px_rgba(0,0,0,0.08)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-main focus-visible:ring-offset-2"
         aria-label={`View ${title}`}
       >
         {/* Image Area */}
@@ -128,7 +128,7 @@ export default function ProductCard({
         {/* Card Body */}
         <div className="flex flex-1 flex-col items-center px-4 py-5 text-center sm:px-5 sm:py-6">
           <h3
-            className="line-clamp-2 min-h-[2.8em] text-sm font-semibold leading-snug text-[#2d2d2d] sm:text-[0.95rem]"
+            className="line-clamp-2 min-h-[2.8em] text-sm font-semibold leading-snug text-soft-black sm:text-[0.95rem]"
             style={{ fontFamily: "'Poppins', sans-serif" }}
           >
             {title}
@@ -139,7 +139,7 @@ export default function ProductCard({
           <div className="flex flex-wrap items-center justify-center gap-2">
             {oldPrice ? (
               <span
-                className="text-xs text-[#93979A] line-through sm:text-sm"
+                className="text-xs text-secondary line-through sm:text-sm"
                 style={{ fontFamily: "'Poppins', sans-serif" }}
               >
                 {currency} {Number(oldPrice).toFixed(2)}
@@ -148,7 +148,7 @@ export default function ProductCard({
 
             <span
               className={`text-base font-bold sm:text-lg ${
-                isOnSale ? "text-red-500" : "text-[#2d2d2d]"
+                isOnSale ? "text-red-500" : "text-soft-black"
               }`}
               style={{ fontFamily: "'Poppins', sans-serif" }}
             >
@@ -157,7 +157,7 @@ export default function ProductCard({
           </div>
 
           <span
-            className="mt-3 hidden text-[11px] font-semibold uppercase tracking-wider text-[#68bc52] opacity-0 transition-opacity duration-300 group-hover:opacity-100 md:block"
+            className="mt-3 hidden text-[11px] font-semibold uppercase tracking-wider text-main opacity-0 transition-opacity duration-300 group-hover:opacity-100 md:block"
             aria-hidden="true"
             style={{ fontFamily: "'Poppins', sans-serif" }}
           >

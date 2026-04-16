@@ -49,13 +49,13 @@ const NavLink = ({ item, pathname, onClick }) => {
       className={`
         group relative text-sm font-medium tracking-wide pb-1
         transition-colors duration-200 whitespace-nowrap
-        ${isActive ? "text-[#2d2d2d]" : "text-[#93979A] hover:text-[#2d2d2d]"}
+        ${isActive ? "text-soft-black" : "text-secondary hover:text-soft-black"}
       `}
     >
       {item.label}
       <span
         className={`
-          absolute bottom-0 left-0 h-[1.5px] bg-[#68bc52] rounded-full
+          absolute bottom-0 left-0 h-[1.5px] bg-main rounded-full
           transition-all duration-300
           ${isActive ? "w-full" : "w-0 group-hover:w-full"}
         `}
@@ -80,13 +80,13 @@ const MobileNavLink = ({ item, pathname, onClick }) => {
         transition-colors duration-200
         ${
           isActive
-            ? "text-[#68bc52] bg-white"
-            : "text-[#2d2d2d] hover:text-[#68bc52] hover:bg-white"
+            ? "text-main bg-white"
+            : "text-soft-black hover:text-main hover:bg-white"
         }
       `}
     >
       {item.label}
-      {isActive && <span className="w-1.5 h-1.5 rounded-full bg-[#68bc52]" />}
+      {isActive && <span className="w-1.5 h-1.5 rounded-full bg-main" />}
     </Link>
   );
 };
@@ -96,25 +96,25 @@ const HeaderIcons = ({ cartCount = 1 }) => (
   <div className="flex items-center gap-3 sm:gap-4 flex-shrink-0">
     <button
       aria-label="Search"
-      className="text-[#2d2d2d] hover:text-[#68bc52] transition-colors duration-200"
+      className="text-soft-black hover:text-main transition-colors duration-200"
     >
       <Search size={19} strokeWidth={1.5} />
     </button>
 
     <button
       aria-label="My Account"
-      className="text-[#2d2d2d] hover:text-[#68bc52] transition-colors duration-200"
+      className="text-soft-black hover:text-main transition-colors duration-200"
     >
       <User size={19} strokeWidth={1.5} />
     </button>
 
     <button
       aria-label={`Shopping Bag - ${cartCount} item`}
-      className="relative text-[#2d2d2d] hover:text-[#68bc52] transition-colors duration-200"
+      className="relative text-soft-black hover:text-main transition-colors duration-200"
     >
       <ShoppingBag size={19} strokeWidth={1.5} />
       {cartCount > 0 && (
-        <span className="absolute -top-2 -right-2 w-4 h-4 bg-[#68bc52] rounded-full flex items-center justify-center">
+        <span className="absolute -top-2 -right-2 w-4 h-4 bg-main rounded-full flex items-center justify-center">
           <span className="text-white text-[9px] font-bold leading-none">
             {cartCount}
           </span>
@@ -126,7 +126,7 @@ const HeaderIcons = ({ cartCount = 1 }) => (
 
 // ===== TOP BAR =====
 const TopBar = () => (
-  <div className="w-full bg-[#68bc52] py-2 px-4">
+  <div className="w-full bg-main py-2 px-4">
     <p className="text-center text-white font-semibold tracking-wide text-[11px] sm:text-xs md:text-sm leading-snug">
       <span className="hidden sm:inline">
         UAE Delivery Free Over 150AED Within 2Days &nbsp;|&nbsp; GCC Free over
@@ -178,7 +178,7 @@ const HamburgerBtn = ({ menuOpen, toggleMenu }) => (
     aria-expanded={menuOpen}
     aria-controls="mobile-menu"
     onClick={toggleMenu}
-    className="lg:hidden text-[#2d2d2d] hover:text-[#68bc52] transition-colors duration-200 ml-1"
+    className="lg:hidden text-soft-black hover:text-main transition-colors duration-200 ml-1"
   >
     {menuOpen ? (
       <X size={22} strokeWidth={1.5} />

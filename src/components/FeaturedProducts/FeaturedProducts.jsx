@@ -130,21 +130,21 @@ export default function FeaturedProducts() {
 
   return (
     <section
-      className="w-full overflow-hidden bg-[#f4f3f0] py-16 sm:py-20 md:py-24"
+      className="w-full overflow-hidden bg-[#f4f3f0] py-8 sm:py-12 md:py-16"
       aria-label="Featured Products"
     >
       <div className="mx-auto w-full max-w-[1440px]">
         {/* Header */}
-        <div className="mb-10 px-4 sm:px-6 md:mb-14 md:px-8 lg:px-10">
+        <div className="mb-10 px-4 sm:px-6 md:mb-14">
           <span
-            className="mb-2 block text-xs font-semibold uppercase tracking-[0.2em] text-[#68bc52] sm:text-sm"
+            className="mb-2 block text-xs font-semibold uppercase tracking-[0.2em] text-main sm:text-sm"
             style={{ fontFamily: "'Poppins', sans-serif" }}
           >
             Our Selection
           </span>
 
           <h2
-            className="text-[clamp(2rem,5vw,3.5rem)] font-bold leading-tight text-[#2d2d2d]"
+            className="text-[clamp(2rem,5vw,3.5rem)] font-bold leading-tight text-soft-black"
             style={{ fontFamily: "'Oswald', sans-serif" }}
           >
             Featured Products
@@ -157,7 +157,7 @@ export default function FeaturedProducts() {
         </div>
 
         {/* Desktop grid */}
-        <div className="hidden px-4 sm:px-6 md:block md:px-8 lg:px-10">
+        <div className="hidden px-4 sm:px-6 md:block ">
           <DesktopGrid />
         </div>
 
@@ -165,11 +165,11 @@ export default function FeaturedProducts() {
         <div className="mt-10 flex justify-center px-4 sm:mt-14">
           <Link
             href="/catalog"
-            className="group relative inline-flex items-center gap-2 overflow-hidden rounded-full border border-[#2d2d2d]/20 bg-white px-8 py-3 text-sm font-semibold tracking-wide text-[#2d2d2d] transition-all duration-300 hover:border-[#68bc52] hover:text-[#68bc52] hover:shadow-md"
+            className="group relative inline-flex items-center gap-2 overflow-hidden rounded-full border border-soft-black/20 bg-white px-8 py-3 text-sm font-semibold tracking-wide text-soft-black transition-all duration-300 hover:border-main hover:text-main hover:shadow-md"
             style={{ fontFamily: "'Poppins', sans-serif" }}
           >
             <span
-              className="absolute inset-0 origin-left scale-x-0 rounded-full bg-[#68bc52]/5 transition-transform duration-500 group-hover:scale-x-100"
+              className="absolute inset-0 origin-left scale-x-0 rounded-full bg-main/5 transition-transform duration-500 group-hover:scale-x-100"
               aria-hidden="true"
             />
             <span className="relative z-10">View All Products</span>

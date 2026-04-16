@@ -207,7 +207,7 @@ export default function HeroSlider() {
           <div className="absolute left-1/2 -translate-x-1/2 bottom-14 sm:bottom-16 md:bottom-20">
             <Link
               href={SLIDES[current].href}
-              className="group relative inline-flex items-center gap-2 bg-[#68bc52] text-white rounded-full px-5 py-2 sm:px-7 sm:py-3 text-xs sm:text-sm md:text-base font-semibold tracking-wide whitespace-nowrap overflow-hidden transition-all hover:shadow-xl hover:shadow-[#68bc52]/30 hover:scale-105"
+              className="group relative inline-flex items-center gap-2 bg-main text-white rounded-full px-5 py-2 sm:px-7 sm:py-3 text-xs sm:text-sm md:text-base font-semibold tracking-wide whitespace-nowrap overflow-hidden transition-all hover:shadow-xl hover:shadow-main/30 hover:scale-105"
             >
               <span
                 className="absolute inset-0 bg-gradient-to-r from-transparent via-white/25 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700"
@@ -260,7 +260,7 @@ export default function HeroSlider() {
       >
         <div
           key={`progress-${current}`}
-          className="h-full bg-[#68bc52]"
+          className="h-full bg-main"
           style={{
             animation: isPaused
               ? "none"
