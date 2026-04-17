@@ -10,7 +10,7 @@ import { usePathname } from "next/navigation";
 // ===== NAV ITEMS =====
 const NAV_ITEMS = [
   { label: "Home", href: "/" },
-  { label: "Catalog", href: "/catalog" },
+  { label: "Catalog", href: "/collections/all" },
   { label: "Skinage", href: "/skinage" },
   { label: "Denefis", href: "/denefis" },
   { label: "Offers", href: "/offers" },

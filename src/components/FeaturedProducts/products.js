@@ -11,8 +11,9 @@ export const PRODUCTS = [
     newPrice: 299,
     currency: "AED",
     isOnSale: true,
+    brand: "Skinage",
+    category: "Skinage",
   },
-
   {
     id: 1,
     title: "Skinage Hairboost Ampoules",
@@ -23,6 +24,8 @@ export const PRODUCTS = [
     newPrice: 199,
     currency: "AED",
     isOnSale: false,
+    brand: "Skinage",
+    category: "Skinage",
   },
   {
     id: 3,
@@ -35,6 +38,8 @@ export const PRODUCTS = [
     newPrice: 229,
     currency: "AED",
     isOnSale: true,
+    brand: "Skinage",
+    category: "Skinage",
   },
   {
     id: 4,
@@ -47,6 +52,8 @@ export const PRODUCTS = [
     newPrice: 159,
     currency: "AED",
     isOnSale: false,
+    brand: "Omniflex",
+    category: "Omniflex",
   },
   {
     id: 5,
@@ -58,6 +65,8 @@ export const PRODUCTS = [
     newPrice: 139,
     currency: "AED",
     isOnSale: false,
+    brand: "Omniflex",
+    category: "Omniflex",
   },
   {
     id: 6,
@@ -69,6 +78,8 @@ export const PRODUCTS = [
     newPrice: 79,
     currency: "AED",
     isOnSale: true,
+    brand: "Skinage",
+    category: "Skinage",
   },
   {
     id: 7,
@@ -82,6 +93,8 @@ export const PRODUCTS = [
     newPrice: 119,
     currency: "AED",
     isOnSale: false,
+    brand: "I-vita",
+    category: "I-vita",
   },
   {
     id: 8,
@@ -95,5 +108,123 @@ export const PRODUCTS = [
     newPrice: 119,
     currency: "AED",
     isOnSale: false,
+    brand: "I-vita",
+    category: "I-vita",
+  },
+
+  {
+    id: 9,
+    title: "Bellyslim Capsule 60s",
+    href: "/bellyslim-capsule-60s",
+    frontImage:
+      "/cdn/shop/files/gemini_generated_image_egx2uqegx2uqegx2.png?v=1774602548",
+    backImage:
+      "/cdn/shop/files/gemini_generated_image_1hmf0n1hmf0n1hmf.png?v=1774602563",
+    oldPrice: 280,
+    newPrice: 150,
+    currency: "AED",
+    isOnSale: true,
+    brand: "Bellyslim",
+    category: "Bellyslim",
+  },
+  {
+    id: 10,
+    title: "Denefis 24k Gold Serum 30ml",
+    href: "/denefis-24k-gold-serum-30ml",
+    frontImage: "/cdn/shop/files/Denefis_24k_Gold_Serum_30ml.jpg?v=1725366245",
+    backImage:
+      "/cdn/shop/files/dreamina-2026-01-09-8958-Createaclean_premiumlifestyleimage....jpg?v=1768224248",
+    oldPrice: 115,
+    newPrice: 39.99,
+    currency: "AED",
+    isOnSale: true,
+    brand: "Denefis",
+    category: "Denefis",
+  },
+  {
+    id: 11,
+    title: "Denefis Aha+Bha Serum 30ml",
+    href: "/denefis-aha-bha-serum-30ml",
+    frontImage: "/cdn/shop/files/NS_AHA-BHA-SERUM.jpg?v=1769545031",
+    backImage:
+      "/cdn/shop/files/W26-01-06-6536-Createaclean_premiumlifestyleimage....jpg?v=1769545031",
+    oldPrice: 105,
+    newPrice: 39.95,
+    currency: "AED",
+    isOnSale: true,
+    brand: "Denefis",
+    category: "Denefis",
+  },
+  {
+    id: 12,
+    title: "Denefis All-In-One Kit",
+    href: "/denefis-all-in-one-kit",
+    frontImage:
+      "/cdn/shop/files/Gemini_Generated_Image_qdai69qdai69qdai.png?v=1774292091",
+    backImage: null,
+    oldPrice: 248.8,
+    newPrice: 179,
+    currency: "AED",
+    isOnSale: true,
+    brand: "Denefis",
+    category: "Denefis",
+  },
+  {
+    id: 13,
+    title: "Denefis Double Cleanse Bundle - Oil & Foam Duo",
+    href: "/denefis-double-cleanse-bundle-oil-foam-duo",
+    frontImage:
+      "/cdn/shop/files/Denefis_Double_Cleanse_Bundle_Oil_Foam_Duo_copy.jpg?v=1739260651",
+    backImage: null,
+    oldPrice: 270,
+    newPrice: 135,
+    currency: "AED",
+    isOnSale: true,
+    brand: "Denefis",
+    category: "Denefis",
+  },
+  {
+    id: 14,
+    title: "Denefis Hyaluronic Acid Serum 30ml",
+    href: "/denefis-hyaluronic-acid-serum-30ml",
+    frontImage:
+      "/cdn/shop/files/rn-image_picker_lib_temp_40ea1f79-bf26-437f-8fbb-5ea0aeeff990.jpg?v=1752998395",
+    backImage:
+      "/cdn/shop/files/rn-image_picker_lib_temp_59c03d72-94e3-4444-855f-26d5faf575b5.jpg?v=1772574634",
+    oldPrice: 105,
+    newPrice: 79,
+    currency: "AED",
+    isOnSale: true,
+    brand: "Denefis",
+    category: "Denefis",
+  },
+  {
+    id: 15,
+    title: "Denefis Vitamin C Serum 30ml",
+    href: "/denefis-vitamin-c-serum-30ml",
+    frontImage:
+      "/cdn/shop/files/dreamina-2026-01-05-1119-Before___After_Vitamin_C_Serum_Create....jpg?v=1772574634",
+    backImage:
+      "/cdn/shop/files/rn-image_picker_lib_temp_308db6b4-4e50-4439-86e5-ef9b5155cfa9.jpg?v=1773158970",
+    oldPrice: 105,
+    newPrice: 89,
+    currency: "AED",
+    isOnSale: true,
+    brand: "Denefis",
+    category: "Denefis",
+  },
+  {
+    id: 16,
+    title: "Denefis Anti Blemish Even Skin Tone Serum 30ml",
+    href: "/denefis-anti-blemish-even-skin-tone-serum-30ml",
+    frontImage:
+      "/cdn/shop/files/dreamina-2026-01-06-2893-Createaclean_premiumlifestyleimage....jpg?v=1773158970",
+    backImage: "/cdn/shop/files/DENEFIS_RETINOL_SERUM.jpg?v=1725366180",
+    oldPrice: 105,
+    newPrice: 52.5,
+    currency: "AED",
+    isOnSale: true,
+    brand: "Denefis",
+    category: "Denefis",
   },
 ];
