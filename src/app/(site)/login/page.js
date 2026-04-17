@@ -5,10 +5,10 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useDispatch, useSelector } from "react-redux";
-import { loginUser, clearAuthError } from "../../features/auth/authSlice";
+import { loginUser, clearAuthError } from "../../../features/auth/authSlice";
 
 import { Eye, EyeOff, Mail, Lock } from "lucide-react";
-import InnerPageWrapper from "../../sections/Common/InnerPageWrapper";
+import InnerPageWrapper from "../../../sections/Common/InnerPageWrapper";
 import Swal from "sweetalert2";
 import PhoneInput from "react-phone-input-2";
 import "react-phone-input-2/lib/style.css";

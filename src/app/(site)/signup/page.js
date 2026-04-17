@@ -8,10 +8,10 @@ import {
   registerUser,
   resetRegisterStatus,
   setRegistrationData,
-} from "../../features/auth/authSlice";
+} from "../../../features/auth/authSlice";
 import { Eye, EyeOff, User, Mail, Lock } from "lucide-react";
 
-import InnerPageWrapper from "../../sections/Common/InnerPageWrapper";
+import InnerPageWrapper from "../../../sections/Common/InnerPageWrapper";
 import Swal from "sweetalert2";
 import PhoneInput from "react-phone-input-2";
 import "react-phone-input-2/lib/style.css";
