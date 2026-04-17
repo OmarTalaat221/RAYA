@@ -234,12 +234,12 @@ function ContactRow({ icon, href, children, isRTL }) {
   const content = href ? (
     <a
       href={href}
-      className="text-sm leading-6 text-white/88 transition-colors duration-300 hover:text-white font-poppins!"
+      className="text-sm leading-6 text-white/88! transition-colors duration-300 hover:text-white! font-poppins!"
     >
       {children}
     </a>
   ) : (
-    <span className="text-sm leading-6 text-white/88 font-poppins!">
+    <span className="text-sm leading-6 text-white/88! font-poppins!">
       {children}
     </span>
   );
@@ -547,7 +547,7 @@ export default function Footer({
                   <Link
                     key={item.key}
                     href={item.href}
-                    className="text-sm text-white/76 transition-colors duration-300 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/70 font-poppins!"
+                    className="text-sm text-white/76! transition-colors duration-300 hover:text-white! focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/70 font-poppins!"
                   >
                     {t(`legal.${item.key}`)}
                   </Link>
