@@ -2,7 +2,6 @@
 "use client";
 
 import Link from "next/link";
-import Image from "next/image";
 import { Search, User, ShoppingBag, Menu, X } from "lucide-react";
 import { useState, useEffect, useCallback } from "react";
 import { usePathname } from "next/navigation";
@@ -194,7 +193,6 @@ export default function Header() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [showFixed, setShowFixed] = useState(false);
 
-  // ===== RAF Scroll Handler =====
   useEffect(() => {
     let rafId = null;
 
@@ -213,7 +211,6 @@ export default function Header() {
     };
   }, []);
 
-  // ===== Body Scroll Lock =====
   useEffect(() => {
     document.body.style.overflow = menuOpen ? "hidden" : "";
     return () => {
@@ -221,7 +218,6 @@ export default function Header() {
     };
   }, [menuOpen]);
 
-  // ===== Close on Route Change =====
   useEffect(() => {
     setMenuOpen(false);
   }, [pathname]);
@@ -238,7 +234,6 @@ export default function Header() {
         <div className="w-full bg-white border-b border-gray-100">
           <div className="container mx-auto">
             <div className="flex items-center justify-between py-3 gap-4">
-              {/* Logo */}
               <Link
                 href="/"
                 className="flex-shrink-0"
@@ -247,7 +242,6 @@ export default function Header() {
                 <Logo size="default" />
               </Link>
 
-              {/* Desktop Nav */}
               <nav
                 aria-label="Main navigation"
                 className="hidden lg:flex flex-1"
@@ -261,7 +255,6 @@ export default function Header() {
                 </ul>
               </nav>
 
-              {/* Icons + Hamburger */}
               <div className="flex items-center gap-2 sm:px-0 px-2">
                 <HeaderIcons cartCount={1} />
                 <HamburgerBtn menuOpen={menuOpen} toggleMenu={toggleMenu} />
@@ -269,12 +262,13 @@ export default function Header() {
             </div>
           </div>
 
-          {/* Mobile Menu */}
-          <MobileMenu
-            visible={menuOpen}
-            pathname={pathname}
-            closeMenu={closeMenu}
-          />
+          {!showFixed && (
+            <MobileMenu
+              visible={menuOpen}
+              pathname={pathname}
+              closeMenu={closeMenu}
+            />
+          )}
         </div>
       </header>
 
@@ -294,7 +288,6 @@ export default function Header() {
       >
         <div className="container mx-auto">
           <div className="flex items-center justify-between py-2 gap-4">
-            {/* Logo smaller */}
             <Link
               href="/"
               className="flex-shrink-0"
@@ -304,7 +297,6 @@ export default function Header() {
               <Logo size="small" />
             </Link>
 
-            {/* Desktop Nav */}
             <nav
               aria-label="Fixed main navigation"
               className="hidden lg:flex flex-1"
@@ -318,7 +310,6 @@ export default function Header() {
               </ul>
             </nav>
 
-            {/* Icons + Hamburger */}
             <div className="flex items-center gap-2 sm:px-0 px-2">
               <HeaderIcons cartCount={1} />
               <HamburgerBtn menuOpen={menuOpen} toggleMenu={toggleMenu} />
@@ -326,15 +317,15 @@ export default function Header() {
           </div>
         </div>
 
-        {/* Mobile Menu */}
-        <MobileMenu
-          visible={menuOpen}
-          pathname={pathname}
-          closeMenu={closeMenu}
-        />
+        {showFixed && (
+          <MobileMenu
+            visible={menuOpen}
+            pathname={pathname}
+            closeMenu={closeMenu}
+          />
+        )}
       </header>
 
-      {/* ===== OVERLAY ===== */}
       {menuOpen && (
         <div
           className="fixed inset-0 bg-black/20 z-40 lg:hidden"
