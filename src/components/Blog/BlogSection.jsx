@@ -178,7 +178,7 @@ export default function BlogSection() {
           viewport={{ once: true }}
         >
           <Link
-            href="/blogs"
+            href="/blog/news"
             className={[
               "group relative inline-flex items-center gap-2",
               "overflow-hidden rounded-full",
