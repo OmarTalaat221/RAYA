@@ -133,7 +133,7 @@ export default function FeaturedProducts() {
       className="w-full overflow-hidden bg-[#f4f3f0] py-8 sm:py-12 md:py-16"
       aria-label="Featured Products"
     >
-      <div className="mx-auto w-full max-w-[1440px]">
+      <div className="mx-auto w-full container">
         {/* Header */}
         <div className="mb-10 px-4 sm:px-6 md:mb-14">
           <span

@@ -8,11 +8,13 @@ import "~/public/main-assets/css/style.css";
 import "~/public/main-assets/css/react-adjustment.css";
 import "~/public/main-assets/css/fonts.css";
 import "./globals.css";
+
 import { NextIntlClientProvider } from "next-intl";
 import { getLocale, getMessages } from "next-intl/server";
 import AOSProvider from "../components/AOSProvider";
 import Header from "../sections/Common/Header/Header";
 import StoreProvider from "../features/StoreProvider";
+import Footer from "../components/Footer/Footer";
 
 export const metadata = {
   title: "Raya Pharmacy",
@@ -39,6 +41,19 @@ export default async function RootLayout({ children }) {
               <Header />
 
               {children}
+
+              <Footer
+                logoSrc="https://res.cloudinary.com/dbvh5i83q/image/upload/v1776082859/rds_logo_xpmbfn.webp"
+                store={{
+                  name: "RDS Pharma",
+                  address: {
+                    en: "Nasr City, Cairo, Egypt",
+                    ar: "مدينة نصر، القاهرة، مصر",
+                  },
+                  phone: "+20 101 234 5678",
+                  email: "care@rdspharma.com",
+                }}
+              />
 
               {/* <FloatingSocialButton /> */}
             </AOSProvider>

@@ -15,9 +15,16 @@ import SpecialOffer from "../sections/Home/SpecialOffer";
 import FeaturedProducts from "../components/FeaturedProducts/FeaturedProducts";
 import Collections from "../components/Collections/Collections.jsx";
 import BlogSection from "../components/Blog/BlogSection.jsx";
+import { useLocale } from "next-intl";
 // import "./globals.css";
 
 export default function HomePage() {
+  const locale = useLocale();
+
+  const messagesMap = {
+    en: require("../locales/en.json"),
+    ar: require("../locales/ar.json"),
+  };
   return (
     <div style={{ overflow: "hidden" }}>
       {/* <PageBanner
@@ -30,7 +37,6 @@ export default function HomePage() {
       >
         <HeroContent />
       </PageBanner> */}
-
       <HeroBanner />
       <SpecialOffer />
       <FeaturedProducts />
