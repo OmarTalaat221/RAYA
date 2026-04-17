@@ -161,7 +161,7 @@ export const PRODUCTS = [
     href: "/denefis-all-in-one-kit",
     frontImage:
       "/cdn/shop/files/Gemini_Generated_Image_qdai69qdai69qdai.png?v=1774292091",
-    backImage: null,
+    backImage: "/cdn/shop/files/DENEFIS_RETINOL_SERUM.jpg?v=1725366180",
     oldPrice: 248.8,
     newPrice: 179,
     currency: "AED",
@@ -190,7 +190,7 @@ export const PRODUCTS = [
     frontImage:
       "/cdn/shop/files/rn-image_picker_lib_temp_40ea1f79-bf26-437f-8fbb-5ea0aeeff990.jpg?v=1752998395",
     backImage:
-      "/cdn/shop/files/rn-image_picker_lib_temp_59c03d72-94e3-4444-855f-26d5faf575b5.jpg?v=1772574634",
+      "/cdn/shop/files/dreamina-2026-01-10-9937-Createaclean_premiumlifestyleimage....jpg?v=1768224304",
     oldPrice: 105,
     newPrice: 79,
     currency: "AED",
@@ -203,9 +203,10 @@ export const PRODUCTS = [
     title: "Denefis Vitamin C Serum 30ml",
     href: "/denefis-vitamin-c-serum-30ml",
     frontImage:
-      "/cdn/shop/files/dreamina-2026-01-05-1119-Before___After_Vitamin_C_Serum_Create....jpg?v=1772574634",
+      "/cdn/shop/files/rn-image_picker_lib_temp_59c03d72-94e3-4444-855f-26d5faf575b5.jpg?v=1772574634",
     backImage:
-      "/cdn/shop/files/rn-image_picker_lib_temp_308db6b4-4e50-4439-86e5-ef9b5155cfa9.jpg?v=1773158970",
+      "/cdn/shop/files/dreamina-2026-01-05-1119-Before___After_Vitamin_C_Serum_Create....jpg?v=1772574634",
+    // "/cdn/shop/files/rn-image_picker_lib_temp_308db6b4-4e50-4439-86e5-ef9b5155cfa9.jpg?v=1773158970",
     oldPrice: 105,
     newPrice: 89,
     currency: "AED",
@@ -218,8 +219,9 @@ export const PRODUCTS = [
     title: "Denefis Anti Blemish Even Skin Tone Serum 30ml",
     href: "/denefis-anti-blemish-even-skin-tone-serum-30ml",
     frontImage:
+      "/cdn/shop/files/rn-image_picker_lib_temp_308db6b4-4e50-4439-86e5-ef9b5155cfa9.jpg?v=1773158970",
+    backImage:
       "/cdn/shop/files/dreamina-2026-01-06-2893-Createaclean_premiumlifestyleimage....jpg?v=1773158970",
-    backImage: "/cdn/shop/files/DENEFIS_RETINOL_SERUM.jpg?v=1725366180",
     oldPrice: 105,
     newPrice: 52.5,
     currency: "AED",
