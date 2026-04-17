@@ -1,4 +1,4 @@
-import ContactPage from "../../components/Contact/ContactPage";
+import ContactPage from "../../../components/Contact/ContactPage";
 
 export const metadata = {
   title: "Contact Us | RDS Pharma",

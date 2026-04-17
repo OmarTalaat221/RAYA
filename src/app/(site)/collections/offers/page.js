@@ -1,5 +1,5 @@
-import CatalogPage from "../../../components/Catalog/CatalogPage";
-import { PRODUCTS } from "../../../components/FeaturedProducts/products";
+import CatalogPage from "../../../../components/Catalog/CatalogPage";
+import { PRODUCTS } from "../../../../components/FeaturedProducts/products";
 
 const getProductsByBrand = (products, brand) =>
   products.filter((product) => product.isOnSale === true);

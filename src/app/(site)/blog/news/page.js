@@ -1,5 +1,6 @@
 import { Suspense } from "react";
-import NewsPageClient from "../../../components/Blog/NewsPageClient";
+import NewsPageClient from "../../../../components/Blog/NewsPageClient";
+// import NewsPageClient from "../../components/Blog/NewsPageClient";
 
 export const metadata = {
   title: "Latest News | RDS Pharma",

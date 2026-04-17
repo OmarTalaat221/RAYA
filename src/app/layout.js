@@ -38,11 +38,11 @@ export default async function RootLayout({ children }) {
         <NextIntlClientProvider locale={locale} messages={messages}>
           <StoreProvider>
             <AOSProvider>
-              <Header />
+              {/* <Header /> */}
 
               {children}
 
-              <Footer
+              {/* <Footer
                 logoSrc="https://res.cloudinary.com/dbvh5i83q/image/upload/v1776082859/rds_logo_xpmbfn.webp"
                 store={{
                   name: "RDS Pharma",
@@ -53,7 +53,7 @@ export default async function RootLayout({ children }) {
                   phone: "+20 101 234 5678",
                   email: "care@rdspharma.com",
                 }}
-              />
+              /> */}
 
               {/* <FloatingSocialButton /> */}
             </AOSProvider>
