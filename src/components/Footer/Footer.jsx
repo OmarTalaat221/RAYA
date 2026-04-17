@@ -10,9 +10,9 @@ import StyledBackground from "./StyledBackground";
 // ─── nav data ─────────────────────────────────────────────
 const primaryLinks = [
   { key: "home", href: "/" },
-  { key: "catalog", href: "/catalog" },
-  { key: "skinage", href: "/skinage" },
-  { key: "denefis", href: "/denefis" },
+  { key: "catalog", href: "/collections/all" },
+  { key: "skinage", href: "/collections/skinage" },
+  { key: "denefis", href: "/collections/denefis" },
   { key: "offers", href: "/offers" },
   { key: "blog", href: "/blog" },
   { key: "contact", href: "/contact" },

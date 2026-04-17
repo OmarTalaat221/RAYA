@@ -11,8 +11,8 @@ import { usePathname } from "next/navigation";
 const NAV_ITEMS = [
   { label: "Home", href: "/" },
   { label: "Catalog", href: "/collections/all" },
-  { label: "Skinage", href: "/skinage" },
-  { label: "Denefis", href: "/denefis" },
+  { label: "Skinage", href: "/collections/skinage" },
+  { label: "Denefis", href: "/collections/denefis" },
   { label: "Offers", href: "/offers" },
   { label: "Blog", href: "/blog" },
   { label: "Contact", href: "/contact" },
