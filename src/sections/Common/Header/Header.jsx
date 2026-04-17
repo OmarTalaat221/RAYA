@@ -262,7 +262,7 @@ export default function Header() {
               </nav>
 
               {/* Icons + Hamburger */}
-              <div className="flex items-center gap-3">
+              <div className="flex items-center gap-2 sm:px-0 px-2">
                 <HeaderIcons cartCount={1} />
                 <HamburgerBtn menuOpen={menuOpen} toggleMenu={toggleMenu} />
               </div>
@@ -319,7 +319,7 @@ export default function Header() {
             </nav>
 
             {/* Icons + Hamburger */}
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2 sm:px-0 px-2">
               <HeaderIcons cartCount={1} />
               <HamburgerBtn menuOpen={menuOpen} toggleMenu={toggleMenu} />
             </div>

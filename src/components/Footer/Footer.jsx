@@ -246,7 +246,7 @@ function ContactRow({ icon, href, children, isRTL }) {
 
   return (
     <li
-      className={`flex items-start gap-3 ${
+      className={`flex items-center gap-3 ${
         isRTL ? "flex-row-reverse text-right" : "text-left"
       }`}
     >

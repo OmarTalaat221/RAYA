@@ -204,7 +204,7 @@ export default function HeroSlider() {
           </button>
 
           {/* Shop Now */}
-          <div className="absolute left-1/2 -translate-x-1/2 bottom-14 sm:bottom-16 md:bottom-20">
+          <div className="absolute  right-3 bottom-4 xsm:right-auto xsm:left-1/2 xsm:-translate-x-1/2 xsm:bottom-14 sm:bottom-16 md:bottom-20">
             <Link
               href={SLIDES[current].href}
               className="group relative inline-flex items-center gap-2 bg-main text-white rounded-full px-5 py-2 sm:px-7 sm:py-3 text-xs sm:text-sm md:text-base font-semibold tracking-wide whitespace-nowrap overflow-hidden transition-all hover:shadow-xl hover:shadow-main/30 hover:scale-105"
