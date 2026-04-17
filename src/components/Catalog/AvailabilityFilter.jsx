@@ -23,6 +23,7 @@ export default function AvailabilityFilter({
 
         {availability.length > 0 && (
           <button
+            type="button"
             onClick={() => {
               onReset();
               onClose?.();

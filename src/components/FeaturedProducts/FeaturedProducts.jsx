@@ -74,7 +74,7 @@ function ProductsSlider() {
           pauseOnMouseEnter: true,
         }}
         speed={700}
-        loop={PRODUCTS.length > 1}
+        loop={PRODUCTS?.filter((p) => p.isOnSale)?.slice(0, 8).length > 1}
         observer={true}
         observeParents={true}
         updateOnWindowResize={true}
@@ -93,11 +93,13 @@ function ProductsSlider() {
           nextSlideMessage: "Next product",
         }}
       >
-        {PRODUCTS.map((product, index) => (
-          <SwiperSlide key={product.id}>
-            <ProductCard {...product} priority={index < 2} />
-          </SwiperSlide>
-        ))}
+        {PRODUCTS?.filter((p) => p.isOnSale)
+          ?.slice(0, 8)
+          .map((product, index) => (
+            <SwiperSlide key={product.id}>
+              <ProductCard {...product} priority={index < 2} />
+            </SwiperSlide>
+          ))}
       </Swiper>
     </div>
   );
@@ -112,11 +114,13 @@ function DesktopGrid() {
       whileInView="visible"
       viewport={{ once: true, amount: 0.05 }}
     >
-      {PRODUCTS.map((product, index) => (
-        <motion.div key={product.id} variants={itemVariants}>
-          <ProductCard {...product} priority={index < 4} />
-        </motion.div>
-      ))}
+      {PRODUCTS?.filter((p) => p.isOnSale)
+        ?.slice(0, 8)
+        .map((product, index) => (
+          <motion.div key={product.id} variants={itemVariants}>
+            <ProductCard {...product} priority={index < 4} />
+          </motion.div>
+        ))}
     </motion.div>
   );
 }
@@ -164,7 +168,7 @@ export default function FeaturedProducts() {
         {/* CTA */}
         <div className="mt-10 flex justify-center px-4 sm:mt-14">
           <Link
-            href="/catalog"
+            href="/collections/offers"
             className="group relative inline-flex items-center gap-2 overflow-hidden rounded-full border border-soft-black/20 bg-white px-8 py-3 text-sm font-semibold tracking-wide text-soft-black transition-all duration-300 hover:border-main hover:text-main hover:shadow-md"
             style={{ fontFamily: "'Poppins', sans-serif" }}
           >

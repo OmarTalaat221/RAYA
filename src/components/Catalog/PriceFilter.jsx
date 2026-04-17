@@ -11,7 +11,7 @@ export default function PriceFilter({
   const hasValues = priceRange.from !== "" || priceRange.to !== "";
 
   return (
-    <div className="w-[320px]">
+    <div className="w-full">
       {/* header */}
       <div className="mb-4 flex items-center justify-between">
         <span className="text-xs font-semibold uppercase tracking-[0.18em] text-secondary font-poppins!">
@@ -20,6 +20,7 @@ export default function PriceFilter({
 
         {hasValues && (
           <button
+            type="button"
             onClick={() => {
               onReset();
               onClose?.();
@@ -42,9 +43,9 @@ export default function PriceFilter({
       </div>
 
       {/* inputs */}
-      <div className="flex items-end gap-4">
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-[1fr_auto_1fr] sm:items-end sm:gap-4">
         {/* from */}
-        <div className="flex-1">
+        <div>
           <label className="mb-2 block text-[11px] font-medium uppercase tracking-wider text-secondary font-poppins!">
             From
           </label>
@@ -68,12 +69,12 @@ export default function PriceFilter({
         </div>
 
         {/* separator */}
-        <div className="mb-3 flex h-12 items-center px-1">
+        <div className="hidden sm:flex h-12 items-center justify-center px-1">
           <div className="h-px w-4 bg-gray-300" />
         </div>
 
         {/* to */}
-        <div className="flex-1">
+        <div>
           <label className="mb-2 block text-[11px] font-medium uppercase tracking-wider text-secondary font-poppins!">
             To
           </label>

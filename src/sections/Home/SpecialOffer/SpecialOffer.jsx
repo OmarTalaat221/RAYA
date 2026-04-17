@@ -44,7 +44,7 @@ export default function SpecialOffer() {
 
           {/* CTA */}
           <Link
-            href="/skinage"
+            href="/collections/skinage"
             className="group relative mt-8 sm:mt-10 inline-flex items-center gap-2 bg-main text-white rounded-full px-7 py-3 sm:px-9 sm:py-3.5 text-sm sm:text-base font-semibold tracking-wide overflow-hidden transition-all duration-300 hover:shadow-lg hover:shadow-main/30 hover:scale-105 font-poppins!"
             // style={{ fontFamily: "'Poppins', sans-serif" }}
           >

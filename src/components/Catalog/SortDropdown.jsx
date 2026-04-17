@@ -11,7 +11,7 @@ const sortOptions = [
   { value: "title-desc", label: "Alphabetically: Z–A" },
 ];
 
-export default function SortDropdown({ value, onChange }) {
+export default function SortDropdown({ value, onChange, fullWidth = false }) {
   return (
     <ConfigProvider
       theme={{
@@ -32,8 +32,8 @@ export default function SortDropdown({ value, onChange }) {
         },
       }}
     >
-      <div className="flex items-center gap-2">
-        <ArrowUpDown size={14} className="text-secondary" />
+      <div className={`flex items-center gap-2 ${fullWidth ? "w-full" : ""}`}>
+        <ArrowUpDown size={14} className="shrink-0 text-secondary" />
 
         <Select
           value={value}
@@ -43,6 +43,7 @@ export default function SortDropdown({ value, onChange }) {
           className="catalog-sort-select"
           popupClassName="catalog-sort-dropdown"
           getPopupContainer={(trigger) => trigger.parentElement}
+          style={{ width: fullWidth ? "100%" : 220 }}
         />
       </div>
     </ConfigProvider>

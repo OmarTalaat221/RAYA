@@ -52,4 +52,6 @@ p {
   /* Container */
   --container-center: true;
   --container-padding: 1rem;
+
+  --breakpoint-xsm: 450px;
 }
