@@ -189,7 +189,7 @@ export default function Collections() {
             {/* Decorative top line */}
             <div className="flex items-center justify-start gap-3">
               <span
-                className="mb-2 block text-xs font-semibold uppercase tracking-[0.2em] text-main sm:text-sm font-poppins!"
+                className="mb-2 block text-xs font-semibold uppercase tracking-[0.2em] text-main sm:text-sm font-garamond!"
                 // style={{ fontFamily: "'Poppins', sans-serif" }}
               >
                 Browse by

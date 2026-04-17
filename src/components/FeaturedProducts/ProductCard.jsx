@@ -75,7 +75,7 @@ export default function ProductCard({
         {/* Image Area */}
         <div
           className="relative w-full overflow-hidden bg-white"
-          style={{ aspectRatio: "1 / 1" }}
+          style={{ aspectRatio: "3 / 2" }}
         >
           {isOnSale && <SaleRibbon />}
 

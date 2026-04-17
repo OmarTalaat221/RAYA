@@ -9,14 +9,13 @@ import arMessages from "@/src/locales/ar.json";
 
 const messagesByLocale = { en: enMessages, ar: arMessages };
 
-// ── default store data ─────────────────────────────────────
-const defaultStore = {
-  name: "RDS Pharma",
+const fallbackStore = {
+  name: "Al Reaya Al Owla Medicine",
   address: {
-    en: "123 Wellness Avenue, Cairo, Egypt",
-    ar: "123 شارع ويلنس، القاهرة، مصر",
+    en: "Shop 2, Salim Al Owis Building, Sharjah, UAE",
+    ar: "المحل 2، بناية سالم العويس، الشارقة، الإمارات",
   },
-  phone: "+20 100 000 0000",
+  phone: "+971 6 535 3772",
   email: "care@rdspharma.com",
 };
 
@@ -34,7 +33,7 @@ export default function FooterClient({
   logoSrc,
   logoAlt = "RDS Pharma",
   socials = defaultSocials,
-  store = defaultStore,
+  store = fallbackStore,
 }) {
   const [locale, setLocale] = useState(initialLocale);
   const [region, setRegion] = useState(initialRegion);

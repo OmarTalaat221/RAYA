@@ -41,7 +41,7 @@ export default function SortDropdown({ value, onChange, fullWidth = false }) {
           options={sortOptions}
           showSearch={false}
           className="catalog-sort-select"
-          popupClassName="catalog-sort-dropdown"
+          classNames={{ popup: { root: "catalog-sort-dropdown" } }}
           getPopupContainer={(trigger) => trigger.parentElement}
           style={{ width: fullWidth ? "100%" : 220 }}
         />

@@ -14,7 +14,7 @@ const primaryLinks = [
   { key: "skinage", href: "/collections/skinage" },
   { key: "denefis", href: "/collections/denefis" },
   { key: "offers", href: "/collections/offers" },
-  { key: "blog", href: "/blog" },
+  { key: "blog", href: "/blog/news" },
   { key: "contact", href: "/contact" },
 ];
 
@@ -26,12 +26,12 @@ const legalLinks = [
 
 // ─── fallback store ───────────────────────────────────────
 const fallbackStore = {
-  name: "RDS Pharma",
+  name: "Al Reaya Al Owla Medicine",
   address: {
-    en: "123 Wellness Avenue, Cairo, Egypt",
-    ar: "123 شارع ويلنس، القاهرة، مصر",
+    en: "Shop 2, Salim Al Owis Building, Sharjah, UAE",
+    ar: "المحل 2، بناية سالم العويس، الشارقة، الإمارات",
   },
-  phone: "+20 100 000 0000",
+  phone: "+971 6 535 3772",
   email: "care@rdspharma.com",
 };
 
@@ -294,7 +294,7 @@ function SelectField({ label, value, onChange, options, isRTL, size }) {
           size={size}
           showSearch={false}
           suffixIcon={<ChevronDownIcon className="h-4 w-4" />}
-          popupClassName="footer-ant-select-dropdown"
+          classNames={{ popup: { root: "footer-ant-select-dropdown" } }}
           className={`footer-ant-select ${
             isRTL ? "footer-ant-select--rtl" : ""
           }`}

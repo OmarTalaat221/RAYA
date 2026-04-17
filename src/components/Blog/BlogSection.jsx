@@ -148,7 +148,7 @@ export default function BlogSection() {
         >
           {/* Eyebrow — identical className pattern */}
           <div className="flex items-center justify-start gap-3">
-            <span className="mb-2 block text-xs font-semibold uppercase tracking-[0.2em] text-main sm:text-sm font-poppins!">
+            <span className="mb-2 block text-xs font-semibold uppercase tracking-[0.2em] text-main sm:text-sm font-garamond!">
               From the Journal
             </span>
           </div>
@@ -161,12 +161,12 @@ export default function BlogSection() {
 
         {/* ── Desktop grid ─────────────────────────────────────────────── */}
         <div className="hidden md:block">
-          <DesktopGrid items={blogData} />
+          <DesktopGrid items={blogData.slice(0, 3)} />
         </div>
 
         {/* ── Mobile swiper ────────────────────────────────────────────── */}
         <div className="block md:hidden -mx-4">
-          <MobileSwiper items={blogData} />
+          <MobileSwiper items={blogData.slice(0, 3)} />
         </div>
 
         {/* ── CTA — identical ghost button pattern ─────────────────────── */}

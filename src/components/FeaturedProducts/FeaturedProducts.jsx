@@ -141,8 +141,8 @@ export default function FeaturedProducts() {
         {/* Header */}
         <div className="mb-10 px-4 sm:px-6 md:mb-14">
           <span
-            className="mb-2 block text-xs font-semibold uppercase tracking-[0.2em] text-main sm:text-sm"
-            style={{ fontFamily: "'Poppins', sans-serif" }}
+            className="mb-2 block text-xs font-semibold uppercase tracking-[0.2em] text-main sm:text-sm font-garamond!"
+            // style={{ fontFamily: "'Poppins', sans-serif" }}
           >
             Our Selection
           </span>
