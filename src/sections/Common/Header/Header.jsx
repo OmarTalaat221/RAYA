@@ -98,21 +98,21 @@ const HeaderIcons = ({ cartCount = 1 }) => (
       aria-label="Search"
       className="text-soft-black hover:text-main transition-colors duration-200"
     >
-      <Search size={19} strokeWidth={1.5} />
+      <Search size={22} strokeWidth={1.5} />
     </button>
 
     <button
       aria-label="My Account"
       className="text-soft-black hover:text-main transition-colors duration-200"
     >
-      <User size={19} strokeWidth={1.5} />
+      <User size={22} strokeWidth={1.5} />
     </button>
 
     <button
       aria-label={`Shopping Bag - ${cartCount} item`}
       className="relative text-soft-black hover:text-main transition-colors duration-200"
     >
-      <ShoppingBag size={19} strokeWidth={1.5} />
+      <ShoppingBag size={22} strokeWidth={1.5} />
       {cartCount > 0 && (
         <span className="absolute -top-2 -right-2 w-4 h-4 bg-main rounded-full flex items-center justify-center">
           <span className="text-white text-[9px] font-bold leading-none">
