@@ -13,7 +13,7 @@ const primaryLinks = [
   { key: "catalog", href: "/collections/all" },
   { key: "skinage", href: "/collections/skinage" },
   { key: "denefis", href: "/collections/denefis" },
-  { key: "offers", href: "/offers" },
+  { key: "offers", href: "/collections/offers" },
   { key: "blog", href: "/blog" },
   { key: "contact", href: "/contact" },
 ];

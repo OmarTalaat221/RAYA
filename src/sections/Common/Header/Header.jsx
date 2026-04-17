@@ -13,7 +13,7 @@ const NAV_ITEMS = [
   { label: "Catalog", href: "/collections/all" },
   { label: "Skinage", href: "/collections/skinage" },
   { label: "Denefis", href: "/collections/denefis" },
-  { label: "Offers", href: "/offers" },
+  { label: "Offers", href: "/collections/offers" },
   { label: "Blog", href: "/blog" },
   { label: "Contact", href: "/contact" },
 ];
