@@ -450,7 +450,7 @@ const LoginPage = () => {
                       className="flex items-center justify-center gap-2 sm:gap-1.5 md:gap-2 py-2.5 sm:py-3 px-3 sm:px-2 md:px-3 bg-black text-white font-medium rounded-lg transition-all duration-300 hover:bg-[#1a1a1a] hover:shadow-lg"
                     >
                       <svg
-                        className="w-5 h-5 sm:w-4 sm:h-4 md:w-5 md:h-5 flex-shrink-0"
+                        className="w-5 h-5 sm:w-4 sm:h-4 md:w-5 md:h-5 shrink-0"
                         viewBox="0 0 24 24"
                         fill="currentColor"
                       >
@@ -467,7 +467,7 @@ const LoginPage = () => {
                       className="flex items-center justify-center gap-2 sm:gap-1.5 md:gap-2 py-2.5 sm:py-3 px-3 sm:px-2 md:px-3 bg-white border border-[#023048]/20 rounded-lg transition-all duration-300 hover:border-[#4285F4] hover:shadow-lg"
                     >
                       <svg
-                        className="w-5 h-5 sm:w-4 sm:h-4 md:w-5 md:h-5 flex-shrink-0"
+                        className="w-5 h-5 sm:w-4 sm:h-4 md:w-5 md:h-5 shrink-0"
                         viewBox="0 0 24 24"
                       >
                         <path
@@ -498,7 +498,7 @@ const LoginPage = () => {
                       className="flex items-center justify-center gap-2 sm:gap-1.5 md:gap-2 py-2.5 sm:py-3 px-3 sm:px-2 md:px-3 bg-[#1877F2] text-white font-medium rounded-lg transition-all duration-300 hover:bg-[#166FE5] hover:shadow-lg"
                     >
                       <svg
-                        className="w-5 h-5 sm:w-4 sm:h-4 md:w-5 md:h-5 flex-shrink-0"
+                        className="w-5 h-5 sm:w-4 sm:h-4 md:w-5 md:h-5 shrink-0"
                         viewBox="0 0 24 24"
                         fill="currentColor"
                       >

@@ -102,4 +102,39 @@ export const collectionsData = [
   //     "https://www.rdspharma.online/cdn/shop/collections/WhatsApp_Image_2023-12-09_at_11.27.09.jpg?v=1739260799 400w",
   //   ].join(", "),
   // },
+
+  {
+    id: 6,
+    title: "Ramadan Offers",
+    slug: "ramadan-offers",
+    href: "/collections/ramadan-offers",
+    image:
+      "https://www.rdspharma.online/cdn/shop/collections/m024t0317_c_ramadan_19jan23_copy.jpg?v=1740820192&width=750",
+    srcSet: [
+      "https://www.rdspharma.online/cdn/shop/collections/m024t0317_c_ramadan_19jan23_copy.jpg?v=1740820192&width=165 165w",
+      "https://www.rdspharma.online/cdn/shop/collections/m024t0317_c_ramadan_19jan23_copy.jpg?v=1740820192&width=330 330w",
+      "https://www.rdspharma.online/cdn/shop/collections/m024t0317_c_ramadan_19jan23_copy.jpg?v=1740820192&width=535 535w",
+      "https://www.rdspharma.online/cdn/shop/collections/m024t0317_c_ramadan_19jan23_copy.jpg?v=1740820192&width=750 750w",
+      "https://www.rdspharma.online/cdn/shop/collections/m024t0317_c_ramadan_19jan23_copy.jpg?v=1740820192&width=1000 1000w",
+      "https://www.rdspharma.online/cdn/shop/collections/m024t0317_c_ramadan_19jan23_copy.jpg?v=1740820192&width=1500 1500w",
+      "https://www.rdspharma.online/cdn/shop/collections/m024t0317_c_ramadan_19jan23_copy.jpg?v=1740820192&width=3000 3000w",
+      "https://www.rdspharma.online/cdn/shop/collections/m024t0317_c_ramadan_19jan23_copy.jpg?v=1740820192 4000w",
+    ].join(", "),
+  },
+  {
+    id: 7,
+    title: "Up Sells",
+    slug: "up-sells",
+    href: "/collections/up-sells",
+    image:
+      "https://www.rdspharma.online/cdn/shop/files/prestige.jpg?v=1774985078&width=750",
+    srcSet: [
+      "https://www.rdspharma.online/cdn/shop/files/prestige.jpg?v=1774985078&width=165 165w",
+      "https://www.rdspharma.online/cdn/shop/files/prestige.jpg?v=1774985078&width=330 330w",
+      "https://www.rdspharma.online/cdn/shop/files/prestige.jpg?v=1774985078&width=535 535w",
+      "https://www.rdspharma.online/cdn/shop/files/prestige.jpg?v=1774985078&width=750 750w",
+      "https://www.rdspharma.online/cdn/shop/files/prestige.jpg?v=1774985078&width=1000 1000w",
+      "https://www.rdspharma.online/cdn/shop/files/prestige.jpg?v=1774985078 1080w",
+    ].join(", "),
+  },
 ];

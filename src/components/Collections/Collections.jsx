@@ -225,7 +225,7 @@ export default function Collections() {
             viewport={{ once: true }}
           >
             <Link
-              href="/catalog"
+              href="/collections"
               className="group relative inline-flex items-center gap-2 overflow-hidden rounded-full border border-soft-black/20 bg-white px-8 py-3 text-sm font-semibold tracking-wide text-soft-black transition-all duration-300 hover:border-main hover:text-main hover:shadow-md"
               style={{ fontFamily: "'Poppins', sans-serif" }}
             >
@@ -233,7 +233,7 @@ export default function Collections() {
                 className="absolute inset-0 origin-left scale-x-0 rounded-full bg-main/5 transition-transform duration-500 group-hover:scale-x-100"
                 aria-hidden="true"
               />
-              <span className="relative z-10">View All Products</span>
+              <span className="relative z-10">View All Collections</span>
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 width="14"

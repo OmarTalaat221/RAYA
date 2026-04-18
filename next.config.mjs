@@ -5,25 +5,21 @@ const withNextIntl = createNextIntlPlugin("./i18n.js");
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: false,
-  // output: "export",
-  // distDir: "out",
-
-  // images: {
-  //   unoptimized: true,
-  //   remotePatterns: [
-  //     {
-  //       protocol: "https",
-  //       hostname: "res.cloudinary.com",
-  //       pathname: "/dbvh5i83q/**",
-  //     },
-
-  //     {
-  //       protocol: "https",
-  //       hostname: "www.rdspharma.online",
-  //       pathname: "/cdn/shop/**",
-  //     },
-  //   ],
-  // },
+  images: {
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "res.cloudinary.com",
+        pathname: "/dbvh5i83q/**",
+      },
+      {
+        protocol: "https",
+        hostname: "www.rdspharma.online",
+        pathname: "/cdn/shop/**",
+      },
+    ],
+    formats: ["image/avif", "image/webp"],
+  },
 };
 
 export default withNextIntl(nextConfig);

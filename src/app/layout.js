@@ -13,7 +13,7 @@ import { NextIntlClientProvider } from "next-intl";
 import { getLocale, getMessages } from "next-intl/server";
 import AOSProvider from "../components/AOSProvider";
 import Header from "../sections/Common/Header/Header";
-import StoreProvider from "../features/StoreProvider";
+// import StoreProvider from "../features/StoreProvider";
 import Footer from "../components/Footer/Footer";
 
 export const metadata = {
@@ -36,13 +36,13 @@ export default async function RootLayout({ children }) {
     <html lang={locale} dir={locale === "ar" ? "rtl" : "ltr"}>
       <body>
         <NextIntlClientProvider locale={locale} messages={messages}>
-          <StoreProvider>
-            <AOSProvider>
-              {/* <Header /> */}
+          {/* <StoreProvider> */}
+          <AOSProvider>
+            {/* <Header /> */}
 
-              {children}
+            {children}
 
-              {/* <Footer
+            {/* <Footer
                 logoSrc="https://res.cloudinary.com/dbvh5i83q/image/upload/v1776082859/rds_logo_xpmbfn.webp"
                 store={{
                   name: "RDS Pharma",
@@ -55,9 +55,9 @@ export default async function RootLayout({ children }) {
                 }}
               /> */}
 
-              {/* <FloatingSocialButton /> */}
-            </AOSProvider>
-          </StoreProvider>
+            {/* <FloatingSocialButton /> */}
+          </AOSProvider>
+          {/* </StoreProvider> */}
         </NextIntlClientProvider>
       </body>
     </html>

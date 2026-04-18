@@ -30,17 +30,17 @@ export default function BlogCard({
       variants={blogCardVariant}
       className="group relative h-full"
     >
-      <div className="pointer-events-none absolute -inset-[1.5px] -z-10 rounded-[18px] bg-gradient-to-br from-main/60 via-main/20 to-transparent opacity-0 transition-opacity duration-400 ease-out group-hover:opacity-100" />
+      <div className="pointer-events-none absolute -inset-[1.5px] -z-10 rounded-[18px] bg-linear-to-br from-main/60 via-main/20 to-transparent opacity-0 transition-opacity duration-400 ease-out group-hover:opacity-100" />
 
       <Link
         href={href}
-        className="flex h-full flex-col overflow-hidden rounded-2xl bg-white shadow-[0_1px_4px_rgba(0,0,0,0.06),0_4px_16px_rgba(0,0,0,0.06)] transition-shadow duration-400 ease-out translate-y-0 transition-transform duration-350 ease-out group-hover:-translate-y-1.5 group-hover:shadow-[0_8px_32px_rgba(0,0,0,0.12),0_2px_8px_rgba(104,188,82,0.1)]"
+        className="flex h-full flex-col overflow-hidden rounded-2xl bg-white shadow-[0_1px_4px_rgba(0,0,0,0.06),0_4px_16px_rgba(0,0,0,0.06)] translate-y-0 transition-transform duration-350 ease-out group-hover:-translate-y-1.5 group-hover:shadow-[0_8px_32px_rgba(0,0,0,0.12),0_2px_8px_rgba(104,188,82,0.1)]"
       >
         {/* IMAGE */}
-        <div className="relative w-full overflow-hidden border-b border-gray-100 bg-[#f4f3f0] aspect-[16/10]">
+        <div className="relative w-full overflow-hidden border-b border-gray-100 bg-[#f4f3f0] aspect-16/10">
           <div className="pointer-events-none absolute inset-0 z-10 transition-shadow duration-400" />
 
-          <div className="pointer-events-none absolute inset-0 z-10 bg-main/0 transition-colors duration-400 ease-out group-hover:bg-main/[0.04]" />
+          <div className="pointer-events-none absolute inset-0 z-10 bg-main/0 transition-colors duration-400 ease-out group-hover:bg-main/4" />
 
           <img
             src={image}
@@ -77,7 +77,7 @@ export default function BlogCard({
               <span className="absolute bottom-0 left-0 h-[1.5px] w-0 bg-main transition-[width] duration-350 ease-out group-hover:w-full" />
             </div>
 
-            <span className="flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-full bg-[#f4f3f0] text-secondary transition-all duration-400 ease-out group-hover:rotate-[360deg] group-hover:bg-main group-hover:text-white">
+            <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-[#f4f3f0] text-secondary transition-all duration-400 ease-out group-hover:rotate-[360deg] group-hover:bg-main group-hover:text-white">
               <ArrowUpRight size={13} strokeWidth={2.5} />
             </span>
           </div>
