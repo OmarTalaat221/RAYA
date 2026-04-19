@@ -10,6 +10,7 @@ import "swiper/css/pagination";
 
 import ProductCard from "./ProductCard";
 import { PRODUCTS } from "./products";
+import useCanHover from "../Catalog/useCanHover";
 
 const containerVariants = {
   hidden: {},
@@ -29,7 +30,7 @@ const itemVariants = {
   },
 };
 
-function ProductsSlider() {
+function ProductsSlider({ canHover }) {
   return (
     <div className="relative">
       <style>{`
@@ -97,7 +98,11 @@ function ProductsSlider() {
           ?.slice(0, 8)
           .map((product, index) => (
             <SwiperSlide key={product.id}>
-              <ProductCard {...product} priority={index < 2} />
+              <ProductCard
+                {...product}
+                priority={index < 2}
+                canHover={canHover}
+              />
             </SwiperSlide>
           ))}
       </Swiper>
@@ -105,7 +110,7 @@ function ProductsSlider() {
   );
 }
 
-function DesktopGrid() {
+function DesktopGrid({ canHover }) {
   return (
     <motion.div
       className="grid grid-cols-2 gap-5 lg:grid-cols-3 xl:grid-cols-4 xl:gap-6"
@@ -118,7 +123,11 @@ function DesktopGrid() {
         ?.slice(0, 8)
         .map((product, index) => (
           <motion.div key={product.id} variants={itemVariants}>
-            <ProductCard {...product} priority={index < 4} />
+            <ProductCard
+              {...product}
+              priority={index < 4}
+              canHover={canHover}
+            />
           </motion.div>
         ))}
     </motion.div>
@@ -127,6 +136,8 @@ function DesktopGrid() {
 
 export default function FeaturedProducts() {
   const [mounted, setMounted] = useState(false);
+
+  const canHover = useCanHover();
 
   useEffect(() => {
     setMounted(true);
@@ -157,12 +168,12 @@ export default function FeaturedProducts() {
 
         {/* Mobile / Tablet slider */}
         <div className="px-4 sm:px-6 md:hidden">
-          {mounted ? <ProductsSlider /> : null}
+          {mounted ? <ProductsSlider canHover={canHover} /> : null}
         </div>
 
         {/* Desktop grid */}
         <div className="hidden px-4 sm:px-6 md:block ">
-          <DesktopGrid />
+          <DesktopGrid canHover={canHover} />
         </div>
 
         {/* CTA */}

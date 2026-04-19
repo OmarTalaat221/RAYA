@@ -19,7 +19,7 @@ export default function ProductCard({
 }) {
   const [isHovered, setIsHovered] = useState(false);
 
-  const showBackImage = canHover && backImage && isHovered;
+  const showBackImage = 1 && backImage && isHovered;
 
   const normalizedFrontImage = frontImage?.startsWith("http")
     ? frontImage
@@ -33,7 +33,7 @@ export default function ProductCard({
 
   return (
     <article
-      className="w-full transition-transform duration-300 hover:-translate-y-1"
+      className="h-full w-full transition-transform duration-300 hover:-translate-y-1"
       onMouseEnter={() => canHover && setIsHovered(true)}
       onMouseLeave={() => canHover && setIsHovered(false)}
     >
@@ -44,14 +44,14 @@ export default function ProductCard({
         {/* Image */}
         <div
           className="relative w-full overflow-hidden bg-white"
-          style={{ aspectRatio: "3 / 2" }}
+          style={{ aspectRatio: "2.5 / 2" }}
         >
           {isOnSale && <SaleRibbon />}
 
           {/* Front */}
           <div
             className={`absolute inset-0 transition-all duration-300 ${
-              showBackImage ? "opacity-0 scale-[1.04]" : "opacity-100"
+              showBackImage ? "scale-[1.04] opacity-0" : "opacity-100"
             }`}
           >
             <Image
@@ -69,7 +69,7 @@ export default function ProductCard({
           {normalizedBackImage && (
             <div
               className={`absolute inset-0 transition-all duration-300 ${
-                showBackImage ? "opacity-100" : "opacity-0 scale-[1.04]"
+                showBackImage ? "opacity-100" : "scale-[1.04] opacity-0"
               }`}
             >
               <Image
@@ -85,14 +85,14 @@ export default function ProductCard({
         </div>
 
         {/* Body */}
-        <div className="flex flex-col items-center px-4 py-5 text-center">
-          <h3 className="line-clamp-2 text-sm font-semibold text-soft-black">
+        <div className="flex flex-1 flex-col items-center px-4 py-5 text-center">
+          <h3 className="min-h-[3.75rem] line-clamp-3 text-sm font-semibold leading-5 text-soft-black">
             {title}
           </h3>
 
           <div className="my-3 h-px w-8 bg-[#e4e1db]" />
 
-          <div className="flex items-center gap-2">
+          <div className="mt-auto flex items-center gap-2">
             {oldPrice && (
               <span className="text-xs text-secondary line-through">
                 {currency} {Number(oldPrice).toFixed(2)}
