@@ -20,8 +20,9 @@
   font-family: "Poppins", sans-serif;
 }
 
-html {
+html, body {
   font-family: "Poppins", sans-serif;
+  scroll-behavior: smooth !important;
 }
 
 li {

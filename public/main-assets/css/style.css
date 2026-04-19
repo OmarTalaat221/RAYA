@@ -110,7 +110,7 @@
 /*------------------- 1.5. Typography -------------------*/
 html,
 body {
-  scroll-behavior: smooth !important;
+  /* scroll-behavior: smooth !important; Removed to fix Next.js routing scroll to top */
 }
 
 body {
