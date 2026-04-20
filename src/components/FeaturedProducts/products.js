@@ -4,7 +4,7 @@ export const PRODUCTS = [
   {
     id: 2,
     title: "Skinage Collagen Prestige Ampoules 15's",
-    href: "/skinage-collagen-prestige-15",
+    href: "/products/skinage-collagen-prestige-15",
     frontImage: "/cdn/shop/files/prestige.jpg?v=1774985078",
     backImage: "/cdn/shop/files/2J1A7560_copy.jpg?v=1774985078",
     oldPrice: 349,
@@ -13,24 +13,118 @@ export const PRODUCTS = [
     isOnSale: true,
     brand: "Skinage",
     category: "Skinage",
+
+    slug: "skinage-collagen-prestige-15",
+    sku: null,
+    badge: "Sale",
+    rating: null,
+    reviewCount: null,
+    stockStatus: "in_stock",
+    limitedOffer: {
+      enabled: false,
+      endsAt: null,
+    },
+    media: [
+      {
+        type: "image",
+        role: "front_image",
+        src: "/cdn/shop/files/prestige.jpg?v=1774985078",
+        alt: "Skinage Collagen Prestige Ampoules 15's front image",
+        isPrimary: true,
+      },
+      {
+        type: "image",
+        role: "back_image",
+        src: "/cdn/shop/files/2J1A7560_copy.jpg?v=1774985078",
+        alt: "Skinage Collagen Prestige Ampoules 15's back image",
+      },
+    ],
+    shortDescription: "",
+    contentSections: [],
   },
+
   {
     id: 1,
     title: "Skinage Hairboost Ampoules",
-    href: "/skinage-hairboost",
+    href: "/products/skinage-hairboost",
     backImage: "/cdn/shop/files/2e2w.jpg?v=1765061709",
     frontImage: "/cdn/shop/files/hairboost.jpg?v=1765061709",
-    oldPrice: null,
+    oldPrice: 249,
     newPrice: 199,
     currency: "AED",
-    isOnSale: false,
+    isOnSale: true,
     brand: "Skinage",
     category: "Skinage",
+
+    slug: "skinage-hairboost",
+    sku: "SKN-HB-15X25",
+    badge: "Sale",
+    rating: 4.8,
+    reviewCount: 27,
+    stockStatus: "in_stock",
+    limitedOffer: {
+      enabled: true,
+      endsAt: "2026-04-30T23:59:59Z",
+    },
+    media: [
+      {
+        type: "image",
+        role: "front_image",
+        src: "/cdn/shop/files/hairboost.jpg?v=1765061709",
+        alt: "Skinage Hairboost Ampoules front image",
+        isPrimary: true,
+      },
+      {
+        type: "image",
+        role: "back_image",
+        src: "/cdn/shop/files/2e2w.jpg?v=1765061709",
+        alt: "Skinage Hairboost Ampoules back image",
+      },
+      {
+        type: "video",
+        role: "video",
+        src: "https://res.cloudinary.com/dp7jfs375/video/upload/v1773140082/set-elsham_isx9my.mp4",
+        alt: "Skinage Hairboost product video",
+        poster: "/cdn/shop/files/2e2w.jpg?v=1765061709",
+      },
+    ],
+    shortDescription:
+      "A concentrated ampoule formula designed to support stronger, healthier-looking hair with a lightweight daily-use routine.",
+    contentSections: [
+      {
+        type: "rich_text",
+        title: "Product Overview",
+        content:
+          "<p>Skinage Hairboost Ampoules are designed for weak, dull, and fragile hair. The formula supports a healthier-looking hair routine and helps improve the overall appearance of the hair with regular use.</p>",
+      },
+      {
+        type: "bullet_list",
+        title: "Key Benefits",
+        items: [
+          "Helps improve the appearance of weak hair",
+          "Supports a healthier-looking hair care routine",
+          "Easy-to-use ampoule format",
+          "Suitable for regular use",
+        ],
+      },
+      {
+        type: "table",
+        title: "Product Details",
+        columns: ["Attribute", "Details"],
+        rows: [
+          ["Brand", "Skinage"],
+          ["Format", "15 ampoules"],
+          ["Category", "Hair Care"],
+          ["Use", "Regular care routine"],
+        ],
+      },
+    ],
   },
+
   {
     id: 3,
     title: "Skinage Collagen Prestige 10000",
-    href: "/skinage-collagen-prestige-10000",
+    href: "/products/skinage-collagen-prestige-10000",
     frontImage:
       "/cdn/shop/files/Skinage_Collagen_Prestige_10000.jpg?v=1722858467",
     backImage: "/cdn/shop/files/rtr.jpg?v=1723281480",
@@ -40,11 +134,40 @@ export const PRODUCTS = [
     isOnSale: true,
     brand: "Skinage",
     category: "Skinage",
+
+    slug: "skinage-collagen-prestige-10000",
+    sku: null,
+    badge: "Sale",
+    rating: null,
+    reviewCount: null,
+    stockStatus: "in_stock",
+    limitedOffer: {
+      enabled: false,
+      endsAt: null,
+    },
+    media: [
+      {
+        type: "image",
+        role: "front_image",
+        src: "/cdn/shop/files/Skinage_Collagen_Prestige_10000.jpg?v=1722858467",
+        alt: "Skinage Collagen Prestige 10000 front image",
+        isPrimary: true,
+      },
+      {
+        type: "image",
+        role: "back_image",
+        src: "/cdn/shop/files/rtr.jpg?v=1723281480",
+        alt: "Skinage Collagen Prestige 10000 back image",
+      },
+    ],
+    shortDescription: "",
+    contentSections: [],
   },
+
   {
     id: 4,
     title: "Omniflex Magnesium DUO SPORT",
-    href: "/omniflex-magnesium-duo-sport",
+    href: "/products/omniflex-magnesium-duo-sport",
     frontImage:
       "/cdn/shop/files/OMNIflex-magnezij-DUO-SPORT-opt.png?v=1702363982",
     backImage: null,
@@ -54,11 +177,34 @@ export const PRODUCTS = [
     isOnSale: false,
     brand: "Omniflex",
     category: "Omniflex",
+
+    slug: "omniflex-magnesium-duo-sport",
+    sku: null,
+    badge: null,
+    rating: null,
+    reviewCount: null,
+    stockStatus: "in_stock",
+    limitedOffer: {
+      enabled: false,
+      endsAt: null,
+    },
+    media: [
+      {
+        type: "image",
+        role: "front_image",
+        src: "/cdn/shop/files/OMNIflex-magnezij-DUO-SPORT-opt.png?v=1702363982",
+        alt: "Omniflex Magnesium DUO SPORT front image",
+        isPrimary: true,
+      },
+    ],
+    shortDescription: "",
+    contentSections: [],
   },
+
   {
     id: 5,
     title: "Omniflex K2D3 Powder",
-    href: "/omniflex-k2d3-powder",
+    href: "/products/omniflex-k2d3-powder",
     frontImage: "/cdn/shop/files/OMNIflex-K2D3-prah-opt.png?v=1702364902",
     backImage: null,
     oldPrice: null,
@@ -67,11 +213,34 @@ export const PRODUCTS = [
     isOnSale: false,
     brand: "Omniflex",
     category: "Omniflex",
+
+    slug: "omniflex-k2d3-powder",
+    sku: null,
+    badge: null,
+    rating: null,
+    reviewCount: null,
+    stockStatus: "in_stock",
+    limitedOffer: {
+      enabled: false,
+      endsAt: null,
+    },
+    media: [
+      {
+        type: "image",
+        role: "front_image",
+        src: "/cdn/shop/files/OMNIflex-K2D3-prah-opt.png?v=1702364902",
+        alt: "Omniflex K2D3 Powder front image",
+        isPrimary: true,
+      },
+    ],
+    shortDescription: "",
+    contentSections: [],
   },
+
   {
     id: 6,
     title: "Skinage Beauty Orchid Silk Hand Cream 100G",
-    href: "/skinage-orchid-silk-hand-cream",
+    href: "/products/skinage-orchid-silk-hand-cream",
     frontImage: "/cdn/shop/files/ORCHID_SILK.jpg?v=1722856768",
     backImage: "/cdn/shop/files/hn.jpg?v=1765021217",
     oldPrice: 99,
@@ -80,11 +249,40 @@ export const PRODUCTS = [
     isOnSale: true,
     brand: "Skinage",
     category: "Skinage",
+
+    slug: "skinage-orchid-silk-hand-cream",
+    sku: null,
+    badge: "Sale",
+    rating: null,
+    reviewCount: null,
+    stockStatus: "in_stock",
+    limitedOffer: {
+      enabled: false,
+      endsAt: null,
+    },
+    media: [
+      {
+        type: "image",
+        role: "front_image",
+        src: "/cdn/shop/files/ORCHID_SILK.jpg?v=1722856768",
+        alt: "Skinage Beauty Orchid Silk Hand Cream 100G front image",
+        isPrimary: true,
+      },
+      {
+        type: "image",
+        role: "back_image",
+        src: "/cdn/shop/files/hn.jpg?v=1765021217",
+        alt: "Skinage Beauty Orchid Silk Hand Cream 100G back image",
+      },
+    ],
+    shortDescription: "",
+    contentSections: [],
   },
+
   {
     id: 7,
     title: "I-vita Vitamin Shower Filter Peach",
-    href: "/ivita-shower-filter-peach",
+    href: "/products/ivita-shower-filter-peach",
     frontImage:
       "/cdn/shop/files/bac8584f-6d2a-4f3c-b1ec-89bcdd1e74e8.jpg?v=1722245953",
     backImage:
@@ -95,11 +293,40 @@ export const PRODUCTS = [
     isOnSale: false,
     brand: "I-vita",
     category: "I-vita",
+
+    slug: "ivita-shower-filter-peach",
+    sku: null,
+    badge: null,
+    rating: null,
+    reviewCount: null,
+    stockStatus: "in_stock",
+    limitedOffer: {
+      enabled: false,
+      endsAt: null,
+    },
+    media: [
+      {
+        type: "image",
+        role: "front_image",
+        src: "/cdn/shop/files/bac8584f-6d2a-4f3c-b1ec-89bcdd1e74e8.jpg?v=1722245953",
+        alt: "I-vita Vitamin Shower Filter Peach front image",
+        isPrimary: true,
+      },
+      {
+        type: "image",
+        role: "back_image",
+        src: "/cdn/shop/files/HOW_TO_INSTALL_i-vita_vitamin_shower_filter.jpg?v=1769589523",
+        alt: "I-vita Vitamin Shower Filter Peach back image",
+      },
+    ],
+    shortDescription: "",
+    contentSections: [],
   },
+
   {
     id: 8,
     title: "I-vita Vitamin Shower Filter Cherry Blossom",
-    href: "/ivita-shower-filter-cherry-blossom",
+    href: "/products/ivita-shower-filter-cherry-blossom",
     frontImage:
       "/cdn/shop/files/657f9cb9-1743-4db0-bca0-fc9edc0e261b.jpg?v=1722246496",
     backImage:
@@ -110,12 +337,40 @@ export const PRODUCTS = [
     isOnSale: false,
     brand: "I-vita",
     category: "I-vita",
+
+    slug: "ivita-shower-filter-cherry-blossom",
+    sku: null,
+    badge: null,
+    rating: null,
+    reviewCount: null,
+    stockStatus: "in_stock",
+    limitedOffer: {
+      enabled: false,
+      endsAt: null,
+    },
+    media: [
+      {
+        type: "image",
+        role: "front_image",
+        src: "/cdn/shop/files/657f9cb9-1743-4db0-bca0-fc9edc0e261b.jpg?v=1722246496",
+        alt: "I-vita Vitamin Shower Filter Cherry Blossom front image",
+        isPrimary: true,
+      },
+      {
+        type: "image",
+        role: "back_image",
+        src: "/cdn/shop/files/e63f4417-a5c2-4173-becb-468e2d961247.jpg?v=1722246505",
+        alt: "I-vita Vitamin Shower Filter Cherry Blossom back image",
+      },
+    ],
+    shortDescription: "",
+    contentSections: [],
   },
 
   {
     id: 9,
     title: "Bellyslim Capsule 60s",
-    href: "/bellyslim-capsule-60s",
+    href: "/products/bellyslim-capsule-60s",
     frontImage:
       "/cdn/shop/files/gemini_generated_image_egx2uqegx2uqegx2.png?v=1774602548",
     backImage:
@@ -126,11 +381,40 @@ export const PRODUCTS = [
     isOnSale: true,
     brand: "Bellyslim",
     category: "Bellyslim",
+
+    slug: "bellyslim-capsule-60s",
+    sku: null,
+    badge: "Sale",
+    rating: null,
+    reviewCount: null,
+    stockStatus: "in_stock",
+    limitedOffer: {
+      enabled: false,
+      endsAt: null,
+    },
+    media: [
+      {
+        type: "image",
+        role: "front_image",
+        src: "/cdn/shop/files/gemini_generated_image_egx2uqegx2uqegx2.png?v=1774602548",
+        alt: "Bellyslim Capsule 60s front image",
+        isPrimary: true,
+      },
+      {
+        type: "image",
+        role: "back_image",
+        src: "/cdn/shop/files/gemini_generated_image_1hmf0n1hmf0n1hmf.png?v=1774602563",
+        alt: "Bellyslim Capsule 60s back image",
+      },
+    ],
+    shortDescription: "",
+    contentSections: [],
   },
+
   {
     id: 10,
     title: "Denefis 24k Gold Serum 30ml",
-    href: "/denefis-24k-gold-serum-30ml",
+    href: "/products/denefis-24k-gold-serum-30ml",
     frontImage: "/cdn/shop/files/Denefis_24k_Gold_Serum_30ml.jpg?v=1725366245",
     backImage:
       "/cdn/shop/files/dreamina-2026-01-09-8958-Createaclean_premiumlifestyleimage....jpg?v=1768224248",
@@ -140,11 +424,40 @@ export const PRODUCTS = [
     isOnSale: true,
     brand: "Denefis",
     category: "Denefis",
+
+    slug: "denefis-24k-gold-serum-30ml",
+    sku: null,
+    badge: "Sale",
+    rating: null,
+    reviewCount: null,
+    stockStatus: "in_stock",
+    limitedOffer: {
+      enabled: false,
+      endsAt: null,
+    },
+    media: [
+      {
+        type: "image",
+        role: "front_image",
+        src: "/cdn/shop/files/Denefis_24k_Gold_Serum_30ml.jpg?v=1725366245",
+        alt: "Denefis 24k Gold Serum 30ml front image",
+        isPrimary: true,
+      },
+      {
+        type: "image",
+        role: "back_image",
+        src: "/cdn/shop/files/dreamina-2026-01-09-8958-Createaclean_premiumlifestyleimage....jpg?v=1768224248",
+        alt: "Denefis 24k Gold Serum 30ml back image",
+      },
+    ],
+    shortDescription: "",
+    contentSections: [],
   },
+
   {
     id: 11,
     title: "Denefis Aha+Bha Serum 30ml",
-    href: "/denefis-aha-bha-serum-30ml",
+    href: "/products/denefis-aha-bha-serum-30ml",
     frontImage: "/cdn/shop/files/NS_AHA-BHA-SERUM.jpg?v=1769545031",
     backImage:
       "/cdn/shop/files/W26-01-06-6536-Createaclean_premiumlifestyleimage....jpg?v=1769545031",
@@ -154,11 +467,40 @@ export const PRODUCTS = [
     isOnSale: true,
     brand: "Denefis",
     category: "Denefis",
+
+    slug: "denefis-aha-bha-serum-30ml",
+    sku: null,
+    badge: "Sale",
+    rating: null,
+    reviewCount: null,
+    stockStatus: "in_stock",
+    limitedOffer: {
+      enabled: false,
+      endsAt: null,
+    },
+    media: [
+      {
+        type: "image",
+        role: "front_image",
+        src: "/cdn/shop/files/NS_AHA-BHA-SERUM.jpg?v=1769545031",
+        alt: "Denefis Aha+Bha Serum 30ml front image",
+        isPrimary: true,
+      },
+      {
+        type: "image",
+        role: "back_image",
+        src: "/cdn/shop/files/W26-01-06-6536-Createaclean_premiumlifestyleimage....jpg?v=1769545031",
+        alt: "Denefis Aha+Bha Serum 30ml back image",
+      },
+    ],
+    shortDescription: "",
+    contentSections: [],
   },
+
   {
     id: 12,
     title: "Denefis All-In-One Kit",
-    href: "/denefis-all-in-one-kit",
+    href: "/products/denefis-all-in-one-kit",
     frontImage:
       "/cdn/shop/files/Gemini_Generated_Image_qdai69qdai69qdai.png?v=1774292091",
     backImage: "/cdn/shop/files/DENEFIS_RETINOL_SERUM.jpg?v=1725366180",
@@ -168,11 +510,40 @@ export const PRODUCTS = [
     isOnSale: true,
     brand: "Denefis",
     category: "Denefis",
+
+    slug: "denefis-all-in-one-kit",
+    sku: null,
+    badge: "Sale",
+    rating: null,
+    reviewCount: null,
+    stockStatus: "in_stock",
+    limitedOffer: {
+      enabled: false,
+      endsAt: null,
+    },
+    media: [
+      {
+        type: "image",
+        role: "front_image",
+        src: "/cdn/shop/files/Gemini_Generated_Image_qdai69qdai69qdai.png?v=1774292091",
+        alt: "Denefis All-In-One Kit front image",
+        isPrimary: true,
+      },
+      {
+        type: "image",
+        role: "back_image",
+        src: "/cdn/shop/files/DENEFIS_RETINOL_SERUM.jpg?v=1725366180",
+        alt: "Denefis All-In-One Kit back image",
+      },
+    ],
+    shortDescription: "",
+    contentSections: [],
   },
+
   {
     id: 13,
     title: "Denefis Double Cleanse Bundle - Oil & Foam Duo",
-    href: "/denefis-double-cleanse-bundle-oil-foam-duo",
+    href: "/products/denefis-double-cleanse-bundle-oil-foam-duo",
     frontImage:
       "/cdn/shop/files/Denefis_Double_Cleanse_Bundle_Oil_Foam_Duo_copy.jpg?v=1739260651",
     backImage: null,
@@ -182,11 +553,34 @@ export const PRODUCTS = [
     isOnSale: true,
     brand: "Denefis",
     category: "Denefis",
+
+    slug: "denefis-double-cleanse-bundle-oil-foam-duo",
+    sku: null,
+    badge: "Sale",
+    rating: null,
+    reviewCount: null,
+    stockStatus: "in_stock",
+    limitedOffer: {
+      enabled: false,
+      endsAt: null,
+    },
+    media: [
+      {
+        type: "image",
+        role: "front_image",
+        src: "/cdn/shop/files/Denefis_Double_Cleanse_Bundle_Oil_Foam_Duo_copy.jpg?v=1739260651",
+        alt: "Denefis Double Cleanse Bundle - Oil & Foam Duo front image",
+        isPrimary: true,
+      },
+    ],
+    shortDescription: "",
+    contentSections: [],
   },
+
   {
     id: 14,
     title: "Denefis Hyaluronic Acid Serum 30ml",
-    href: "/denefis-hyaluronic-acid-serum-30ml",
+    href: "/products/denefis-hyaluronic-acid-serum-30ml",
     frontImage:
       "/cdn/shop/files/rn-image_picker_lib_temp_40ea1f79-bf26-437f-8fbb-5ea0aeeff990.jpg?v=1752998395",
     backImage:
@@ -197,27 +591,84 @@ export const PRODUCTS = [
     isOnSale: true,
     brand: "Denefis",
     category: "Denefis",
+
+    slug: "denefis-hyaluronic-acid-serum-30ml",
+    sku: null,
+    badge: "Sale",
+    rating: null,
+    reviewCount: null,
+    stockStatus: "in_stock",
+    limitedOffer: {
+      enabled: false,
+      endsAt: null,
+    },
+    media: [
+      {
+        type: "image",
+        role: "front_image",
+        src: "/cdn/shop/files/rn-image_picker_lib_temp_40ea1f79-bf26-437f-8fbb-5ea0aeeff990.jpg?v=1752998395",
+        alt: "Denefis Hyaluronic Acid Serum 30ml front image",
+        isPrimary: true,
+      },
+      {
+        type: "image",
+        role: "back_image",
+        src: "/cdn/shop/files/dreamina-2026-01-10-9937-Createaclean_premiumlifestyleimage....jpg?v=1768224304",
+        alt: "Denefis Hyaluronic Acid Serum 30ml back image",
+      },
+    ],
+    shortDescription: "",
+    contentSections: [],
   },
+
   {
     id: 15,
     title: "Denefis Vitamin C Serum 30ml",
-    href: "/denefis-vitamin-c-serum-30ml",
+    href: "/products/denefis-vitamin-c-serum-30ml",
     frontImage:
       "/cdn/shop/files/rn-image_picker_lib_temp_59c03d72-94e3-4444-855f-26d5faf575b5.jpg?v=1772574634",
     backImage:
       "/cdn/shop/files/dreamina-2026-01-05-1119-Before___After_Vitamin_C_Serum_Create....jpg?v=1772574634",
-    // "/cdn/shop/files/rn-image_picker_lib_temp_308db6b4-4e50-4439-86e5-ef9b5155cfa9.jpg?v=1773158970",
     oldPrice: 105,
     newPrice: 89,
     currency: "AED",
     isOnSale: true,
     brand: "Denefis",
     category: "Denefis",
+
+    slug: "denefis-vitamin-c-serum-30ml",
+    sku: null,
+    badge: "Sale",
+    rating: null,
+    reviewCount: null,
+    stockStatus: "in_stock",
+    limitedOffer: {
+      enabled: false,
+      endsAt: null,
+    },
+    media: [
+      {
+        type: "image",
+        role: "front_image",
+        src: "/cdn/shop/files/rn-image_picker_lib_temp_59c03d72-94e3-4444-855f-26d5faf575b5.jpg?v=1772574634",
+        alt: "Denefis Vitamin C Serum 30ml front image",
+        isPrimary: true,
+      },
+      {
+        type: "image",
+        role: "back_image",
+        src: "/cdn/shop/files/dreamina-2026-01-05-1119-Before___After_Vitamin_C_Serum_Create....jpg?v=1772574634",
+        alt: "Denefis Vitamin C Serum 30ml back image",
+      },
+    ],
+    shortDescription: "",
+    contentSections: [],
   },
+
   {
     id: 16,
     title: "Denefis Anti Blemish Even Skin Tone Serum 30ml",
-    href: "/denefis-anti-blemish-even-skin-tone-serum-30ml",
+    href: "/products/denefis-anti-blemish-even-skin-tone-serum-30ml",
     frontImage:
       "/cdn/shop/files/rn-image_picker_lib_temp_308db6b4-4e50-4439-86e5-ef9b5155cfa9.jpg?v=1773158970",
     backImage:
@@ -228,5 +679,33 @@ export const PRODUCTS = [
     isOnSale: true,
     brand: "Denefis",
     category: "Denefis",
+
+    slug: "denefis-anti-blemish-even-skin-tone-serum-30ml",
+    sku: null,
+    badge: "Sale",
+    rating: null,
+    reviewCount: null,
+    stockStatus: "in_stock",
+    limitedOffer: {
+      enabled: false,
+      endsAt: null,
+    },
+    media: [
+      {
+        type: "image",
+        role: "front_image",
+        src: "/cdn/shop/files/rn-image_picker_lib_temp_308db6b4-4e50-4439-86e5-ef9b5155cfa9.jpg?v=1773158970",
+        alt: "Denefis Anti Blemish Even Skin Tone Serum 30ml front image",
+        isPrimary: true,
+      },
+      {
+        type: "image",
+        role: "back_image",
+        src: "/cdn/shop/files/dreamina-2026-01-06-2893-Createaclean_premiumlifestyleimage....jpg?v=1773158970",
+        alt: "Denefis Anti Blemish Even Skin Tone Serum 30ml back image",
+      },
+    ],
+    shortDescription: "",
+    contentSections: [],
   },
 ];
