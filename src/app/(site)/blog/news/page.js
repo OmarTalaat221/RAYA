@@ -1,6 +1,6 @@
 import { Suspense } from "react";
 import NewsPageClient from "../../../../components/Blog/NewsPageClient";
-// import NewsPageClient from "../../components/Blog/NewsPageClient";
+import NewsPageFallback from "../../../../components/Blog/NewsPageFallback";
 
 export const metadata = {
   title: "Latest News | RDS Pharma",
@@ -10,7 +10,7 @@ export const metadata = {
 
 export default function NewsPage() {
   return (
-    <Suspense fallback={null}>
+    <Suspense fallback={<NewsPageFallback />}>
       <NewsPageClient />
     </Suspense>
   );

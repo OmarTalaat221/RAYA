@@ -20,8 +20,8 @@ const NAV_ITEMS = [
 // ===== LOGO =====
 const Logo = ({ size = "default" }) => {
   const sizes = {
-    default: { className: "w-24 h-12 sm:w-26 sm:h-14 md:w-28 md:h-[60px]" },
-    small: { className: "w-20 h-10 sm:w-24 sm:h-12" },
+    default: { className: "w-24 h-16! sm:w-26 sm:h-20! md:w-28 md:h-[100px]!" },
+    small: { className: "w-20 h-14! sm:w-24 sm:h-18!" },
   };
 
   return (
@@ -100,12 +100,13 @@ const HeaderIcons = ({ cartCount = 1 }) => (
       <Search size={22} strokeWidth={1.5} />
     </button>
 
-    <button
+    <Link
       aria-label="My Account"
+      href="/login"
       className="text-soft-black hover:text-main transition-colors duration-200"
     >
       <User size={22} strokeWidth={1.5} />
-    </button>
+    </Link>
 
     <button
       aria-label={`Shopping Bag - ${cartCount} item`}

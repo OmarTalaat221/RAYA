@@ -1,0 +1,273 @@
+/* ═══════════════════════════════════════════════
+   Register — Phone Input (react-phone-input-2)
+   ═══════════════════════════════════════════════ */
+
+.register-phone-shell {
+  position: relative;
+  overflow: visible;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  border-radius: 1rem;
+  background: #ffffff;
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.register-phone-normal:focus-within {
+  border-color: rgba(104, 188, 82, 0.6);
+  box-shadow: 0 0 0 4px rgba(104, 188, 82, 0.1);
+}
+
+.register-phone-error {
+  border-color: rgb(252 165 165);
+  box-shadow: 0 0 0 4px rgb(254 242 242);
+}
+
+/* container */
+.register-phone-container.react-tel-input {
+  position: relative !important;
+  width: 100% !important;
+  font-family: "Poppins", sans-serif !important;
+}
+
+/* input */
+.register-phone-container.react-tel-input .form-control.register-phone-input {
+  width: 100% !important;
+  height: 48px !important;
+  border: 0 !important;
+  border-radius: 1rem !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  outline: none !important;
+  padding: 0 16px 0 76px !important;
+  font-size: 14px !important;
+  line-height: 1.4 !important;
+  color: #2d2d2d !important;
+  font-family: "Poppins", sans-serif !important;
+}
+
+.register-phone-container.react-tel-input
+  .form-control.register-phone-input::placeholder {
+  color: #93979a !important;
+  opacity: 1 !important;
+}
+
+.register-phone-container.react-tel-input
+  .form-control.register-phone-input:focus {
+  border: 0 !important;
+  box-shadow: none !important;
+  outline: none !important;
+}
+
+/* flag button */
+.register-phone-container.react-tel-input .flag-dropdown.register-phone-button {
+  position: absolute !important;
+  top: 0 !important;
+  left: 0 !important;
+  bottom: 0 !important;
+  width: 64px !important;
+  border: 0 !important;
+  border-right: 1px solid rgba(0, 0, 0, 0.08) !important;
+  border-radius: 1rem 0 0 1rem !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+.register-phone-container.react-tel-input
+  .flag-dropdown.register-phone-button:hover {
+  background: rgba(0, 0, 0, 0.025) !important;
+}
+
+.register-phone-container.react-tel-input
+  .flag-dropdown.register-phone-button
+  .selected-flag {
+  width: 100% !important;
+  height: 100% !important;
+  padding: 0 0 0 16px !important;
+  background: transparent !important;
+  border-radius: 1rem 0 0 1rem !important;
+}
+
+.register-phone-container.react-tel-input
+  .flag-dropdown.register-phone-button
+  .selected-flag:hover,
+.register-phone-container.react-tel-input
+  .flag-dropdown.register-phone-button
+  .selected-flag:focus {
+  background: transparent !important;
+}
+
+.register-phone-container.react-tel-input
+  .flag-dropdown.register-phone-button
+  .selected-flag
+  .flag {
+  transform: scale(1.05);
+}
+
+.register-phone-container.react-tel-input
+  .flag-dropdown.register-phone-button
+  .arrow {
+  left: 38px !important;
+  border-top-color: #93979a !important;
+}
+
+.register-phone-container.react-tel-input
+  .flag-dropdown.register-phone-button
+  .arrow.up {
+  border-bottom-color: #93979a !important;
+}
+
+/* dropdown */
+.register-phone-container.react-tel-input
+  .country-list.register-phone-dropdown {
+  position: absolute !important;
+  left: 0 !important;
+  top: calc(100% + 8px) !important;
+  bottom: auto !important;
+  /* width: 10 !important; */
+  max-height: 260px !important;
+  margin: 0 !important;
+  padding: 8px !important;
+  border: 1px solid rgba(0, 0, 0, 0.06) !important;
+  border-radius: 16px !important;
+  background: #ffffff !important;
+  box-shadow: 0 16px 48px rgba(45, 45, 45, 0.12) !important;
+  overflow-x: hidden !important;
+  overflow-y: auto !important;
+  z-index: 70 !important;
+  font-family: "Poppins", sans-serif !important;
+}
+
+/* hide search completely */
+.register-phone-container.react-tel-input
+  .country-list.register-phone-dropdown
+  .search {
+  display: none !important;
+}
+
+.register-phone-container.react-tel-input
+  .country-list.register-phone-dropdown
+  .search-box {
+  display: none !important;
+}
+
+/* country items */
+.register-phone-container.react-tel-input
+  .country-list.register-phone-dropdown
+  .country {
+  border-radius: 10px !important;
+  padding: 10px 14px !important;
+  font-size: 13px !important;
+  color: #2d2d2d !important;
+  transition: background-color 0.15s ease !important;
+}
+
+.register-phone-container.react-tel-input
+  .country-list.register-phone-dropdown
+  .country:hover,
+.register-phone-container.react-tel-input
+  .country-list.register-phone-dropdown
+  .country.highlight {
+  background: rgba(104, 188, 82, 0.06) !important;
+}
+
+.register-phone-container.react-tel-input
+  .country-list.register-phone-dropdown
+  .country-name {
+  color: #2d2d2d !important;
+}
+
+.register-phone-container.react-tel-input
+  .country-list.register-phone-dropdown
+  .dial-code {
+  color: #93979a !important;
+}
+
+/* ═══════════════════════════════════════════════
+   Register — Ant Design Select
+   ═══════════════════════════════════════════════ */
+
+.register-select-shell {
+  position: relative;
+  overflow: visible;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  border-radius: 1rem;
+  background: #ffffff;
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.register-select-normal:focus-within {
+  border-color: rgba(104, 188, 82, 0.6);
+  box-shadow: 0 0 0 4px rgba(104, 188, 82, 0.1);
+}
+
+.register-select-error {
+  border-color: rgb(252 165 165);
+  box-shadow: 0 0 0 4px rgb(254 242 242);
+}
+
+/* selector */
+.register-ant-select .ant-select-selector {
+  border: none !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  padding: 4px 8px !important;
+  height: 48px !important;
+  font-size: 14px !important;
+  color: #2d2d2d !important;
+  font-family: "Poppins", sans-serif !important;
+}
+
+.register-ant-select .ant-select-selector:hover {
+  border: none !important;
+}
+
+.register-ant-select .ant-select-selection-placeholder {
+  color: #93979a !important;
+  font-size: 14px !important;
+}
+
+.register-ant-select .ant-select-selection-item {
+  color: #2d2d2d !important;
+  font-size: 14px !important;
+}
+
+.register-ant-select .ant-select-arrow {
+  color: #93979a !important;
+}
+
+.register-ant-select.ant-select-focused .ant-select-selector {
+  box-shadow: none !important;
+  border: none !important;
+}
+
+/* dropdown */
+.register-ant-dropdown {
+  border-radius: 16px !important;
+  border: 1px solid rgba(0, 0, 0, 0.06) !important;
+  box-shadow: 0 16px 48px rgba(45, 45, 45, 0.12) !important;
+  padding: 6px !important;
+  overflow: hidden !important;
+  font-family: "Poppins", sans-serif !important;
+}
+
+.register-ant-dropdown .ant-select-item {
+  border-radius: 10px !important;
+  padding: 10px 14px !important;
+  font-size: 13px !important;
+  color: #2d2d2d !important;
+  transition: background 0.15s;
+}
+
+.register-ant-dropdown .ant-select-item-option-active {
+  background: rgba(104, 188, 82, 0.06) !important;
+}
+
+.register-ant-dropdown .ant-select-item-option-selected {
+  background: rgba(104, 188, 82, 0.12) !important;
+  font-weight: 500 !important;
+  color: #2d2d2d !important;
+}
