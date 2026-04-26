@@ -24,6 +24,7 @@ export default function BlogCard({
   image,
   srcSet,
   href,
+  slug,
 }) {
   return (
     <motion.article
@@ -33,7 +34,7 @@ export default function BlogCard({
       <div className="pointer-events-none absolute -inset-[1.5px] -z-10 rounded-[18px] bg-linear-to-br from-main/60 via-main/20 to-transparent opacity-0 transition-opacity duration-400 ease-out group-hover:opacity-100" />
 
       <Link
-        href={href}
+        href={`/blog/news/${slug}`}
         className="flex h-full flex-col overflow-hidden rounded-2xl bg-white shadow-[0_1px_4px_rgba(0,0,0,0.06),0_4px_16px_rgba(0,0,0,0.06)] translate-y-0 transition-transform duration-350 ease-out group-hover:-translate-y-1.5 group-hover:shadow-[0_8px_32px_rgba(0,0,0,0.12),0_2px_8px_rgba(104,188,82,0.1)]"
       >
         {/* IMAGE */}
