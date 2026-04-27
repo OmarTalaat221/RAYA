@@ -1,3 +1,5 @@
+export const runtime = "nodejs";
+
 import { notFound } from "next/navigation";
 import { blogData } from "../../../../../components/Blog/blog";
 import BlogDetailsPage from "../../../../../components/Blog/BlogDetailsPage";
@@ -7,19 +9,13 @@ import {
   toAbsoluteUrl,
 } from "../../../../../components/Blog/blog-details.utils";
 
-// ─── Data helpers ─────────────────────────────────────────────────────────────
-
 function getRawPostBySlug(slug) {
   return blogData.find((post) => post.slug === slug) ?? null;
 }
 
-// ─── Static params ────────────────────────────────────────────────────────────
-
 export async function generateStaticParams() {
   return blogData.map((post) => ({ slug: post.slug }));
 }
-
-// ─── Metadata ─────────────────────────────────────────────────────────────────
 
 export async function generateMetadata({ params }) {
   const { slug } = await params;
@@ -45,18 +41,16 @@ export async function generateMetadata({ params }) {
       type: "article",
       url: canonicalUrl,
       publishedTime: post.publishedAt,
-      images: imageUrl ? [{ url: toAbsoluteUrl(imageUrl) }] : [],
+      images: imageUrl ? [{ url: imageUrl }] : [],
     },
     twitter: {
       card: "summary_large_image",
       title: pageTitle,
       description,
-      images: imageUrl ? [toAbsoluteUrl(imageUrl)] : [],
+      images: imageUrl ? [imageUrl] : [],
     },
   };
 }
-
-// ─── Page ─────────────────────────────────────────────────────────────────────
 
 export default async function BlogDetailsRoute({ params }) {
   const { slug } = await params;
@@ -66,8 +60,6 @@ export default async function BlogDetailsRoute({ params }) {
 
   const post = adaptBlogPost(raw);
   const canonicalUrl = toAbsoluteUrl(post.shareUrl);
-
-  // Resolve related posts from raw blogData so BlogCard gets the original shape
   const relatedPosts = getRelatedPosts(blogData, raw.relatedPosts, raw.id);
 
   return (

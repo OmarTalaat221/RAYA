@@ -1,4 +1,4 @@
-import DOMPurify from "isomorphic-dompurify";
+import sanitizeHtml from "sanitize-html";
 
 // ─── Media ────────────────────────────────────────────────────────────────────
 
@@ -35,7 +35,6 @@ export function formatBlogDate(value) {
   const parsed = new Date(value);
 
   if (Number.isNaN(parsed.getTime())) {
-    // value might already be a pre-formatted string like "Jan 12, 2025"
     return value;
   }
 
@@ -46,15 +45,61 @@ export function formatBlogDate(value) {
   }).format(parsed);
 }
 
-// ─── Rich text sanitizer ───────────────────────────────────────────────────────
+// ─── Rich text sanitizer ──────────────────────────────────────────────────────
 
 export function sanitizeRichText(html = "") {
   if (typeof html !== "string") return "";
 
-  return DOMPurify.sanitize(html, {
-    USE_PROFILES: { html: true },
-    ADD_ATTR: ["target", "rel", "loading", "srcset", "sizes"],
-  });
+  try {
+    return sanitizeHtml(html, {
+      allowedTags: [
+        "p",
+        "br",
+        "strong",
+        "b",
+        "em",
+        "i",
+        "u",
+        "a",
+        "ul",
+        "ol",
+        "li",
+        "blockquote",
+        "h1",
+        "h2",
+        "h3",
+        "h4",
+        "h5",
+        "h6",
+        "img",
+        "figure",
+        "figcaption",
+        "table",
+        "thead",
+        "tbody",
+        "tr",
+        "th",
+        "td",
+        "hr",
+      ],
+      allowedAttributes: {
+        a: ["href", "target", "rel"],
+        img: ["src", "alt", "title", "loading", "srcset", "sizes"],
+        th: ["colspan", "rowspan"],
+        td: ["colspan", "rowspan"],
+      },
+      allowedSchemes: ["http", "https", "mailto"],
+      transformTags: {
+        a: sanitizeHtml.simpleTransform("a", {
+          target: "_blank",
+          rel: "noopener noreferrer",
+        }),
+      },
+    });
+  } catch (error) {
+    console.error("sanitizeRichText failed:", error);
+    return "";
+  }
 }
 
 // ─── Adapter ──────────────────────────────────────────────────────────────────
@@ -65,41 +110,28 @@ export function adaptBlogPost(post) {
   if (!post) return null;
 
   return {
-    // ── identity ──────────────────────────────────────────────────
     id: post.id,
     slug: post.slug,
-
-    // ── display fields ────────────────────────────────────────────
     title: post.title ?? "",
     excerpt: post.excerpt ?? "",
     category: post.category ?? "",
-
-    // ── dates ─────────────────────────────────────────────────────
-    // keep publishedAt as ISO string for <time dateTime>
     publishedAt: post.publishedAt ?? "",
-    // keep the pre-formatted date string as a fallback label
     date: post.date ?? "",
-
-    // ── image ─────────────────────────────────────────────────────
-    // blogData uses `image` — same key BlogDetailsPage reads
     image: post.image ?? "",
-
-    // ── rich text body ────────────────────────────────────────────
-    // blogData stores body in `description`; BlogDetailsPage reads `content`
     content: post.description ?? "",
-
-    // ── sharing ───────────────────────────────────────────────────
-    // blogData has `shareUrl`; fall back to `href` then slug-based path
     shareUrl: post.shareUrl || post.href || `/blog/news/${post.slug}`,
-
-    // ── CTA (optional per-post override; defaults used in component) ──
     ctaHref: post.ctaHref ?? "/",
     ctaLabel: post.ctaLabel ?? "Order it now from RDS",
-
-    // ── related (preserved, not used in detail page yet) ──────────
     relatedPosts: post.relatedPosts ?? [],
   };
 }
+
+// ─── Related posts ────────────────────────────────────────────────────────────
+// Returns:
+// 1) prioritized posts from relatedIds first
+// 2) then the rest of posts
+// 3) excluding current post
+// This preserves old data and lets the related section show all other posts.
 
 export function getRelatedPosts(allPosts, relatedIds = [], currentPostId) {
   if (!Array.isArray(allPosts) || allPosts.length === 0) return [];

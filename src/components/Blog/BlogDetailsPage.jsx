@@ -123,7 +123,7 @@ export default function BlogDetailsPage({
           <footer className="mx-auto mt-8 w-full sm:mt-10">
             <Link
               href="/blog/news"
-              className="inline-flex items-center gap-2 font-poppins! text-sm font-medium text-soft-black transition-colors duration-200 hover:text-main"
+              className="inline-flex items-center gap-2 font-poppins! text-sm font-medium text-soft-black transition-colors duration-200 hover:text-main! hover:underline!"
             >
               <ArrowLeft size={16} />
               Back to blog

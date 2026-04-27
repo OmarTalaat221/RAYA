@@ -45,6 +45,7 @@
     "react-responsive-modal": "^6.4.2",
     "react-signature-canvas": "^1.1.0-alpha.2",
     "react-slick": "^0.30.2",
+    "sanitize-html": "^2.17.3",
     "slick-carousel": "^1.8.1",
     "sweetalert2": "^11.26.24",
     "sweetalert2-react-content": "^5.1.2",
