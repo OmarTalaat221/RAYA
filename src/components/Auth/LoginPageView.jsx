@@ -165,8 +165,8 @@ export default function LoginPageView() {
           return;
         }
 
+        // ✅ Fix: push فقط — بدون refresh
         router.push(result.data?.redirectTo || "/");
-        router.refresh();
       } finally {
         setIsSubmitting(false);
       }

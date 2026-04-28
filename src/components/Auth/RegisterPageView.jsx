@@ -1,7 +1,6 @@
-// components/Auth/RegisterPageView.jsx
 "use client";
 
-import { useState, useCallback, useReducer, memo } from "react";
+import { useState, useCallback, useReducer, memo, useRef } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import dynamic from "next/dynamic";
@@ -252,9 +251,7 @@ function getTextareaClassName(hasError) {
 }
 
 /* ═══════════════════════════════════════════════
-   Error message builder
-   بيحوّل errors array أو message string
-   لـ display string موحد
+   Error helpers
    ═══════════════════════════════════════════════ */
 
 function buildSubmitError(result) {
@@ -263,11 +260,6 @@ function buildSubmitError(result) {
   }
   return result.message;
 }
-
-/* ═══════════════════════════════════════════════
-   SubmitErrorDisplay
-   بيعرض error واحد أو قائمة errors
-   ═══════════════════════════════════════════════ */
 
 function SubmitErrorDisplay({ error }) {
   if (!error) return null;
@@ -555,6 +547,10 @@ const RegisterForm = memo(function RegisterForm({ state, dispatch, onSubmit }) {
     [dispatch]
   );
 
+  const phoneValue = formData.codeCountry
+    ? `${formData.codeCountry.replace("+", "")}${formData.phone}`
+    : formData.phone;
+
   return (
     <>
       {/* ── header ── */}
@@ -691,7 +687,7 @@ const RegisterForm = memo(function RegisterForm({ state, dispatch, onSubmit }) {
                 enableSearch={false}
                 disableSearchIcon
                 placeholder="Enter your phone number"
-                value={`${formData.codeCountry.replace("+", "")}${formData.phone}`}
+                value={phoneValue}
                 onChange={handlePhoneChange}
                 inputProps={{
                   id: "phone",
@@ -814,19 +810,29 @@ export default function RegisterPageView() {
   const [registeredEmail, setRegisteredEmail] = useState("");
   const [state, dispatch] = useReducer(formReducer, INITIAL_FORM_STATE);
 
+  // ✅ Fix: useRef للـ formData عشان handleSubmit ما يعتمدش على state كاملة
+  const formDataRef = useRef(state.formData);
+  const isSubmittingRef = useRef(state.isSubmitting);
+
+  // sync refs مع state
+  formDataRef.current = state.formData;
+  isSubmittingRef.current = state.isSubmitting;
+
   const handleBackToRegister = useCallback(() => {
     setStep("register");
   }, []);
 
+  // ✅ Fix: handleSubmit بيقرأ من refs مش من state مباشرة
   const handleSubmit = useCallback(
     async function handleSubmit(event) {
       event.preventDefault();
 
-      if (state.isSubmitting) return;
+      if (isSubmittingRef.current) return;
 
       dispatch({ type: FORM_ACTIONS.RESET_ERRORS });
 
-      const errors = validateForm(state.formData);
+      const currentFormData = formDataRef.current;
+      const errors = validateForm(currentFormData);
 
       if (Object.keys(errors).length > 0) {
         dispatch({ type: FORM_ACTIONS.SET_FIELD_ERRORS, payload: errors });
@@ -836,18 +842,16 @@ export default function RegisterPageView() {
       dispatch({ type: FORM_ACTIONS.SET_SUBMITTING, payload: true });
 
       try {
-        const { formData } = state;
-
         const result = await register({
-          name: formData.name.trim(),
-          email: formData.email.trim(),
-          password: formData.password,
-          confirm_password: formData.confirm_password,
-          codeCountry: formData.codeCountry.trim(),
-          gender: formData.gender.trim(),
-          country: formData.country.trim(),
-          address: formData.address.trim(),
-          phone: formData.phone.trim(),
+          name: currentFormData.name.trim(),
+          email: currentFormData.email.trim(),
+          password: currentFormData.password,
+          confirm_password: currentFormData.confirm_password,
+          codeCountry: currentFormData.codeCountry.trim(),
+          gender: currentFormData.gender.trim(),
+          country: currentFormData.country.trim(),
+          address: currentFormData.address.trim(),
+          phone: currentFormData.phone.trim(),
         });
 
         if (!result.success) {
@@ -858,38 +862,45 @@ export default function RegisterPageView() {
           return;
         }
 
-        setRegisteredEmail(formData.email.trim());
+        setRegisteredEmail(currentFormData.email.trim());
         setStep("verify");
       } finally {
         dispatch({ type: FORM_ACTIONS.SET_SUBMITTING, payload: false });
       }
     },
-    [state]
+    [dispatch]
   );
 
   return (
     <main className="relative flex min-h-screen min-h-dvh items-center justify-center overflow-hidden bg-[#f4f3f0] px-4 py-8 font-poppins! sm:px-6 lg:px-8">
       <BackgroundBlobs />
 
+      {/* ✅ Fix: مش بنغير الـ max-width بـ transition-all
+          بدل كده بنخلي الـ section يبقى full width دايمًا
+          والـ inner card هو اللي بيتحكم في الـ width */}
       <section
         aria-labelledby="register-heading"
-        className={`relative z-10 w-full transition-all duration-300 ${
-          step === "register" ? "max-w-[760px]" : "max-w-[460px]"
-        }`}
+        className="relative z-10 w-full"
       >
-        <div className="rounded-[30px] border border-black/5 bg-white/95 p-6 shadow-[0_24px_80px_rgba(45,45,45,0.10)] backdrop-blur-sm sm:p-8">
-          {step === "verify" ? (
-            <VerificationStep
-              email={registeredEmail}
-              onBack={handleBackToRegister}
-            />
-          ) : (
-            <RegisterForm
-              state={state}
-              dispatch={dispatch}
-              onSubmit={handleSubmit}
-            />
-          )}
+        <div
+          className={`mx-auto transition-[max-width] duration-300 ease-in-out ${
+            step === "register" ? "max-w-[760px]" : "max-w-[460px]"
+          }`}
+        >
+          <div className="rounded-[30px] border border-black/5 bg-white/95 p-6 shadow-[0_24px_80px_rgba(45,45,45,0.10)] backdrop-blur-sm sm:p-8">
+            {step === "verify" ? (
+              <VerificationStep
+                email={registeredEmail}
+                onBack={handleBackToRegister}
+              />
+            ) : (
+              <RegisterForm
+                state={state}
+                dispatch={dispatch}
+                onSubmit={handleSubmit}
+              />
+            )}
+          </div>
         </div>
       </section>
     </main>

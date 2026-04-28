@@ -254,3 +254,70 @@ export async function logout() {
     return handleServiceError(error);
   }
 }
+
+// ═══════════════════════════════════════════════
+// أضف هذه الـ functions في نهاية الملف
+// قبل أو بعد الـ Authenticated Requests section
+// ═══════════════════════════════════════════════
+
+// payload: { email }
+export async function forgetPassword({ email }) {
+  try {
+    const response = await axiosInstance.post("/auth/forget-password", {
+      email,
+    });
+
+    return {
+      success: true,
+      data: response.data,
+      message:
+        response?.data?.message ||
+        "A verification code has been sent to your email.",
+      status: response.status,
+    };
+  } catch (error) {
+    return handleServiceError(error);
+  }
+}
+
+// payload: { email }
+export async function resendForgetPasswordOtp({ email }) {
+  try {
+    const response = await axiosInstance.post(
+      "/auth/resend-otp-forget-password",
+      { email }
+    );
+
+    return {
+      success: true,
+      data: response.data,
+      message:
+        response?.data?.message ||
+        "A new verification code has been sent to your email.",
+      status: response.status,
+    };
+  } catch (error) {
+    return handleServiceError(error);
+  }
+}
+
+// payload: { email, otp, password, confirm }
+export async function resetPassword({ email, otp, password, confirm }) {
+  try {
+    const response = await axiosInstance.patch("/auth/reset-password", {
+      email,
+      otp,
+      password,
+      confirm,
+    });
+
+    return {
+      success: true,
+      data: response.data,
+      message: response?.data?.message || "Password reset successfully.",
+      status: response.status,
+    };
+  } catch (error) {
+    return handleServiceError(error);
+  }
+}
