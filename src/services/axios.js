@@ -1,14 +1,17 @@
 // services/axios.js
+
 import axios from "axios";
 
 const API_BASE_URL =
   process.env.NEXT_PUBLIC_API_BASE_URL || "https://rdspharma.cloud";
 
+const TOKEN_KEY = "raya-token";
+
 function getStoredToken() {
   if (typeof window === "undefined") {
     return null;
   }
-  return localStorage.getItem("token");
+  return localStorage.getItem(TOKEN_KEY);
 }
 
 const axiosInstance = axios.create({

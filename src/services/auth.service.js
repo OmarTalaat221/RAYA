@@ -5,25 +5,26 @@ import axiosInstance from "./axios";
    Token Helpers
    ═══════════════════════════════════════════════ */
 
+const TOKEN_KEY = "raya-token";
+
 function isBrowser() {
   return typeof window !== "undefined";
 }
 
 export function setAuthToken(token) {
   if (!isBrowser()) return;
-  localStorage.setItem("token", token);
+  localStorage.setItem(TOKEN_KEY, token);
 }
 
 export function getAuthToken() {
   if (!isBrowser()) return null;
-  return localStorage.getItem("token");
+  return localStorage.getItem(TOKEN_KEY);
 }
 
 export function removeAuthToken() {
   if (!isBrowser()) return;
-  localStorage.removeItem("token");
+  localStorage.removeItem(TOKEN_KEY);
 }
-
 /* ═══════════════════════════════════════════════
    Error Handler — بيهندل كل حالات الأخطاء
    ═══════════════════════════════════════════════ */

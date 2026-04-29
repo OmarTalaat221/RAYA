@@ -1,12 +1,18 @@
-// components/Header.jsx
 "use client";
 
 import Link from "next/link";
+import dynamic from "next/dynamic";
 import { Search, User, ShoppingBag, Menu, X } from "lucide-react";
 import { useState, useEffect, useCallback } from "react";
 import { usePathname } from "next/navigation";
 
-// ===== NAV ITEMS =====
+const SearchOverlay = dynamic(
+  () => import("../../../components/Search/SearchOverlay"),
+  {
+    ssr: false,
+  }
+);
+
 const NAV_ITEMS = [
   { label: "Home", href: "/" },
   { label: "Catalog", href: "/collections/all" },
@@ -17,10 +23,11 @@ const NAV_ITEMS = [
   { label: "Contact", href: "/contact" },
 ];
 
-// ===== LOGO =====
 const Logo = ({ size = "default" }) => {
   const sizes = {
-    default: { className: "w-24 h-16! sm:w-26 sm:h-20! md:w-28 md:h-[100px]!" },
+    default: {
+      className: "w-24 h-16! sm:w-26 sm:h-20! md:w-28 md:h-[100px]!",
+    },
     small: { className: "w-20 h-14! sm:w-24 sm:h-18!" },
   };
 
@@ -36,7 +43,6 @@ const Logo = ({ size = "default" }) => {
   );
 };
 
-// ===== NAV LINK =====
 const NavLink = ({ item, pathname, onClick }) => {
   const isActive = pathname === item.href;
 
@@ -63,7 +69,6 @@ const NavLink = ({ item, pathname, onClick }) => {
   );
 };
 
-// ===== MOBILE NAV LINK =====
 const MobileNavLink = ({ item, pathname, onClick }) => {
   const isActive = pathname === item.href;
 
@@ -90,11 +95,12 @@ const MobileNavLink = ({ item, pathname, onClick }) => {
   );
 };
 
-// ===== HEADER ICONS =====
-const HeaderIcons = ({ cartCount = 1 }) => (
+const HeaderIcons = ({ cartCount = 1, onSearchClick }) => (
   <div className="flex items-center gap-3 sm:gap-4 flex-shrink-0">
     <button
-      aria-label="Search"
+      type="button"
+      aria-label="Open search"
+      onClick={onSearchClick}
       className="text-soft-black hover:text-main transition-colors duration-200"
     >
       <Search size={22} strokeWidth={1.5} />
@@ -109,6 +115,7 @@ const HeaderIcons = ({ cartCount = 1 }) => (
     </Link>
 
     <button
+      type="button"
       aria-label={`Shopping Bag - ${cartCount} item`}
       className="relative text-soft-black hover:text-main transition-colors duration-200"
     >
@@ -124,7 +131,6 @@ const HeaderIcons = ({ cartCount = 1 }) => (
   </div>
 );
 
-// ===== TOP BAR =====
 const TopBar = () => (
   <div className="w-full bg-main py-2 px-4">
     <p className="text-center text-white font-semibold tracking-wide text-[11px] sm:text-xs md:text-sm leading-snug">
@@ -139,7 +145,6 @@ const TopBar = () => (
   </div>
 );
 
-// ===== MOBILE MENU =====
 const MobileMenu = ({ visible, pathname, closeMenu }) => (
   <div
     id="mobile-menu"
@@ -171,7 +176,6 @@ const MobileMenu = ({ visible, pathname, closeMenu }) => (
   </div>
 );
 
-// ===== HAMBURGER BUTTON =====
 const HamburgerBtn = ({ menuOpen, toggleMenu }) => (
   <button
     aria-label={menuOpen ? "Close menu" : "Open menu"}
@@ -188,10 +192,10 @@ const HamburgerBtn = ({ menuOpen, toggleMenu }) => (
   </button>
 );
 
-// ===== MAIN HEADER =====
 export default function Header() {
   const pathname = usePathname();
   const [menuOpen, setMenuOpen] = useState(false);
+  const [searchOpen, setSearchOpen] = useState(false);
   const [showFixed, setShowFixed] = useState(false);
 
   useEffect(() => {
@@ -206,6 +210,7 @@ export default function Header() {
     };
 
     window.addEventListener("scroll", handleScroll, { passive: true });
+
     return () => {
       window.removeEventListener("scroll", handleScroll);
       if (rafId) cancelAnimationFrame(rafId);
@@ -221,14 +226,25 @@ export default function Header() {
 
   useEffect(() => {
     setMenuOpen(false);
+    setSearchOpen(false);
   }, [pathname]);
 
   const closeMenu = useCallback(() => setMenuOpen(false), []);
-  const toggleMenu = useCallback(() => setMenuOpen((prev) => !prev), []);
+  const closeSearch = useCallback(() => setSearchOpen(false), []);
+
+  const openSearch = useCallback(() => {
+    setMenuOpen(false);
+    setSearchOpen(true);
+  }, []);
+
+  const toggleMenu = useCallback(() => {
+    setSearchOpen(false);
+    setMenuOpen((prev) => !prev);
+  }, []);
 
   return (
     <>
-      {/* ==================== STATIC HEADER ==================== */}
+      {/* ── static header ── */}
       <header className="relative z-[1000]">
         <TopBar />
 
@@ -257,7 +273,7 @@ export default function Header() {
               </nav>
 
               <div className="flex items-center gap-2 sm:px-0 px-2">
-                <HeaderIcons cartCount={1} />
+                <HeaderIcons cartCount={1} onSearchClick={openSearch} />
                 <HamburgerBtn menuOpen={menuOpen} toggleMenu={toggleMenu} />
               </div>
             </div>
@@ -273,7 +289,7 @@ export default function Header() {
         </div>
       </header>
 
-      {/* ==================== FIXED HEADER ==================== */}
+      {/* ── fixed header ── */}
       <header
         aria-hidden={!showFixed}
         className={`
@@ -312,7 +328,7 @@ export default function Header() {
             </nav>
 
             <div className="flex items-center gap-2 sm:px-0 px-2">
-              <HeaderIcons cartCount={1} />
+              <HeaderIcons cartCount={1} onSearchClick={openSearch} />
               <HamburgerBtn menuOpen={menuOpen} toggleMenu={toggleMenu} />
             </div>
           </div>
@@ -334,6 +350,8 @@ export default function Header() {
           aria-hidden="true"
         />
       )}
+
+      <SearchOverlay open={searchOpen} onClose={closeSearch} />
     </>
   );
 }
