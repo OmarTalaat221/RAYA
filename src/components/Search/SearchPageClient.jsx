@@ -1,11 +1,12 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { LoaderCircle, Search, SearchX, X } from "lucide-react";
 import { useRouter } from "next/navigation";
 import CatalogClient from "../Catalog/CatalogClient";
 import { buildSearchPageHref, getCatalogSearchResults } from "./search.utils";
 
+/* ─── debounce ─── */
 function useDebouncedValue(value, delay = 250) {
   const [debounced, setDebounced] = useState(value);
 
@@ -17,33 +18,35 @@ function useDebouncedValue(value, delay = 250) {
   return debounced;
 }
 
-function SearchNoResults({ query, onClear }) {
+/* ─── no results ─── */
+const SearchNoResults = memo(function SearchNoResults({ query, onClear }) {
   return (
-    <div className="rounded-2xl border border-gray-100 bg-white p-8 text-center shadow-[0_2px_12px_rgba(0,0,0,0.03)] sm:p-10">
-      <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-[#f6fbf4] text-main">
-        <SearchX size={22} strokeWidth={1.8} />
+    <div className="rounded-2xl border border-gray-100 bg-white p-6 text-center shadow-[0_2px_12px_rgba(0,0,0,0.03)] sm:p-8 md:p-10">
+      <div className="mx-auto flex h-11 w-11 items-center justify-center rounded-full bg-[#f6fbf4] text-main sm:h-12 sm:w-12">
+        <SearchX size={20} strokeWidth={1.8} />
       </div>
 
-      <h2 className="mt-4 font-garamond! text-2xl text-soft-black sm:text-[2rem]">
+      <h2 className="mt-3 font-garamond! text-xl text-soft-black sm:mt-4 sm:text-2xl md:text-[2rem]">
         No products found
       </h2>
 
-      <p className="mx-auto mt-2 max-w-2xl font-poppins! text-sm leading-7 text-secondary sm:text-[15px]">
-        We couldn’t find anything matching "{query}". Try another product name,
+      <p className="mx-auto mt-1.5 max-w-lg font-poppins! text-[13px] leading-6 text-secondary sm:mt-2 sm:text-sm sm:leading-7">
+        We couldn't find anything matching "{query}". Try another product name,
         brand, or category.
       </p>
 
       <button
         type="button"
         onClick={onClear}
-        className="mt-5 inline-flex items-center justify-center rounded-full bg-main px-5 py-2.5 font-poppins! text-sm font-medium text-white transition-colors duration-150 hover:bg-[#5baa47]"
+        className="mt-4 inline-flex items-center justify-center rounded-full bg-main px-5 py-2.5 font-poppins! text-sm font-medium text-white transition-colors duration-150 hover:bg-[#5baa47] sm:mt-5"
       >
         Back to all products
       </button>
     </div>
   );
-}
+});
 
+/* ─── main ─── */
 export default function SearchPageClient({
   products = [],
   initialQuery = "",
@@ -70,6 +73,7 @@ export default function SearchPageClient({
   const hasActiveQuery = debouncedTrimmed.length > 0;
   const hasNoResults = hasActiveQuery && filteredProducts.length === 0;
 
+  /* ─── handlers ─── */
   const handleSubmit = useCallback(
     (e) => {
       e.preventDefault();
@@ -84,6 +88,9 @@ export default function SearchPageClient({
     inputRef.current?.focus();
   }, [router]);
 
+  const handleChange = useCallback((e) => setQuery(e.target.value), []);
+
+  /* ─── display strings ─── */
   const title = debouncedTrimmed
     ? `Results for "${debouncedTrimmed}"`
     : "Search the Catalog";
@@ -99,53 +106,55 @@ export default function SearchPageClient({
 
   return (
     <>
-      <div className="mb-6 rounded-2xl border border-gray-100 bg-white p-5 shadow-[0_2px_12px_rgba(0,0,0,0.03)] sm:p-6 md:mb-8 md:p-8">
-        <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
-          <div>
+      {/* ─── header card ─── */}
+      <div className="mb-5 rounded-2xl border border-gray-100 bg-white p-4 shadow-[0_2px_12px_rgba(0,0,0,0.03)] sm:mb-6 sm:p-6 md:mb-8 md:p-8">
+        <div className="flex flex-col gap-3 sm:gap-4 lg:flex-row lg:items-end lg:justify-between">
+          <div className="min-w-0 flex-1">
             <p className="font-oswald! text-[11px] uppercase tracking-[0.28em] text-main">
               Search
             </p>
 
-            <h1 className="mt-3 font-garamond! text-3xl leading-none text-soft-black sm:text-4xl md:text-[2.8rem]">
+            <h1 className="mt-2 font-garamond! text-2xl leading-tight text-soft-black sm:mt-3 sm:text-3xl md:text-4xl lg:text-[2.8rem]">
               {title}
             </h1>
 
-            <p className="mt-3 max-w-3xl font-poppins! text-sm leading-7 text-secondary sm:text-[15px]">
+            <p className="mt-2 max-w-3xl font-poppins! text-[13px] leading-6 text-secondary sm:mt-3 sm:text-sm sm:leading-7 md:text-[15px]">
               {subtitle}
             </p>
           </div>
 
-          <div className="inline-flex items-center rounded-full bg-[#f6fbf4] px-4 py-2 font-poppins! text-sm font-medium text-soft-black">
+          <div className="inline-flex shrink-0 items-center self-start rounded-full bg-[#f6fbf4] px-3.5 py-1.5 font-poppins! text-[13px] font-medium text-soft-black sm:px-4 sm:py-2 sm:text-sm lg:self-auto">
             {resultsLabel}
           </div>
         </div>
 
-        <form onSubmit={handleSubmit} className="mt-6">
-          <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
-            <div className="flex min-w-0 flex-1 items-center gap-3 rounded-2xl border border-gray-200 bg-[#f9f9f8] px-4 py-3 transition-colors duration-200 focus-within:border-main/35 sm:px-5 sm:py-4">
+        {/* ─── search form ─── */}
+        <form onSubmit={handleSubmit} className="mt-5 sm:mt-6">
+          <div className="flex flex-col gap-2.5 sm:flex-row sm:items-center sm:gap-3">
+            <div className="flex min-w-0 flex-1 items-center gap-2.5 rounded-xl border border-gray-200 bg-[#f9f9f8] px-3.5 py-2.5 transition-colors duration-200 focus-within:border-main/35 sm:gap-3 sm:rounded-2xl sm:px-5 sm:py-3.5">
               <Search
-                size={20}
+                size={18}
                 strokeWidth={1.8}
-                className="flex-shrink-0 text-secondary"
+                className="flex-shrink-0 text-secondary sm:[&]:w-5 sm:[&]:h-5"
               />
 
               <input
                 ref={inputRef}
                 type="text"
                 value={query}
-                onChange={(e) => setQuery(e.target.value)}
+                onChange={handleChange}
                 placeholder="Search products, brands, and categories"
                 autoComplete="off"
                 spellCheck="false"
                 autoFocus
-                className="h-8 flex-1 border-none bg-transparent font-poppins! text-[15px] text-soft-black outline-none placeholder:text-secondary sm:text-base"
+                className="h-7 flex-1 border-none bg-transparent font-poppins! text-sm text-soft-black outline-none placeholder:text-secondary sm:h-8 sm:text-[15px]"
               />
 
               {isTyping ? (
                 <LoaderCircle
-                  size={18}
+                  size={16}
                   strokeWidth={1.8}
-                  className="flex-shrink-0 animate-spin text-main"
+                  className="flex-shrink-0 animate-spin text-main sm:[&]:w-[18px] sm:[&]:h-[18px]"
                 />
               ) : null}
 
@@ -154,16 +163,16 @@ export default function SearchPageClient({
                   type="button"
                   onClick={handleClear}
                   aria-label="Clear search"
-                  className="inline-flex h-9 w-9 items-center justify-center rounded-full text-secondary transition-colors duration-150 hover:bg-gray-100 hover:text-soft-black"
+                  className="inline-flex h-8 w-8 items-center justify-center rounded-full text-secondary transition-colors duration-150 hover:bg-gray-100 hover:text-soft-black sm:h-9 sm:w-9"
                 >
-                  <X size={18} strokeWidth={1.8} />
+                  <X size={16} strokeWidth={1.8} />
                 </button>
               ) : null}
             </div>
 
             <button
               type="submit"
-              className="inline-flex h-14 items-center justify-center rounded-2xl bg-main px-6 font-poppins! text-sm font-medium text-white transition-colors duration-150 hover:bg-[#5baa47] sm:h-[60px]"
+              className="inline-flex h-12 items-center justify-center rounded-xl bg-main px-5 font-poppins! text-sm font-medium text-white transition-colors duration-150 hover:bg-[#5baa47] sm:h-14 sm:rounded-2xl sm:px-6"
             >
               Search
             </button>
@@ -171,6 +180,7 @@ export default function SearchPageClient({
         </form>
       </div>
 
+      {/* ─── results ─── */}
       {hasNoResults ? (
         <SearchNoResults query={debouncedTrimmed} onClear={handleClear} />
       ) : (

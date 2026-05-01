@@ -46,8 +46,8 @@ export function normalizeSearchText(value) {
 }
 
 /* ─── search matching ─── */
-function getProductMatchScore(product, normalizedQuery) {
-  if (!normalizedQuery || !product) return 0;
+function getProductMatchScore(product, nq) {
+  if (!nq || !product) return 0;
 
   const title = normalizeSearchText(product.title);
   const brand = normalizeSearchText(product.brand);
@@ -57,17 +57,17 @@ function getProductMatchScore(product, normalizedQuery) {
 
   let score = 0;
 
-  if (title.startsWith(normalizedQuery)) score += 120;
-  else if (title.includes(normalizedQuery)) score += 96;
+  if (title.startsWith(nq)) score += 120;
+  else if (title.includes(nq)) score += 96;
 
-  if (brand.startsWith(normalizedQuery)) score += 78;
-  else if (brand.includes(normalizedQuery)) score += 60;
+  if (brand.startsWith(nq)) score += 78;
+  else if (brand.includes(nq)) score += 60;
 
-  if (category.startsWith(normalizedQuery)) score += 66;
-  else if (category.includes(normalizedQuery)) score += 54;
+  if (category.startsWith(nq)) score += 66;
+  else if (category.includes(nq)) score += 54;
 
-  if (slug.includes(normalizedQuery)) score += 28;
-  if (desc.includes(normalizedQuery)) score += 18;
+  if (slug.includes(nq)) score += 28;
+  if (desc.includes(nq)) score += 18;
 
   if (product.isOnSale) score += 6;
   if (product.stockStatus === "in_stock") score += 4;
@@ -95,13 +95,16 @@ export function buildSearchPageHref(query = "") {
   return `${SEARCH_PAGE_ROUTE}?q=${encodeURIComponent(encoded)}`;
 }
 
+/* ─── suggestions ─── */
 export function getSearchSuggestions(products = [], query = "", limit = 4) {
   const nq = normalizeSearchText(query);
   if (!nq) return [];
 
   const map = new Map();
 
-  products.forEach((p) => {
+  for (let i = 0; i < products.length; i++) {
+    const p = products[i];
+
     const addItem = (label, type) => {
       const nl = normalizeSearchText(label);
       if (!nl) return;
@@ -112,34 +115,32 @@ export function getSearchSuggestions(products = [], query = "", limit = 4) {
         return;
       }
 
-      map.set(nl, {
-        id: nl,
-        label: String(label).trim(),
-        type,
-        count: 1,
-      });
+      map.set(nl, { id: nl, label: String(label).trim(), type, count: 1 });
     };
 
     addItem(p?.brand, "Brand");
     addItem(p?.category, "Category");
-  });
+  }
 
-  return [...map.values()]
-    .map((s) => {
-      const nl = normalizeSearchText(s.label);
-      let score = s.count;
+  const result = [];
 
-      if (nl.startsWith(nq)) score += 100;
-      else if (nl.includes(nq)) score += 72;
-      else score = 0;
+  for (const s of map.values()) {
+    const nl = normalizeSearchText(s.label);
+    let score = s.count;
 
-      return { ...s, score };
-    })
-    .filter((s) => s.score > 0)
-    .sort((a, b) => b.score - a.score || b.count - a.count)
-    .slice(0, limit);
+    if (nl.startsWith(nq)) score += 100;
+    else if (nl.includes(nq)) score += 72;
+    else continue;
+
+    result.push({ ...s, score });
+  }
+
+  result.sort((a, b) => b.score - a.score || b.count - a.count);
+
+  return result.length > limit ? result.slice(0, limit) : result;
 }
 
+/* ─── overlay products ─── */
 export function getOverlaySearchProducts(products = [], query = "", limit = 4) {
   const nq = normalizeSearchText(query);
   if (!nq) return [];
@@ -155,14 +156,18 @@ export function getProductSearchHref(product = {}) {
 }
 
 export function getProductSearchImage(product = {}) {
-  const src =
-    product?.media?.find((m) => m?.type === "image" && m?.isPrimary)?.src ||
-    product?.media?.find((m) => m?.type === "image")?.src ||
-    product?.frontImage ||
-    product?.backImage ||
-    "";
+  const media = product?.media;
 
-  return resolveMediaSrc(src);
+  const src = media
+    ? (
+        media.find((m) => m?.type === "image" && m?.isPrimary) ||
+        media.find((m) => m?.type === "image")
+      )?.src
+    : undefined;
+
+  return resolveMediaSrc(
+    src || product?.frontImage || product?.backImage || ""
+  );
 }
 
 export function formatMoney(value, currency = "AED") {
