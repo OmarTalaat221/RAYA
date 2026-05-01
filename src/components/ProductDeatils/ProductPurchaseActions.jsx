@@ -1,8 +1,9 @@
+// components/ProductDetails/ProductPurchaseActions.jsx
 "use client";
-
 import { useEffect, useRef, useState } from "react";
+import useAddToCart from "../Cart/useAddToCart";
 
-/* ── tiny inline icons ── */
+/* ── tiny inline icons (same as before) ── */
 function MinusIcon() {
   return (
     <svg
@@ -76,6 +77,7 @@ function LinkIcon() {
 }
 
 export default function ProductPurchaseActions({
+  product,
   stockStatus,
   productTitle,
   shortDescription,
@@ -84,6 +86,8 @@ export default function ProductPurchaseActions({
   const [copied, setCopied] = useState(false);
   const timeoutRef = useRef(null);
   const isOutOfStock = stockStatus === "out_of_stock";
+
+  const addToCart = useAddToCart();
 
   useEffect(() => {
     return () => {
@@ -106,6 +110,10 @@ export default function ProductPurchaseActions({
       return;
     }
     setQuantity(Math.max(1, Math.min(99, v)));
+  }
+
+  function handleAddToCart() {
+    addToCart({ ...product, quantity });
   }
 
   async function handleCopyLink() {
@@ -184,6 +192,7 @@ export default function ProductPurchaseActions({
         <button
           type="button"
           disabled={isOutOfStock}
+          onClick={handleAddToCart}
           className="inline-flex h-12 items-center justify-center rounded-2xl bg-main px-6 text-sm font-semibold text-white transition hover:brightness-95 disabled:cursor-not-allowed disabled:opacity-50"
         >
           Add to Cart

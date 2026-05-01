@@ -74,7 +74,7 @@ const SuggestionRow = memo(function SuggestionRow({ suggestion, onSelect }) {
       <ArrowRight
         size={14}
         strokeWidth={1.8}
-        className="flex-shrink-0 text-gray-300 transition-colors duration-150 group-hover:text-main"
+        className="shrink-0 text-gray-300 transition-colors duration-150 group-hover:text-main"
       />
     </button>
   );
@@ -96,7 +96,7 @@ const ProductRow = memo(function ProductRow({ product, onSelect }) {
       onClick={handleClick}
       className="group flex w-full items-center gap-2.5 rounded-xl p-2 text-left transition-colors duration-150 hover:bg-[#f3faf0]"
     >
-      <div className="relative h-12 w-12 flex-shrink-0 overflow-hidden rounded-lg bg-[#f5f5f3] sm:h-14 sm:w-14">
+      <div className="relative h-12 w-12 shrink-0 overflow-hidden rounded-lg bg-[#f5f5f3] sm:h-14 sm:w-14">
         {imageSrc ? (
           <Image
             src={imageSrc}
@@ -137,7 +137,7 @@ const ProductRow = memo(function ProductRow({ product, onSelect }) {
       <ChevronRight
         size={14}
         strokeWidth={1.8}
-        className="flex-shrink-0 text-gray-300 transition-colors duration-150 group-hover:text-main"
+        className="shrink-0text-gray-300 transition-colors duration-150 group-hover:text-main"
       />
     </button>
   );
@@ -319,7 +319,7 @@ export default function SearchOverlay({ open = false, onClose }) {
             exit="exit"
             transition={{ duration: 0.15 }}
             onClick={onClose}
-            className="fixed inset-0 z-[1100] bg-black/12"
+            className="fixed inset-0 z-1100 bg-black/12"
             aria-hidden="true"
           />
 
@@ -334,7 +334,7 @@ export default function SearchOverlay({ open = false, onClose }) {
             role="dialog"
             aria-modal="true"
             aria-label="Site search"
-            className="pointer-events-none fixed inset-x-0 top-0 z-[1200] px-3 pt-2.5 sm:px-5 sm:pt-3.5 md:px-6 md:pt-4"
+            className="pointer-events-none fixed inset-x-0 top-0 z-1200 px-3 pt-2.5 sm:px-5 sm:pt-3.5 md:px-6 md:pt-4"
           >
             <div className="mx-auto w-full max-w-[720px] lg:max-w-[860px]">
               <div className="pointer-events-auto overflow-hidden rounded-2xl border border-white/70 bg-white/95 shadow-[0_12px_40px_rgba(0,0,0,0.10)] backdrop-blur-sm sm:rounded-[24px]">
@@ -343,7 +343,7 @@ export default function SearchOverlay({ open = false, onClose }) {
                   <Search
                     size={18}
                     strokeWidth={1.8}
-                    className="flex-shrink-0 text-secondary"
+                    className="shrink-0 text-secondary"
                   />
 
                   <input
@@ -362,7 +362,7 @@ export default function SearchOverlay({ open = false, onClose }) {
                     <LoaderCircle
                       size={16}
                       strokeWidth={1.8}
-                      className="flex-shrink-0 animate-spin text-main"
+                      className="shrink-0 animate-spin text-main"
                     />
                   ) : null}
 
@@ -448,7 +448,7 @@ export default function SearchOverlay({ open = false, onClose }) {
                             className="group flex w-full items-center justify-between gap-2 rounded-xl border border-gray-100 bg-[#f8faf6] px-3 py-2.5 text-left transition-colors duration-150 hover:bg-[#eef8ea] sm:gap-3 sm:px-3.5 sm:py-3"
                           >
                             <div className="flex min-w-0 items-center gap-2">
-                              <div className="flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-full bg-white text-main shadow-sm sm:h-8 sm:w-8">
+                              <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-white text-main shadow-sm sm:h-8 sm:w-8">
                                 <Search size={13} strokeWidth={1.8} />
                               </div>
 
@@ -460,7 +460,7 @@ export default function SearchOverlay({ open = false, onClose }) {
                             <ArrowRight
                               size={14}
                               strokeWidth={1.8}
-                              className="flex-shrink-0 text-gray-300 transition-colors duration-150 group-hover:text-main"
+                              className="shrink-0 text-gray-300 transition-colors duration-150 group-hover:text-main"
                             />
                           </button>
                         </div>

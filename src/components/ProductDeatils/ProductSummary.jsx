@@ -83,6 +83,7 @@ export default function ProductSummary({ product }) {
       {/* ── purchase actions (client) ── */}
       <div className="mt-6">
         <ProductPurchaseActions
+          product={product}
           stockStatus={product.stockStatus}
           productTitle={product.title}
           shortDescription={product.shortDescription}

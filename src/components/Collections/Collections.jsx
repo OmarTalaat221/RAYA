@@ -213,7 +213,7 @@ export default function Collections() {
           </div>
 
           <div className="block md:hidden -mx-4">
-            <MobileSwiper items={collectionsData} />
+            <MobileSwiper items={collectionsData?.slice(0, 5)} />
           </div>
 
           {/* ── CTA ─────────────────────────────────────────────────────── */}

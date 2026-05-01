@@ -135,7 +135,7 @@ export default function SearchPageClient({
               <Search
                 size={18}
                 strokeWidth={1.8}
-                className="flex-shrink-0 text-secondary sm:[&]:w-5 sm:[&]:h-5"
+                className="shrink-0 text-secondary sm:[&]:w-5 sm:[&]:h-5"
               />
 
               <input
@@ -154,7 +154,7 @@ export default function SearchPageClient({
                 <LoaderCircle
                   size={16}
                   strokeWidth={1.8}
-                  className="flex-shrink-0 animate-spin text-main sm:[&]:w-[18px] sm:[&]:h-[18px]"
+                  className="shrink-0 animate-spin text-main sm:[&]:w-[18px] sm:[&]:h-[18px]"
                 />
               ) : null}
 

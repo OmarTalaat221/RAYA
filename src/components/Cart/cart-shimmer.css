@@ -1,0 +1,77 @@
+/* components/Cart/cart-shimmer.css */
+
+/* ── dark button shimmer ── */
+.cart-shimmer-btn::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 60%;
+  height: 100%;
+  background: linear-gradient(
+    105deg,
+    transparent 20%,
+    rgba(255, 255, 255, 0.06) 40%,
+    rgba(255, 255, 255, 0.13) 50%,
+    rgba(255, 255, 255, 0.06) 60%,
+    transparent 80%
+  );
+  animation: cartShimmerSweep 3.5s ease-in-out infinite;
+  z-index: 1;
+  pointer-events: none;
+}
+
+.cart-shimmer-btn:hover::before {
+  animation-duration: 2s;
+  background: linear-gradient(
+    105deg,
+    transparent 20%,
+    rgba(255, 255, 255, 0.08) 40%,
+    rgba(255, 255, 255, 0.18) 50%,
+    rgba(255, 255, 255, 0.08) 60%,
+    transparent 80%
+  );
+}
+
+/* ── green button shimmer ── */
+.cart-shimmer-btn-green::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 60%;
+  height: 100%;
+  background: linear-gradient(
+    105deg,
+    transparent 20%,
+    rgba(255, 255, 255, 0.07) 40%,
+    rgba(255, 255, 255, 0.15) 50%,
+    rgba(255, 255, 255, 0.07) 60%,
+    transparent 80%
+  );
+  animation: cartShimmerSweep 4s ease-in-out 0.6s infinite;
+  z-index: 1;
+  pointer-events: none;
+}
+
+.cart-shimmer-btn-green:hover::before {
+  animation-duration: 2.2s;
+  background: linear-gradient(
+    105deg,
+    transparent 20%,
+    rgba(255, 255, 255, 0.1) 40%,
+    rgba(255, 255, 255, 0.22) 50%,
+    rgba(255, 255, 255, 0.1) 60%,
+    transparent 80%
+  );
+}
+
+@keyframes cartShimmerSweep {
+  0% {
+    left: -100%;
+  }
+  40%,
+  100% {
+    left: 200%;
+  }
+}

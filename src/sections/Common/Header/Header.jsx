@@ -1,16 +1,22 @@
+// sections/Common/Header/Header.jsx
 "use client";
 
 import Link from "next/link";
 import dynamic from "next/dynamic";
 import { Search, User, ShoppingBag, Menu, X } from "lucide-react";
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, memo } from "react";
 import { usePathname } from "next/navigation";
+import { useSelector, useDispatch } from "react-redux";
+import { toggleCart } from "../../../store/cartSlice";
 
 const SearchOverlay = dynamic(
   () => import("../../../components/Search/SearchOverlay"),
-  {
-    ssr: false,
-  }
+  { ssr: false }
+);
+
+const CartDrawer = dynamic(
+  () => import("../../../components/Cart/CartDrawer"),
+  { ssr: false }
 );
 
 const NAV_ITEMS = [
@@ -23,7 +29,7 @@ const NAV_ITEMS = [
   { label: "Contact", href: "/contact" },
 ];
 
-const Logo = ({ size = "default" }) => {
+const Logo = memo(function Logo({ size = "default" }) {
   const sizes = {
     default: {
       className: "w-24 h-16! sm:w-26 sm:h-20! md:w-28 md:h-[100px]!",
@@ -41,9 +47,9 @@ const Logo = ({ size = "default" }) => {
       decoding="async"
     />
   );
-};
+});
 
-const NavLink = ({ item, pathname, onClick }) => {
+const NavLink = memo(function NavLink({ item, pathname, onClick }) {
   const isActive = pathname === item.href;
 
   return (
@@ -67,9 +73,9 @@ const NavLink = ({ item, pathname, onClick }) => {
       />
     </Link>
   );
-};
+});
 
-const MobileNavLink = ({ item, pathname, onClick }) => {
+const MobileNavLink = memo(function MobileNavLink({ item, pathname, onClick }) {
   const isActive = pathname === item.href;
 
   return (
@@ -93,107 +99,130 @@ const MobileNavLink = ({ item, pathname, onClick }) => {
       {isActive && <span className="w-1.5 h-1.5 rounded-full bg-main" />}
     </Link>
   );
-};
+});
 
-const HeaderIcons = ({ cartCount = 1, onSearchClick }) => (
-  <div className="flex items-center gap-3 sm:gap-4 flex-shrink-0">
-    <button
-      type="button"
-      aria-label="Open search"
-      onClick={onSearchClick}
-      className="text-soft-black hover:text-main transition-colors duration-200"
-    >
-      <Search size={22} strokeWidth={1.5} />
-    </button>
+const HeaderIcons = memo(function HeaderIcons({
+  onSearchClick,
+  onCartClick,
+  cartCount,
+}) {
+  return (
+    <div className="flex items-center gap-3 sm:gap-4 flex-shrink-0">
+      <button
+        type="button"
+        aria-label="Open search"
+        onClick={onSearchClick}
+        className="text-soft-black hover:text-main transition-colors duration-200"
+      >
+        <Search size={22} strokeWidth={1.5} />
+      </button>
 
-    <Link
-      aria-label="My Account"
-      href="/login"
-      className="text-soft-black hover:text-main transition-colors duration-200"
-    >
-      <User size={22} strokeWidth={1.5} />
-    </Link>
+      <Link
+        aria-label="My Account"
+        href="/login"
+        className="text-soft-black hover:text-main transition-colors duration-200"
+      >
+        <User size={22} strokeWidth={1.5} />
+      </Link>
 
-    <button
-      type="button"
-      aria-label={`Shopping Bag - ${cartCount} item`}
-      className="relative text-soft-black hover:text-main transition-colors duration-200"
-    >
-      <ShoppingBag size={22} strokeWidth={1.5} />
-      {cartCount > 0 && (
-        <span className="absolute -top-2 -right-2 w-4 h-4 bg-main rounded-full flex items-center justify-center">
-          <span className="text-white text-[9px] font-bold leading-none">
-            {cartCount}
+      <button
+        type="button"
+        onClick={onCartClick}
+        aria-label={`Shopping cart${cartCount > 0 ? `, ${cartCount} items` : ""}`}
+        className="relative text-soft-black hover:text-main transition-colors duration-200"
+      >
+        <ShoppingBag size={22} strokeWidth={1.5} />
+        {cartCount > 0 && (
+          <span
+            className="absolute -top-2 -right-2 flex h-[18px] min-w-[18px]
+                       items-center justify-center rounded-full bg-main px-1
+                       shadow-sm"
+          >
+            <span className="text-white text-[9px] font-bold leading-none">
+              {cartCount > 99 ? "99+" : cartCount}
+            </span>
           </span>
+        )}
+      </button>
+    </div>
+  );
+});
+
+const TopBar = memo(function TopBar() {
+  return (
+    <div className="w-full bg-main py-2 px-4">
+      <p className="text-center text-white font-semibold tracking-wide text-[11px] sm:text-xs md:text-sm leading-snug">
+        <span className="hidden sm:inline">
+          UAE Delivery Free Over 150AED Within 2Days &nbsp;|&nbsp; GCC Free over
+          600AED Within 4Days
         </span>
+        <span className="sm:hidden">
+          🚚 UAE Free &gt;150AED &nbsp;|&nbsp; GCC Free &gt;600AED
+        </span>
+      </p>
+    </div>
+  );
+});
+
+const MobileMenu = memo(function MobileMenu({ visible, pathname, closeMenu }) {
+  return (
+    <div
+      id="mobile-menu"
+      role="dialog"
+      aria-label="Mobile navigation"
+      className={`
+        lg:hidden overflow-hidden
+        transition-all duration-300 ease-in-out
+        ${
+          visible
+            ? "max-h-screen opacity-100"
+            : "max-h-0 opacity-0 pointer-events-none"
+        }
+      `}
+    >
+      <nav className="border-t border-gray-100 bg-[#f7f7f7]">
+        <ul className="flex flex-col py-2">
+          {NAV_ITEMS.map((item) => (
+            <li key={item.label}>
+              <MobileNavLink
+                item={item}
+                pathname={pathname}
+                onClick={closeMenu}
+              />
+            </li>
+          ))}
+        </ul>
+      </nav>
+    </div>
+  );
+});
+
+const HamburgerBtn = memo(function HamburgerBtn({ menuOpen, toggleMenu }) {
+  return (
+    <button
+      aria-label={menuOpen ? "Close menu" : "Open menu"}
+      aria-expanded={menuOpen}
+      aria-controls="mobile-menu"
+      onClick={toggleMenu}
+      className="lg:hidden text-soft-black hover:text-main transition-colors duration-200 ml-1"
+    >
+      {menuOpen ? (
+        <X size={22} strokeWidth={1.5} />
+      ) : (
+        <Menu size={22} strokeWidth={1.5} />
       )}
     </button>
-  </div>
-);
-
-const TopBar = () => (
-  <div className="w-full bg-main py-2 px-4">
-    <p className="text-center text-white font-semibold tracking-wide text-[11px] sm:text-xs md:text-sm leading-snug">
-      <span className="hidden sm:inline">
-        UAE Delivery Free Over 150AED Within 2Days &nbsp;|&nbsp; GCC Free over
-        600AED Within 4Days
-      </span>
-      <span className="sm:hidden">
-        🚚 UAE Free &gt;150AED &nbsp;|&nbsp; GCC Free &gt;600AED
-      </span>
-    </p>
-  </div>
-);
-
-const MobileMenu = ({ visible, pathname, closeMenu }) => (
-  <div
-    id="mobile-menu"
-    role="dialog"
-    aria-label="Mobile navigation"
-    className={`
-      lg:hidden overflow-hidden
-      transition-all duration-300 ease-in-out
-      ${
-        visible
-          ? "max-h-screen opacity-100"
-          : "max-h-0 opacity-0 pointer-events-none"
-      }
-    `}
-  >
-    <nav className="border-t border-gray-100 bg-[#f7f7f7]">
-      <ul className="flex flex-col py-2">
-        {NAV_ITEMS.map((item) => (
-          <li key={item.label}>
-            <MobileNavLink
-              item={item}
-              pathname={pathname}
-              onClick={closeMenu}
-            />
-          </li>
-        ))}
-      </ul>
-    </nav>
-  </div>
-);
-
-const HamburgerBtn = ({ menuOpen, toggleMenu }) => (
-  <button
-    aria-label={menuOpen ? "Close menu" : "Open menu"}
-    aria-expanded={menuOpen}
-    aria-controls="mobile-menu"
-    onClick={toggleMenu}
-    className="lg:hidden text-soft-black hover:text-main transition-colors duration-200 ml-1"
-  >
-    {menuOpen ? (
-      <X size={22} strokeWidth={1.5} />
-    ) : (
-      <Menu size={22} strokeWidth={1.5} />
-    )}
-  </button>
-);
+  );
+});
 
 export default function Header() {
   const pathname = usePathname();
+  const dispatch = useDispatch();
+
+  /* ── Redux cart state ── */
+  const cartCount = useSelector((s) => s.cart.itemCount);
+  const cartOpen = useSelector((s) => s.cart.isOpen);
+
   const [menuOpen, setMenuOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const [showFixed, setShowFixed] = useState(false);
@@ -218,11 +247,12 @@ export default function Header() {
   }, []);
 
   useEffect(() => {
-    document.body.style.overflow = menuOpen ? "hidden" : "";
+    const shouldLock = menuOpen || searchOpen;
+    document.body.style.overflow = shouldLock ? "hidden" : "";
     return () => {
       document.body.style.overflow = "";
     };
-  }, [menuOpen]);
+  }, [menuOpen, searchOpen]);
 
   useEffect(() => {
     setMenuOpen(false);
@@ -236,6 +266,12 @@ export default function Header() {
     setMenuOpen(false);
     setSearchOpen(true);
   }, []);
+
+  const openCart = useCallback(() => {
+    setMenuOpen(false);
+    setSearchOpen(false);
+    dispatch(toggleCart());
+  }, [dispatch]);
 
   const toggleMenu = useCallback(() => {
     setSearchOpen(false);
@@ -273,7 +309,11 @@ export default function Header() {
               </nav>
 
               <div className="flex items-center gap-2 sm:px-0 px-2">
-                <HeaderIcons cartCount={1} onSearchClick={openSearch} />
+                <HeaderIcons
+                  cartCount={cartCount}
+                  onSearchClick={openSearch}
+                  onCartClick={openCart}
+                />
                 <HamburgerBtn menuOpen={menuOpen} toggleMenu={toggleMenu} />
               </div>
             </div>
@@ -328,7 +368,11 @@ export default function Header() {
             </nav>
 
             <div className="flex items-center gap-2 sm:px-0 px-2">
-              <HeaderIcons cartCount={1} onSearchClick={openSearch} />
+              <HeaderIcons
+                cartCount={cartCount}
+                onSearchClick={openSearch}
+                onCartClick={openCart}
+              />
               <HamburgerBtn menuOpen={menuOpen} toggleMenu={toggleMenu} />
             </div>
           </div>
@@ -343,6 +387,7 @@ export default function Header() {
         )}
       </header>
 
+      {/* ── overlays ── */}
       {menuOpen && (
         <div
           className="fixed inset-0 bg-black/20 z-40 lg:hidden"
@@ -352,6 +397,7 @@ export default function Header() {
       )}
 
       <SearchOverlay open={searchOpen} onClose={closeSearch} />
+      <CartDrawer />
     </>
   );
 }
