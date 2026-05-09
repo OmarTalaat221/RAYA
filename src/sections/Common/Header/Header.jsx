@@ -3,8 +3,15 @@
 
 import Link from "next/link";
 import dynamic from "next/dynamic";
-import { Search, User, ShoppingBag, Menu, X } from "lucide-react";
-import { useState, useEffect, useCallback, memo } from "react";
+import { Search, User, ShoppingBag, Menu, X, Globe } from "lucide-react";
+import {
+  useState,
+  useEffect,
+  useLayoutEffect,
+  useCallback,
+  useRef,
+  memo,
+} from "react";
 import { usePathname } from "next/navigation";
 import { useSelector, useDispatch } from "react-redux";
 import { toggleCart } from "../../../store/cartSlice";
@@ -19,9 +26,14 @@ const CartDrawer = dynamic(
   { ssr: false }
 );
 
+/* ─── isomorphic layout effect (avoid SSR warnings) ─── */
+const useIsoLayoutEffect =
+  typeof window !== "undefined" ? useLayoutEffect : useEffect;
+
+/* ─── Constants ─── */
 const NAV_ITEMS = [
   { label: "Home", href: "/" },
-  { label: "Catalog", href: "/collections/all" },
+  { label: "Products", href: "/collections/all" },
   { label: "Skinage", href: "/collections/skinage" },
   { label: "Denefis", href: "/collections/denefis" },
   { label: "Offers", href: "/collections/offers" },
@@ -29,6 +41,15 @@ const NAV_ITEMS = [
   { label: "Contact", href: "/contact" },
 ];
 
+const LANGUAGES = [
+  { code: "en", label: "English", short: "EN" },
+  { code: "ar", label: "العربية", short: "AR" },
+];
+
+const INDICATOR_TRANSITION =
+  "transform 0.42s cubic-bezier(0.22, 1, 0.36, 1), width 0.42s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.25s ease";
+
+/* ─── Logo ─── */
 const Logo = memo(function Logo({ size = "default" }) {
   const sizes = {
     default: {
@@ -49,32 +70,214 @@ const Logo = memo(function Logo({ size = "default" }) {
   );
 });
 
-const NavLink = memo(function NavLink({ item, pathname, onClick }) {
-  const isActive = pathname === item.href;
+/* ─── Desktop Nav with Sliding Pill ─── */
+const NavMenu = memo(function NavMenu({ pathname, ariaLabel }) {
+  const navRef = useRef(null);
+  const linkRefs = useRef({});
+  const [hoveredHref, setHoveredHref] = useState(null);
+  const [indicator, setIndicator] = useState({
+    opacity: 0,
+    x: 0,
+    width: 0,
+  });
+
+  const updateIndicator = useCallback((href) => {
+    if (!href) {
+      setIndicator((prev) => ({ ...prev, opacity: 0 }));
+      return;
+    }
+    const linkEl = linkRefs.current[href];
+    const navEl = navRef.current;
+    if (!linkEl || !navEl) {
+      setIndicator((prev) => ({ ...prev, opacity: 0 }));
+      return;
+    }
+    const linkRect = linkEl.getBoundingClientRect();
+    const navRect = navEl.getBoundingClientRect();
+    setIndicator({
+      opacity: 1,
+      x: linkRect.left - navRect.left,
+      width: linkRect.width,
+    });
+  }, []);
+
+  /* recalc on hover / pathname change */
+  useIsoLayoutEffect(() => {
+    const target = hoveredHref || pathname;
+    const exists = NAV_ITEMS.some((i) => i.href === target);
+    updateIndicator(exists ? target : null);
+  }, [hoveredHref, pathname, updateIndicator]);
+
+  /* recalc on resize */
+  useEffect(() => {
+    const handleResize = () => {
+      const target = hoveredHref || pathname;
+      const exists = NAV_ITEMS.some((i) => i.href === target);
+      updateIndicator(exists ? target : null);
+    };
+    window.addEventListener("resize", handleResize, { passive: true });
+    return () => window.removeEventListener("resize", handleResize);
+  }, [hoveredHref, pathname, updateIndicator]);
+
+  const setLinkRef = useCallback(
+    (href) => (el) => {
+      if (el) linkRefs.current[href] = el;
+      else delete linkRefs.current[href];
+    },
+    []
+  );
+
+  const handleMouseLeave = useCallback(() => setHoveredHref(null), []);
 
   return (
-    <Link
-      href={item.href}
-      onClick={onClick}
-      aria-current={isActive ? "page" : undefined}
-      className={`
-        group relative text-sm font-medium tracking-wide pb-1
-        transition-colors duration-200 whitespace-nowrap
-        ${isActive ? "text-soft-black" : "text-secondary hover:text-soft-black"}
-      `}
-    >
-      {item.label}
-      <span
-        className={`
-          absolute bottom-0 left-0 h-[1.5px] bg-main rounded-full
-          transition-all duration-300
-          ${isActive ? "w-full" : "w-0 group-hover:w-full"}
-        `}
-      />
-    </Link>
+    <nav aria-label={ariaLabel} className="hidden lg:flex flex-1">
+      <ul
+        ref={navRef}
+        onMouseLeave={handleMouseLeave}
+        className="relative flex items-center justify-center gap-0.5 xl:gap-1 w-full"
+      >
+        {/* sliding pill */}
+        <span
+          aria-hidden="true"
+          className="absolute top-1/2 left-0 h-9 rounded-full bg-main/50 pointer-events-none"
+          style={{
+            opacity: indicator.opacity,
+            transform: `translate3d(${indicator.x}px, -50%, 0)`,
+            width: indicator.width,
+            transition: INDICATOR_TRANSITION,
+            willChange: "transform, width, opacity",
+          }}
+        />
+
+        {NAV_ITEMS.map((item) => {
+          const isActive = pathname === item.href;
+          const isHovered = hoveredHref === item.href;
+          return (
+            <li key={item.label}>
+              <Link
+                ref={setLinkRef(item.href)}
+                href={item.href}
+                onMouseEnter={() => setHoveredHref(item.href)}
+                aria-current={isActive ? "page" : undefined}
+                className={`
+                  relative z-10 inline-flex items-center
+                  px-4 py-2 text-sm font-medium tracking-wide
+                  whitespace-nowrap transition-colors duration-200
+                  ${
+                    isActive || isHovered
+                      ? "text-main"
+                      : "text-secondary hover:text-soft-black"
+                  }
+                `}
+              >
+                {item.label}
+              </Link>
+            </li>
+          );
+        })}
+      </ul>
+    </nav>
   );
 });
 
+/* ─── Language Dropdown ─── */
+const LanguageDropdown = memo(function LanguageDropdown() {
+  const [open, setOpen] = useState(false);
+  const [current, setCurrent] = useState("en");
+  const ref = useRef(null);
+
+  const close = useCallback(() => setOpen(false), []);
+  const toggle = useCallback(() => setOpen((p) => !p), []);
+
+  useEffect(() => {
+    if (!open) return;
+
+    const handleClickOutside = (e) => {
+      if (ref.current && !ref.current.contains(e.target)) close();
+    };
+    const handleEscape = (e) => {
+      if (e.key === "Escape") close();
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    document.addEventListener("keydown", handleEscape);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener("keydown", handleEscape);
+    };
+  }, [open, close]);
+
+  const handleSelect = useCallback((code) => {
+    setCurrent(code);
+    setOpen(false);
+    // TODO: integrate with next-intl locale switching
+  }, []);
+
+  const currentLang = LANGUAGES.find((l) => l.code === current);
+
+  return (
+    <div ref={ref} className="relative">
+      <button
+        type="button"
+        onClick={toggle}
+        aria-label="Change language"
+        aria-expanded={open}
+        aria-haspopup="listbox"
+        className="flex items-center gap-1.5 text-soft-black hover:text-main transition-colors duration-200"
+      >
+        <Globe size={20} strokeWidth={1.5} />
+        <span className="text-[11px] font-semibold tracking-wider hidden sm:inline">
+          {currentLang.short}
+        </span>
+      </button>
+
+      <div
+        role="listbox"
+        className={`
+          absolute right-0 top-full mt-3 min-w-[150px]
+          bg-white rounded-xl border border-gray-100
+          shadow-[0_12px_32px_rgba(0,0,0,0.08)]
+          overflow-hidden origin-top-right z-50
+          transition-all duration-200 ease-out
+          ${
+            open
+              ? "opacity-100 scale-100 translate-y-0 pointer-events-auto"
+              : "opacity-0 scale-95 -translate-y-1 pointer-events-none"
+          }
+        `}
+      >
+        {LANGUAGES.map((lang) => {
+          const isActive = lang.code === current;
+          return (
+            <button
+              key={lang.code}
+              type="button"
+              role="option"
+              aria-selected={isActive}
+              onClick={() => handleSelect(lang.code)}
+              className={`
+                w-full flex items-center justify-between gap-3
+                px-4 py-2.5 text-sm transition-colors duration-150
+                ${
+                  isActive
+                    ? "text-main bg-main/5 font-semibold"
+                    : "text-soft-black hover:bg-[#f7f7f7]"
+                }
+              `}
+            >
+              <span>{lang.label}</span>
+              {isActive && (
+                <span className="w-1.5 h-1.5 rounded-full bg-main" />
+              )}
+            </button>
+          );
+        })}
+      </div>
+    </div>
+  );
+});
+
+/* ─── Mobile Nav Link ─── */
 const MobileNavLink = memo(function MobileNavLink({ item, pathname, onClick }) {
   const isActive = pathname === item.href;
 
@@ -101,6 +304,7 @@ const MobileNavLink = memo(function MobileNavLink({ item, pathname, onClick }) {
   );
 });
 
+/* ─── Header Icons ─── */
 const HeaderIcons = memo(function HeaderIcons({
   onSearchClick,
   onCartClick,
@@ -144,10 +348,13 @@ const HeaderIcons = memo(function HeaderIcons({
           </span>
         )}
       </button>
+
+      <LanguageDropdown />
     </div>
   );
 });
 
+/* ─── Top Bar ─── */
 const TopBar = memo(function TopBar() {
   return (
     <div className="w-full bg-main py-2 px-4">
@@ -164,6 +371,7 @@ const TopBar = memo(function TopBar() {
   );
 });
 
+/* ─── Mobile Menu ─── */
 const MobileMenu = memo(function MobileMenu({ visible, pathname, closeMenu }) {
   return (
     <div
@@ -197,6 +405,7 @@ const MobileMenu = memo(function MobileMenu({ visible, pathname, closeMenu }) {
   );
 });
 
+/* ─── Hamburger ─── */
 const HamburgerBtn = memo(function HamburgerBtn({ menuOpen, toggleMenu }) {
   return (
     <button
@@ -215,13 +424,12 @@ const HamburgerBtn = memo(function HamburgerBtn({ menuOpen, toggleMenu }) {
   );
 });
 
+/* ─── Main Header ─── */
 export default function Header() {
   const pathname = usePathname();
   const dispatch = useDispatch();
 
-  /* ── Redux cart state ── */
   const cartCount = useSelector((s) => s.cart.itemCount);
-  const cartOpen = useSelector((s) => s.cart.isOpen);
 
   const [menuOpen, setMenuOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
@@ -229,7 +437,6 @@ export default function Header() {
 
   useEffect(() => {
     let rafId = null;
-
     const handleScroll = () => {
       if (rafId) return;
       rafId = requestAnimationFrame(() => {
@@ -237,9 +444,7 @@ export default function Header() {
         rafId = null;
       });
     };
-
     window.addEventListener("scroll", handleScroll, { passive: true });
-
     return () => {
       window.removeEventListener("scroll", handleScroll);
       if (rafId) cancelAnimationFrame(rafId);
@@ -295,18 +500,7 @@ export default function Header() {
                 <Logo size="default" />
               </Link>
 
-              <nav
-                aria-label="Main navigation"
-                className="hidden lg:flex flex-1"
-              >
-                <ul className="flex items-center justify-center gap-5 xl:gap-7 w-full">
-                  {NAV_ITEMS.map((item) => (
-                    <li key={item.label}>
-                      <NavLink item={item} pathname={pathname} />
-                    </li>
-                  ))}
-                </ul>
-              </nav>
+              <NavMenu pathname={pathname} ariaLabel="Main navigation" />
 
               <div className="flex items-center gap-2 sm:px-0 px-2">
                 <HeaderIcons
@@ -354,18 +548,7 @@ export default function Header() {
               <Logo size="small" />
             </Link>
 
-            <nav
-              aria-label="Fixed main navigation"
-              className="hidden lg:flex flex-1"
-            >
-              <ul className="flex items-center justify-center gap-5 xl:gap-7 w-full">
-                {NAV_ITEMS.map((item) => (
-                  <li key={item.label}>
-                    <NavLink item={item} pathname={pathname} />
-                  </li>
-                ))}
-              </ul>
-            </nav>
+            <NavMenu pathname={pathname} ariaLabel="Fixed main navigation" />
 
             <div className="flex items-center gap-2 sm:px-0 px-2">
               <HeaderIcons
