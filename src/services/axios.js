@@ -2,8 +2,7 @@
 
 import axios from "axios";
 
-const API_BASE_URL =
-  process.env.NEXT_PUBLIC_API_BASE_URL || "https://rdspharma.cloud";
+const API_BASE_URL = "https://rdspharma.cloud";
 
 const TOKEN_KEY = "raya-token";
 
