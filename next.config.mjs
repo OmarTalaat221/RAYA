@@ -15,7 +15,12 @@ const nextConfig = {
       {
         protocol: "https",
         hostname: "www.rdspharma.online",
-        pathname: "/cdn/shop/**",
+        pathname: "/**",
+      },
+      {
+        protocol: "https",
+        hostname: "rdspharma.cloud",
+        pathname: "/**",
       },
     ],
     formats: ["image/avif", "image/webp"],

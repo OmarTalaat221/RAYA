@@ -4,6 +4,7 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import { ChevronLeft, ChevronRight, ArrowRight } from "lucide-react";
 import Link from "next/link";
+import BottomBg from "../../sections/Common/BottomBg/BottomBg";
 
 const SLIDES = [
   {
@@ -253,7 +254,7 @@ export default function HeroSlider() {
         </div>
       </div>
 
-      {/* ✅ Progress Bar — بتتـ reset مع كل current جديد */}
+      {/* ✅ Progress Bar — بتتـ reset مع كل current جديد
       <div
         className="absolute bottom-0 left-0 right-0 z-20 h-[2px] bg-white/10"
         aria-hidden="true"
@@ -267,11 +268,13 @@ export default function HeroSlider() {
               : `progressBar ${AUTOPLAY_DELAY}ms linear forwards`,
           }}
         />
-      </div>
+      </div> */}
 
       <style>{`
         @keyframes progressBar { from { width: 0%; } to { width: 100%; } }
       `}</style>
+
+      <BottomBg />
     </section>
   );
 }

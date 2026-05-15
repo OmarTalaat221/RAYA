@@ -42,12 +42,8 @@ const CartEmpty = memo(function CartEmpty({ onClose, recommendations }) {
         </button>
       </div>
 
-      {/* ── recommendations ── */}
-      {recommendations?.length > 0 && (
-        <div className="border-t border-gray-100 px-5 py-4 sm:px-6">
-          <CartRecommendations products={recommendations} />
-        </div>
-      )}
+      {/* ── recommendations — ready for API ── */}
+      <CartRecommendations products={recommendations} />
     </div>
   );
 });

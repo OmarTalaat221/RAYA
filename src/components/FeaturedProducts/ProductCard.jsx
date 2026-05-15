@@ -93,7 +93,7 @@ export default function ProductCard({
           <div className="my-3 h-px w-8 bg-[#e4e1db]" />
 
           <div className="mt-auto flex items-center gap-2">
-            {oldPrice && (
+            {oldPrice > newPrice && (
               <span className="text-xs text-secondary line-through">
                 {currency} {Number(oldPrice).toFixed(2)}
               </span>

@@ -179,7 +179,7 @@ export default function FeaturedProducts() {
         {/* CTA */}
         <div className="mt-10 flex justify-center px-4 sm:mt-14">
           <Link
-            href="/collections/offers"
+            href="/collections/all"
             className="group relative inline-flex items-center gap-2 overflow-hidden rounded-full border border-soft-black/20 bg-white px-8 py-3 text-sm font-semibold tracking-wide text-soft-black transition-all duration-300 hover:border-main hover:text-main hover:shadow-md"
             style={{ fontFamily: "'Poppins', sans-serif" }}
           >

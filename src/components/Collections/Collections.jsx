@@ -1,18 +1,40 @@
 "use client";
 
+import { useEffect, useState, useCallback } from "react";
 import { motion } from "framer-motion";
 import Link from "next/link";
-import { ArrowRight } from "lucide-react";
+import { RefreshCw } from "lucide-react";
 import { Swiper, SwiperSlide } from "swiper/react";
-import { Pagination, FreeMode } from "swiper/modules";
+import { Pagination, FreeMode, Autoplay } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/pagination";
 import "swiper/css/free-mode";
 
 import CollectionCard, { cardVariant } from "./CollectionCard";
-import { collectionsData } from "./collections";
+import { getAllCategories } from "../../services/categories.service";
+import { adaptCategoriesToCollections } from "./category.adapter";
 
-// ─── Variants ────────────────────────────────────────────────────────────────
+// ─── Static "All" card — always first ────────────────────────────────────────
+const ALL_COLLECTION_CARD = {
+  id: "__all__",
+  title: "Collection",
+  slug: "all",
+  href: "/collections/all",
+  image:
+    "https://www.rdspharma.online/cdn/shop/collections/RDS_LOGO-01.png?v=1739260787&width=750",
+  srcSet: [
+    "https://www.rdspharma.online/cdn/shop/collections/RDS_LOGO-01.png?v=1739260787&width=165 165w",
+    "https://www.rdspharma.online/cdn/shop/collections/RDS_LOGO-01.png?v=1739260787&width=330 330w",
+    "https://www.rdspharma.online/cdn/shop/collections/RDS_LOGO-01.png?v=1739260787&width=535 535w",
+    "https://www.rdspharma.online/cdn/shop/collections/RDS_LOGO-01.png?v=1739260787&width=750 750w",
+    "https://www.rdspharma.online/cdn/shop/collections/RDS_LOGO-01.png?v=1739260787&width=1000 1000w",
+    "https://www.rdspharma.online/cdn/shop/collections/RDS_LOGO-01.png?v=1739260787&width=1500 1500w",
+    "https://www.rdspharma.online/cdn/shop/collections/RDS_LOGO-01.png?v=1739260787&width=3000 3000w",
+    "https://www.rdspharma.online/cdn/shop/collections/RDS_LOGO-01.png?v=1739260787 5000w",
+  ].join(", "),
+};
+
+// ─── Animation Variants ──────────────────────────────────────────────────────
 const containerVariant = {
   hidden: {},
   visible: {
@@ -41,16 +63,13 @@ const ctaVariant = {
   },
 };
 
-// ─────────────────────────────────────────────────────────────────────────────
-// Desktop Grid
-// ─────────────────────────────────────────────────────────────────────────────
+// ─── Desktop Grid ────────────────────────────────────────────────────────────
 function DesktopGrid({ items }) {
   const row1 = items.slice(0, 3);
   const row2 = items.slice(3, 5);
 
   return (
     <div className="space-y-4">
-      {/* Row 1 — 3 cards */}
       <motion.div
         className="grid grid-cols-3 gap-4"
         variants={containerVariant}
@@ -63,36 +82,67 @@ function DesktopGrid({ items }) {
         ))}
       </motion.div>
 
-      {/* Row 2 — 2 cards centered, same width as row1 cards */}
-      <motion.div
-        className="flex justify-center gap-4"
-        variants={containerVariant}
-        initial="hidden"
-        whileInView="visible"
-        viewport={{ once: true, margin: "-80px" }}
-      >
-        {row2.map((item) => (
-          <motion.div
-            key={item.id}
-            variants={cardVariant}
-            // Each card = exactly 1/3 of the grid width minus gaps
-            // grid-cols-3 gap-4 → each col = (100% - 2*gap) / 3
-            style={{ width: "calc((100% - 2 * 1rem) / 3)" }}
-            // But parent is full width — so recalc relative to container
-            // Better: use % based on known grid
-            className="w-[calc(33.333%-11px)]"
-          >
-            <CollectionCard {...item} />
-          </motion.div>
-        ))}
-      </motion.div>
+      {row2.length > 0 && (
+        <motion.div
+          className="flex justify-center gap-4"
+          variants={containerVariant}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, margin: "-80px" }}
+        >
+          {row2.map((item) => (
+            <motion.div
+              key={item.id}
+              variants={cardVariant}
+              className="w-[calc(33.333%-11px)]"
+            >
+              <CollectionCard {...item} />
+            </motion.div>
+          ))}
+        </motion.div>
+      )}
     </div>
   );
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// Mobile Swiper
-// ─────────────────────────────────────────────────────────────────────────────
+// ─── Inline Skeletons ────────────────────────────────────────────────────────
+function DesktopSkeletonInline() {
+  return (
+    <div className="space-y-4">
+      <div className="grid grid-cols-3 gap-4">
+        {Array.from({ length: 3 }).map((_, i) => (
+          <div
+            key={i}
+            className="aspect-[5/3] animate-pulse rounded-2xl bg-white/60"
+          />
+        ))}
+      </div>
+      <div className="flex justify-center gap-4">
+        {Array.from({ length: 2 }).map((_, i) => (
+          <div
+            key={i}
+            className="aspect-[5/3] w-[calc(33.333%-11px)] animate-pulse rounded-2xl bg-white/60"
+          />
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function MobileSkeletonInline() {
+  return (
+    <div className="flex gap-3 overflow-hidden px-4">
+      {Array.from({ length: 2 }).map((_, i) => (
+        <div
+          key={i}
+          className="aspect-[5/3] w-[85vw] max-w-[320px] shrink-0 animate-pulse rounded-2xl bg-white/60"
+        />
+      ))}
+    </div>
+  );
+}
+
+// ─── Mobile Swiper ───────────────────────────────────────────────────────────
 const swiperStyles = `
   .collections-swiper .swiper-pagination-bullets {
     position: relative !important;
@@ -124,7 +174,7 @@ function MobileSwiper({ items }) {
     <>
       <style>{swiperStyles}</style>
       <Swiper
-        modules={[Pagination, FreeMode]}
+        modules={[Pagination, FreeMode, Autoplay]}
         className="collections-swiper !overflow-visible"
         breakpoints={{
           0: { slidesPerView: 1.15, spaceBetween: 12 },
@@ -138,6 +188,11 @@ function MobileSwiper({ items }) {
         grabCursor
         observer
         observeParents
+        autoplay={{
+          delay: 3500,
+          disableOnInteraction: false,
+          pauseOnMouseEnter: true,
+        }}
       >
         {items.map((item, index) => (
           <SwiperSlide key={item.id} className="!h-auto pb-8">
@@ -160,97 +215,155 @@ function MobileSwiper({ items }) {
   );
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// Main Section
-// ─────────────────────────────────────────────────────────────────────────────
+// ─── Main Section ────────────────────────────────────────────────────────────
 export default function Collections() {
+  const [apiItems, setApiItems] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  const fetchCollections = useCallback(async () => {
+    setIsLoading(true);
+    setError(null);
+    try {
+      const data = await getAllCategories({ page: 1, limit: 100 });
+      const adapted = adaptCategoriesToCollections(data?.items ?? [], "en");
+      setApiItems(adapted);
+    } catch (err) {
+      console.error("[Collections] Failed to fetch categories:", err);
+      setError(err.response?.data?.message || "Failed to load collections.");
+      setApiItems([]);
+    } finally {
+      setIsLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchCollections();
+  }, [fetchCollections]);
+
+  // "All" card always first
+  const items = [ALL_COLLECTION_CARD, ...apiItems];
+
+  // Desktop/Mobile: show up to 5 (3+2 layout)
+  const displayItems = items.slice(0, 5);
+
   return (
     <>
-      {/* ── Google Fonts — !important guarantee ───────────────────────────── */}
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&display=swap');
-
-
         .collections-eyebrow {
           font-family: 'Poppins', sans-serif !important;
         }
       `}</style>
 
-      <section className=" w-full bg-[#f4f3f0] py-8 sm:py-10 md:py-12 lg:py-16">
+      <section className="w-full bg-[#f4f3f0] py-8 sm:py-10 md:py-12 lg:py-16">
         <div className="container mx-auto px-4 sm:px-6">
-          {/* ── Section Heading ─────────────────────────────────────────── */}
+          {/* ── Section Heading ── */}
           <motion.div
-            className="text-start md:text-center mb-10 md:mb-14"
+            className="mb-10 text-start md:mb-14 md:text-center"
             variants={headingVariant}
             initial="hidden"
             whileInView="visible"
             viewport={{ once: true, margin: "-60px" }}
           >
-            {/* Decorative top line */}
             <div className="flex items-center justify-start gap-3">
-              <span
-                className="mb-2 block text-xs font-semibold uppercase tracking-[0.2em] text-main sm:text-sm font-garamond!"
-                // style={{ fontFamily: "'Poppins', sans-serif" }}
-              >
+              <span className="font-garamond! mb-2 block text-xs font-semibold uppercase tracking-[0.2em] text-main sm:text-sm">
                 Browse by
               </span>
             </div>
-
-            {/* Main heading — EB Garamond italic */}
-            <h2
-              className="text-[clamp(2rem,5vw,3.5rem)] text-start font-bold leading-tight text-soft-black font-oswald!"
-              // style={{
-              //   fontSize: "clamp(2rem, 4vw, 3.25rem)",
-              // }}
-            >
+            <h2 className="font-oswald! text-start text-[clamp(2rem,5vw,3.5rem)] font-bold leading-tight text-soft-black">
               Collections
             </h2>
           </motion.div>
 
-          {/* ── Cards ───────────────────────────────────────────────────── */}
-          <div className="hidden md:block">
-            <DesktopGrid items={collectionsData} />
-          </div>
-
-          <div className="block md:hidden -mx-4">
-            <MobileSwiper items={collectionsData?.slice(0, 5)} />
-          </div>
-
-          {/* ── CTA ─────────────────────────────────────────────────────── */}
-          <motion.div
-            className="flex justify-center mt-10 md:mt-14"
-            variants={ctaVariant}
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true }}
-          >
-            <Link
-              href="/collections"
-              className="group relative inline-flex items-center gap-2 overflow-hidden rounded-full border border-soft-black/20 bg-white px-8 py-3 text-sm font-semibold tracking-wide text-soft-black transition-all duration-300 hover:border-main hover:text-main hover:shadow-md"
-              style={{ fontFamily: "'Poppins', sans-serif" }}
-            >
-              <span
-                className="absolute inset-0 origin-left scale-x-0 rounded-full bg-main/5 transition-transform duration-500 group-hover:scale-x-100"
-                aria-hidden="true"
-              />
-              <span className="relative z-10">View All Collections</span>
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="14"
-                height="14"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2.5"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                className="relative z-10 transition-transform duration-300 group-hover:translate-x-1"
-                aria-hidden="true"
+          {/* ── Content ── */}
+          {isLoading ? (
+            <>
+              <div className="hidden md:block">
+                <DesktopSkeletonInline />
+              </div>
+              <div className="block md:hidden">
+                <MobileSkeletonInline />
+              </div>
+            </>
+          ) : error ? (
+            <div className="flex flex-col items-center py-16">
+              <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-red-50">
+                <span className="text-2xl">⚠️</span>
+              </div>
+              <p className="font-poppins! mb-2 text-base font-medium text-soft-black">
+                Something went wrong
+              </p>
+              <p className="font-poppins! mb-6 max-w-sm text-center text-sm text-secondary">
+                {error}
+              </p>
+              <button
+                onClick={fetchCollections}
+                className="font-poppins! inline-flex items-center gap-2 rounded-xl
+                           bg-main px-6 py-2.5 text-[13px] font-semibold text-white
+                           transition-all duration-200 hover:bg-[#5aaa44]
+                           active:scale-[0.97] focus-visible:outline-none
+                           focus-visible:ring-2 focus-visible:ring-main/40"
               >
-                <path d="M5 12h14M12 5l7 7-7 7" />
-              </svg>
-            </Link>
-          </motion.div>
+                <RefreshCw size={14} strokeWidth={2} />
+                Try Again
+              </button>
+            </div>
+          ) : (
+            <>
+              <div className="hidden md:block">
+                <DesktopGrid items={displayItems} />
+              </div>
+              <div className="-mx-4 block md:hidden">
+                <MobileSwiper items={displayItems} />
+              </div>
+            </>
+          )}
+
+          {/* ── CTA ── */}
+          {!isLoading && !error && (
+            <motion.div
+              className="mt-10 flex justify-center md:mt-14"
+              variants={ctaVariant}
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true }}
+            >
+              <Link
+                href="/collections"
+                className="group relative inline-flex items-center gap-2 overflow-hidden
+                           rounded-full border border-soft-black/20 bg-white px-8 py-3
+                           text-sm font-semibold tracking-wide text-soft-black
+                           transition-all duration-300 hover:border-main hover:text-main
+                           hover:shadow-md"
+                style={{ fontFamily: "'Poppins', sans-serif" }}
+              >
+                <span
+                  className="absolute inset-0 origin-left scale-x-0 rounded-full
+                             bg-main/5 transition-transform duration-500
+                             group-hover:scale-x-100"
+                  aria-hidden="true"
+                />
+                <span className="relative z-10">View All Collections</span>
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="14"
+                  height="14"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  className="relative z-10 transition-transform duration-300
+                             group-hover:translate-x-1"
+                  aria-hidden="true"
+                >
+                  <path d="M5 12h14M12 5l7 7-7 7" />
+                </svg>
+              </Link>
+            </motion.div>
+          )}
         </div>
       </section>
     </>

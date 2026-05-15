@@ -1,12 +1,11 @@
 // components/Cart/CartDrawer.jsx
 "use client";
 
-import { memo, useCallback, useEffect, useMemo } from "react";
+import { memo, useCallback, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { AnimatePresence, motion } from "framer-motion";
-import { X } from "lucide-react";
-import { closeCart } from "../../store/cartSlice";
-import { PRODUCTS } from "../FeaturedProducts/products";
+import { X, AlertCircle } from "lucide-react";
+import { closeCart, fetchCart, clearError } from "../../store/cartSlice";
 import FreeShippingBar from "./FreeShippingBar";
 import CartItemList from "./CartItemList";
 import CartRecommendations from "./CartRecommendations";
@@ -33,14 +32,16 @@ const DRAWER_TRANSITION = {
   mass: 0.8,
 };
 
-const MAX_RECOMMENDATIONS = 4;
-
 const CartDrawer = memo(function CartDrawer() {
   const dispatch = useDispatch();
   const isOpen = useSelector((s) => s.cart.isOpen);
   const items = useSelector((s) => s.cart.items);
   const subtotal = useSelector((s) => s.cart.subtotal);
   const itemCount = useSelector((s) => s.cart.itemCount);
+  const loading = useSelector((s) => s.cart.loading);
+  const actionLoading = useSelector((s) => s.cart.actionLoading);
+  const error = useSelector((s) => s.cart.error);
+  const initialized = useSelector((s) => s.cart.initialized);
   const qualifiesForFreeShipping = useSelector(
     (s) => s.cart.qualifiesForFreeShipping
   );
@@ -51,9 +52,17 @@ const CartDrawer = memo(function CartDrawer() {
     (s) => s.cart.freeShippingThreshold
   );
 
+  /* ── fetch cart on first open ── */
+  useEffect(() => {
+    if (isOpen && !initialized) {
+      dispatch(fetchCart());
+    }
+  }, [isOpen, initialized, dispatch]);
+
   /* ── close handler ── */
   const handleClose = useCallback(() => {
     dispatch(closeCart());
+    dispatch(clearError());
   }, [dispatch]);
 
   /* ── Escape key ── */
@@ -78,13 +87,11 @@ const CartDrawer = memo(function CartDrawer() {
     };
   }, [isOpen]);
 
-  /* ── recommendations: products not in cart ── */
-  const recommendations = useMemo(() => {
-    const cartIds = new Set(items.map((i) => i.id));
-    return PRODUCTS.filter(
-      (p) => !cartIds.has(p.id) && p.stockStatus !== "out_of_stock"
-    ).slice(0, MAX_RECOMMENDATIONS);
-  }, [items]);
+  /* ── retry fetch ── */
+  const handleRetry = useCallback(() => {
+    dispatch(clearError());
+    dispatch(fetchCart());
+  }, [dispatch]);
 
   const isEmpty = items.length === 0;
 
@@ -156,12 +163,47 @@ const CartDrawer = memo(function CartDrawer() {
               </button>
             </div>
 
-            {isEmpty ? (
-              /* ─── empty state + recommendations ─── */
-              <CartEmpty
-                onClose={handleClose}
-                recommendations={recommendations}
-              />
+            {/* ─── error banner ─── */}
+            {error && (
+              <div
+                className="mx-5 mt-3 flex items-center gap-2.5 rounded-xl border
+                           border-red-100 bg-red-50/60 px-4 py-3 sm:mx-6"
+              >
+                <AlertCircle
+                  size={16}
+                  strokeWidth={2}
+                  className="shrink-0 text-red-400"
+                />
+                <p className="font-poppins! flex-1 text-[12.5px] font-medium text-red-600">
+                  {error}
+                </p>
+                <button
+                  onClick={handleRetry}
+                  className="font-poppins! shrink-0 text-[12px] font-semibold
+                             text-red-500 underline underline-offset-2
+                             transition-colors duration-200 hover:text-red-700"
+                >
+                  Retry
+                </button>
+              </div>
+            )}
+
+            {/* ─── loading state (first load) ─── */}
+            {loading && !initialized ? (
+              <div className="flex flex-1 items-center justify-center">
+                <div className="flex flex-col items-center gap-3">
+                  <div
+                    className="h-8 w-8 animate-spin rounded-full border-[2.5px]
+                               border-gray-200 border-t-main"
+                  />
+                  <span className="font-poppins! text-sm text-gray-400">
+                    Loading your cart…
+                  </span>
+                </div>
+              </div>
+            ) : isEmpty ? (
+              /* ─── empty state ─── */
+              <CartEmpty onClose={handleClose} recommendations={[]} />
             ) : (
               <>
                 {/* ─── scrollable content ─── */}
@@ -181,12 +223,8 @@ const CartDrawer = memo(function CartDrawer() {
                     <CartItemList items={items} />
                   </div>
 
-                  {/* recommendations */}
-                  {recommendations.length > 0 && (
-                    <div className="border-t border-gray-100 px-5 py-4 sm:px-6">
-                      <CartRecommendations products={recommendations} />
-                    </div>
-                  )}
+                  {/* recommendations — empty for now, ready for API */}
+                  <CartRecommendations products={[]} />
 
                   {/* bottom breathing room */}
                   <div className="h-2" />
@@ -195,7 +233,9 @@ const CartDrawer = memo(function CartDrawer() {
                 {/* ─── sticky footer ─── */}
                 <CartFooter
                   subtotal={subtotal}
+                  currency={items[0]?.currency || "AED"}
                   qualifiesForFreeShipping={qualifiesForFreeShipping}
+                  loading={actionLoading}
                 />
               </>
             )}

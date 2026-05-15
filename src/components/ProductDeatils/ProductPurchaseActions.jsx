@@ -1,9 +1,10 @@
-// components/ProductDetails/ProductPurchaseActions.jsx
 "use client";
-import { useEffect, useRef, useState } from "react";
-import useAddToCart from "../Cart/useAddToCart";
 
-/* ── tiny inline icons (same as before) ── */
+import { useEffect, useRef, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { addToCart, fetchCart, removeFromCart } from "../../store/cartSlice";
+
+/* ── tiny inline icons ── */
 function MinusIcon() {
   return (
     <svg
@@ -16,6 +17,7 @@ function MinusIcon() {
     </svg>
   );
 }
+
 function PlusIcon() {
   return (
     <svg
@@ -28,6 +30,7 @@ function PlusIcon() {
     </svg>
   );
 }
+
 function LockIcon() {
   return (
     <svg
@@ -44,6 +47,7 @@ function LockIcon() {
     </svg>
   );
 }
+
 function ShareIcon() {
   return (
     <svg
@@ -60,6 +64,7 @@ function ShareIcon() {
     </svg>
   );
 }
+
 function LinkIcon() {
   return (
     <svg
@@ -82,12 +87,32 @@ export default function ProductPurchaseActions({
   productTitle,
   shortDescription,
 }) {
+  const dispatch = useDispatch();
+
+  const {
+    items = [],
+    initialized,
+    loading,
+    actionLoading,
+  } = useSelector((state) => state.cart);
+
   const [quantity, setQuantity] = useState(1);
   const [copied, setCopied] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitMode, setSubmitMode] = useState("");
+  const [cartError, setCartError] = useState("");
+
   const timeoutRef = useRef(null);
   const isOutOfStock = stockStatus === "out_of_stock";
 
-  const addToCart = useAddToCart();
+  const cartItem = items.find((item) => item.id === product?.id) || null;
+  const isInCart = Boolean(cartItem);
+  const isCartSyncing = !initialized && loading;
+  const disablePurchaseAction =
+    isSubmitting ||
+    actionLoading ||
+    isCartSyncing ||
+    (!isInCart && isOutOfStock);
 
   useEffect(() => {
     return () => {
@@ -95,25 +120,97 @@ export default function ProductPurchaseActions({
     };
   }, []);
 
+  useEffect(() => {
+    if (!product?.id || initialized) return;
+    dispatch(fetchCart());
+  }, [dispatch, initialized, product?.id]);
+
+  useEffect(() => {
+    if (typeof cartItem?.quantity === "number" && cartItem.quantity > 0) {
+      setQuantity(cartItem.quantity);
+    }
+  }, [cartItem?.quantity]);
+
   function handleDecrease() {
-    setQuantity((q) => Math.max(1, q - 1));
+    setQuantity((prev) => Math.max(1, prev - 1));
   }
 
   function handleIncrease() {
-    setQuantity((q) => Math.min(99, q + 1));
+    setQuantity((prev) => prev + 1);
   }
 
-  function handleQtyChange(e) {
-    const v = Number(e.target.value);
-    if (Number.isNaN(v)) {
+  function handleQtyChange(event) {
+    const value = Number(event.target.value);
+    if (Number.isNaN(value) || value < 1) {
       setQuantity(1);
       return;
     }
-    setQuantity(Math.max(1, Math.min(99, v)));
+    setQuantity(value);
   }
 
-  function handleAddToCart() {
-    addToCart({ ...product, quantity });
+  function getPrimaryButtonText() {
+    if (isCartSyncing) return "Loading...";
+    if (isSubmitting && submitMode === "add") return "Adding...";
+    if (isSubmitting && submitMode === "remove") return "Removing...";
+    if (isInCart) return "Remove from Cart";
+    return "Add to Cart";
+  }
+
+  async function handlePrimaryAction() {
+    if (!product?.id || disablePurchaseAction) return;
+
+    setIsSubmitting(true);
+    setCartError("");
+
+    try {
+      if (isInCart) {
+        setSubmitMode("remove");
+
+        const action = await dispatch(
+          removeFromCart({
+            productId: product.id,
+          })
+        );
+
+        if (removeFromCart.rejected.match(action)) {
+          throw new Error(
+            action.payload ||
+              action.error?.message ||
+              "Failed to remove product from cart."
+          );
+        }
+
+        return;
+      }
+
+      setSubmitMode("add");
+
+      const action = await dispatch(
+        addToCart({
+          productId: product.id,
+          quantity,
+        })
+      );
+
+      if (addToCart.rejected.match(action)) {
+        throw new Error(
+          action.payload ||
+            action.error?.message ||
+            "Failed to add product to cart."
+        );
+      }
+    } catch (error) {
+      console.error("[PDP] Cart action failed:", error);
+      setCartError(
+        error.message ||
+          (isInCart
+            ? "Failed to remove product from cart."
+            : "Failed to add product to cart.")
+      );
+    } finally {
+      setIsSubmitting(false);
+      setSubmitMode("");
+    }
   }
 
   async function handleCopyLink() {
@@ -160,7 +257,9 @@ export default function ProductPurchaseActions({
             <button
               type="button"
               onClick={handleDecrease}
-              disabled={isOutOfStock}
+              disabled={
+                isOutOfStock || isSubmitting || actionLoading || isCartSyncing
+              }
               className="inline-flex h-full w-12 items-center justify-center text-soft-black transition hover:text-main disabled:cursor-not-allowed disabled:opacity-50"
               aria-label="Decrease quantity"
             >
@@ -170,17 +269,20 @@ export default function ProductPurchaseActions({
               id="product-quantity"
               type="number"
               min="1"
-              max="99"
               inputMode="numeric"
               value={quantity}
               onChange={handleQtyChange}
-              disabled={isOutOfStock}
+              disabled={
+                isOutOfStock || isSubmitting || actionLoading || isCartSyncing
+              }
               className="h-full w-full border-0 bg-transparent text-center text-sm font-medium text-soft-black outline-none [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
             />
             <button
               type="button"
               onClick={handleIncrease}
-              disabled={isOutOfStock}
+              disabled={
+                isOutOfStock || isSubmitting || actionLoading || isCartSyncing
+              }
               className="inline-flex h-full w-12 items-center justify-center text-soft-black transition hover:text-main disabled:cursor-not-allowed disabled:opacity-50"
               aria-label="Increase quantity"
             >
@@ -191,18 +293,27 @@ export default function ProductPurchaseActions({
 
         <button
           type="button"
-          disabled={isOutOfStock}
-          onClick={handleAddToCart}
-          className="inline-flex h-12 items-center justify-center rounded-2xl bg-main px-6 text-sm font-semibold text-white transition hover:brightness-95 disabled:cursor-not-allowed disabled:opacity-50"
+          disabled={disablePurchaseAction}
+          onClick={handlePrimaryAction}
+          className={`inline-flex h-12 items-center justify-center rounded-2xl px-6 text-sm font-semibold text-white transition disabled:cursor-not-allowed disabled:opacity-50 ${
+            isInCart
+              ? "bg-red-500 hover:bg-red-600"
+              : "bg-main hover:brightness-95"
+          }`}
         >
-          Add to Cart
+          {getPrimaryButtonText()}
         </button>
       </div>
+
+      {/* ── error ── */}
+      {cartError && (
+        <p className="font-poppins! mt-3 text-sm text-red-500">{cartError}</p>
+      )}
 
       {/* ── buy now ── */}
       <button
         type="button"
-        disabled={isOutOfStock}
+        disabled={isOutOfStock || isSubmitting || actionLoading}
         className="mt-3 inline-flex h-12 w-full items-center justify-center rounded-2xl border border-black/8 bg-white px-6 text-sm font-semibold text-soft-black transition hover:border-main hover:text-main disabled:cursor-not-allowed disabled:opacity-50"
       >
         Buy Now

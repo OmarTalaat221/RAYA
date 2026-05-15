@@ -1,52 +1,94 @@
-// app/(site)/collections/[slug]/page.jsx
-
 import { notFound } from "next/navigation";
 import CatalogPage from "../../../../components/Catalog/CatalogPage";
-import { PRODUCTS } from "../../../../components/FeaturedProducts/products";
-import {
-  getCollectionBySlug,
-  getCollectionSlugs,
-} from "../../../../components/Collections/collections";
+import { getAllCategories } from "../../../../services/categories.service";
+import { adaptCategoriesToCollections } from "../../../../components/Collections/category.adapter";
 
-// ─── Static Params ────────────────────────────────────────────────────────────
-export function generateStaticParams() {
-  return getCollectionSlugs().map((slug) => ({ slug }));
+async function fetchCategorySlugs() {
+  try {
+    const data = await getAllCategories({ page: 1, limit: 100 });
+    return adaptCategoriesToCollections(data?.items ?? [], "en");
+  } catch (error) {
+    console.error("[CollectionSlug] Failed to fetch categories:", error);
+    return [];
+  }
 }
 
-// ─── Metadata ─────────────────────────────────────────────────────────────────
+function findCategoryBySlug(categories, slug) {
+  return categories.find((c) => c.slug === slug) || null;
+}
+
+function slugToTitle(slug) {
+  return slug
+    .split("-")
+    .map((s) => s.charAt(0).toUpperCase() + s.slice(1))
+    .join(" ");
+}
+
+export async function generateStaticParams() {
+  const categories = await fetchCategorySlugs();
+  const slugs = categories.map((c) => c.slug);
+  const all = new Set(["all", ...slugs]);
+  return Array.from(all).map((slug) => ({ slug }));
+}
+
 export async function generateMetadata({ params }) {
   const { slug } = await params;
-  const collection = getCollectionBySlug(slug);
 
-  if (!collection) {
+  if (slug === "all") {
     return {
-      title: "Collection Not Found | RDS Pharma",
+      title: "All Products | RDS Pharma",
+      description: "Browse our complete catalogue of premium products.",
     };
   }
 
-  return {
-    title: `${collection.title} | RDS Pharma`,
-    description: collection.subtitle,
-  };
-}
+  const categories = await fetchCategorySlugs();
+  const category = findCategoryBySlug(categories, slug);
 
-// ─── Page ─────────────────────────────────────────────────────────────────────
-export default async function CollectionPage({ params }) {
-  const { slug } = await params;
-  const collection = getCollectionBySlug(slug);
-
-  if (!collection) {
-    notFound();
+  if (category) {
+    return {
+      title: `${category.meta?.metaTitle || category.title} | RDS Pharma`,
+      description:
+        category.meta?.metaDescription ||
+        `Explore our ${category.title} range.`,
+      keywords: category.meta?.metaKeywords || undefined,
+    };
   }
 
-  const products = PRODUCTS.filter(collection.filter);
+  return { title: "Collection Not Found | RDS Pharma" };
+}
 
-  return (
-    <CatalogPage
-      products={products}
-      title={collection.title}
-      subtitle={collection.subtitle}
-      currency="AED"
-    />
-  );
+export default async function CollectionPage({ params }) {
+  const { slug } = await params;
+
+  if (slug === "all") {
+    return (
+      <CatalogPage
+        products={[]}
+        title="All Products"
+        subtitle="Browse our complete catalogue of premium products."
+        currency="AED"
+        source="all"
+      />
+    );
+  }
+
+  const categories = await fetchCategorySlugs();
+  const category = findCategoryBySlug(categories, slug);
+
+  if (category) {
+    return (
+      <CatalogPage
+        products={[]}
+        title={category.title}
+        subtitle={
+          category.meta?.metaDescription ||
+          `Explore our ${category.title.toLowerCase()} range.`
+        }
+        currency="AED"
+        source={`category:${slug}`}
+      />
+    );
+  }
+
+  notFound();
 }

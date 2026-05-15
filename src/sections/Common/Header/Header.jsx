@@ -34,9 +34,11 @@ const useIsoLayoutEffect =
 const NAV_ITEMS = [
   { label: "Home", href: "/" },
   { label: "Products", href: "/collections/all" },
-  { label: "Skinage", href: "/collections/skinage" },
-  { label: "Denefis", href: "/collections/denefis" },
-  { label: "Offers", href: "/collections/offers" },
+  // { label: "Skinage", href: "/collections/skinage" },
+  // { label: "Denefis", href: "/collections/denefis" },
+  // { label: "Offers", href: "/collections/offers" },
+
+  { label: "Brands", href: "/collections" },
   { label: "Blog", href: "/blog/news" },
   { label: "Contact", href: "/contact" },
 ];

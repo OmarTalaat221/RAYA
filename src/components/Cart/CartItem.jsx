@@ -1,42 +1,105 @@
 // components/Cart/CartItem.jsx
 "use client";
 
-import { memo, useCallback } from "react";
+import { memo, useCallback, useState, useRef, useEffect } from "react";
 import { useDispatch } from "react-redux";
 import Image from "next/image";
 import Link from "next/link";
-import { Trash2, Minus, Plus } from "lucide-react";
-import {
-  removeItem,
-  incrementQuantity,
-  decrementQuantity,
-} from "../../store/cartSlice";
-import { formatMoney, resolveMediaSrc, getCartItemHref } from "./cart.utils";
+import { Trash2, Minus, Plus, Loader2 } from "lucide-react";
+import { updateQuantity, removeFromCart } from "../../store/cartSlice";
+import { formatMoney, getCartItemHref } from "./cart.utils";
+
+const DEBOUNCE_DELAY = 400;
 
 const CartItem = memo(function CartItem({ item }) {
   const dispatch = useDispatch();
 
+  /* ── local quantity for instant UI feedback ── */
+  const [localQty, setLocalQty] = useState(item.quantity);
+  const [isRemoving, setIsRemoving] = useState(false);
+  const pendingRef = useRef(null);
+  const accumulatedRef = useRef(0);
+
+  /* ── sync local qty when Redux state updates (after API refetch) ── */
+  useEffect(() => {
+    setLocalQty(item.quantity);
+    accumulatedRef.current = 0;
+  }, [item.quantity]);
+
+  /* ── cleanup on unmount ── */
+  useEffect(() => {
+    return () => {
+      if (pendingRef.current) clearTimeout(pendingRef.current);
+    };
+  }, []);
+
+  /* ── debounced API call ── */
+  const flushUpdate = useCallback(
+    (accumulated) => {
+      if (accumulated === 0) return;
+      dispatch(
+        updateQuantity({
+          productId: item.id,
+          quantity: accumulated,
+        })
+      );
+      accumulatedRef.current = 0;
+    },
+    [dispatch, item.id]
+  );
+
+  const scheduleUpdate = useCallback(
+    (delta) => {
+      accumulatedRef.current += delta;
+
+      if (pendingRef.current) clearTimeout(pendingRef.current);
+      pendingRef.current = setTimeout(() => {
+        flushUpdate(accumulatedRef.current);
+        pendingRef.current = null;
+      }, DEBOUNCE_DELAY);
+    },
+    [flushUpdate]
+  );
+
+  /* ── handlers ── */
   const handleIncrement = useCallback(() => {
-    dispatch(incrementQuantity(item.id));
-  }, [dispatch, item.id]);
+    if (localQty >= item.maxQuantity) return;
+    setLocalQty((prev) => prev + 1);
+    scheduleUpdate(1);
+  }, [localQty, item.maxQuantity, scheduleUpdate]);
 
   const handleDecrement = useCallback(() => {
-    dispatch(decrementQuantity(item.id));
-  }, [dispatch, item.id]);
+    if (localQty <= 1) {
+      handleRemove();
+      return;
+    }
+    setLocalQty((prev) => prev - 1);
+    scheduleUpdate(-1);
+  }, [localQty, scheduleUpdate]);
 
   const handleRemove = useCallback(() => {
-    dispatch(removeItem(item.id));
+    if (pendingRef.current) {
+      clearTimeout(pendingRef.current);
+      pendingRef.current = null;
+      accumulatedRef.current = 0;
+    }
+    setIsRemoving(true);
+    dispatch(removeFromCart({ productId: item.id })).finally(() => {
+      setIsRemoving(false);
+    });
   }, [dispatch, item.id]);
 
-  const lineTotal = item.price * item.quantity;
-  const imageSrc = resolveMediaSrc(item.image);
+  const lineTotal = item.price * localQty;
+  const imageSrc = item.image || "";
   const href = getCartItemHref(item);
+  const currency = item.currency || "AED";
 
   return (
     <div
-      className="group relative flex gap-3.5 rounded-xl border border-gray-100
-                  bg-white p-3 transition-shadow duration-200
-                  hover:shadow-[0_2px_12px_rgba(0,0,0,0.04)] sm:gap-4 sm:p-3.5"
+      className={`group relative flex gap-3.5 rounded-xl border border-gray-100
+                  bg-white p-3 transition-all duration-200
+                  hover:shadow-[0_2px_12px_rgba(0,0,0,0.04)] sm:gap-4 sm:p-3.5
+                  ${isRemoving ? "pointer-events-none opacity-50" : ""}`}
     >
       {/* ── image ── */}
       <Link
@@ -74,14 +137,20 @@ const CartItem = memo(function CartItem({ item }) {
           </Link>
           <button
             onClick={handleRemove}
+            disabled={isRemoving}
             className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full
                        text-gray-300 transition-all duration-200
                        hover:bg-red-50 hover:text-red-400
+                       disabled:cursor-not-allowed disabled:opacity-40
                        focus-visible:outline-none focus-visible:ring-2
                        focus-visible:ring-red-200"
             aria-label={`Remove ${item.title}`}
           >
-            <Trash2 size={14} strokeWidth={1.8} />
+            {isRemoving ? (
+              <Loader2 size={14} strokeWidth={1.8} className="animate-spin" />
+            ) : (
+              <Trash2 size={14} strokeWidth={1.8} />
+            )}
           </button>
         </div>
 
@@ -105,11 +174,11 @@ const CartItem = memo(function CartItem({ item }) {
               className="font-poppins! flex h-8 w-9 items-center justify-center
                          text-[13px] font-semibold text-soft-black"
             >
-              {item.quantity}
+              {localQty}
             </span>
             <button
               onClick={handleIncrement}
-              disabled={item.quantity >= item.maxQuantity}
+              disabled={localQty >= item.maxQuantity}
               className="flex h-8 w-8 items-center justify-center text-gray-500
                          transition-colors duration-150 hover:bg-gray-100
                          hover:text-soft-black disabled:cursor-not-allowed
@@ -122,7 +191,7 @@ const CartItem = memo(function CartItem({ item }) {
 
           {/* line price */}
           <span className="font-poppins! text-[13px] font-semibold text-soft-black sm:text-sm">
-            {formatMoney(lineTotal)}
+            {formatMoney(lineTotal, currency)}
           </span>
         </div>
       </div>

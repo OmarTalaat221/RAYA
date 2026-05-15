@@ -2,7 +2,7 @@
 "use client";
 
 import { memo, useMemo } from "react";
-import { Truck, PartyPopper } from "lucide-react";
+import { PartyPopper } from "lucide-react";
 import { formatMoney } from "./cart.utils";
 
 const FreeShippingBar = memo(function FreeShippingBar({

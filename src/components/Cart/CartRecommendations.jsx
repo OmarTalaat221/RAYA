@@ -5,21 +5,19 @@ import { memo, useCallback } from "react";
 import { useDispatch } from "react-redux";
 import Image from "next/image";
 import { Plus } from "lucide-react";
-import { addItem } from "../../store/cartSlice";
-import { buildCartProduct, resolveMediaSrc, formatMoney } from "./cart.utils";
+import { addToCart } from "../../store/cartSlice";
+import { formatMoney } from "./cart.utils";
 
 const RecommendationItem = memo(function RecommendationItem({ product }) {
   const dispatch = useDispatch();
 
   const handleAdd = useCallback(() => {
-    dispatch(addItem(buildCartProduct(product, 1)));
-  }, [dispatch, product]);
+    dispatch(addToCart({ productId: product.id, quantity: 1 }));
+  }, [dispatch, product.id]);
 
-  const imageSrc =
-    resolveMediaSrc(product.frontImage) ||
-    resolveMediaSrc(product.media?.[0]?.src) ||
-    "";
-  const price = product.newPrice ?? product.oldPrice ?? 0;
+  const imageSrc = product.image || product.frontImage || "";
+  const price = product.newPrice ?? product.oldPrice ?? product.price ?? 0;
+  const currency = product.currency || "AED";
 
   return (
     <div
@@ -56,7 +54,7 @@ const RecommendationItem = memo(function RecommendationItem({ product }) {
           {product.title}
         </span>
         <span className="font-poppins! text-[12px] font-semibold text-main">
-          {formatMoney(price)}
+          {formatMoney(price, currency)}
         </span>
       </div>
 
@@ -80,7 +78,7 @@ const CartRecommendations = memo(function CartRecommendations({ products }) {
   if (!products?.length) return null;
 
   return (
-    <div>
+    <div className="border-t border-gray-100 px-5 py-4 sm:px-6">
       <h3
         className="font-oswald! mb-3 text-[13px] font-semibold uppercase
                     tracking-wider text-gray-400 sm:text-sm"

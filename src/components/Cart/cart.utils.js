@@ -1,6 +1,9 @@
 // components/Cart/cart.utils.js
 
-export function formatMoney(value, currency = "AED.") {
+const IMAGE_BASE_URL =
+  process.env.NEXT_PUBLIC_API_BASE_URL || "https://rdspharma.cloud";
+
+export function formatMoney(value, currency = "AED") {
   if (value == null || isNaN(value)) return `${currency} 0.00`;
   return `${currency} ${Number(value).toLocaleString("en-US", {
     minimumFractionDigits: 2,
@@ -12,6 +15,10 @@ export function resolveMediaSrc(src) {
   if (!src) return "";
   if (src.startsWith("http://") || src.startsWith("https://")) return src;
   if (src.startsWith("/cdn/shop/")) return `https://www.rdspharma.online${src}`;
+  if (src.startsWith("uploads/") || src.startsWith("/uploads/")) {
+    const cleanPath = src.startsWith("/") ? src : `/${src}`;
+    return `${IMAGE_BASE_URL}${cleanPath}`;
+  }
   return src;
 }
 
@@ -28,8 +35,8 @@ export function resolveCartImage(product) {
 }
 
 export function getCartItemHref(item) {
+  if (item.href && item.href !== "#") return item.href;
   if (item.slug) return `/products/${item.slug}`;
-  if (item.href) return item.href;
   return "#";
 }
 

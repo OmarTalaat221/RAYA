@@ -10,21 +10,22 @@ import "swiper/css";
 import "swiper/css/free-mode";
 import "swiper/css/thumbs";
 
+/* ─── resolve image paths ─────────────────────────────────────────────────── */
+
 function resolveMediaSrc(src) {
-  if (!src) {
-    return "";
+  if (!src) return "";
+  if (src.startsWith("http://") || src.startsWith("https://")) return src;
+  if (src.startsWith("/cdn/shop/")) return `https://www.rdspharma.online${src}`;
+  if (src.startsWith("uploads/") || src.startsWith("/uploads/")) {
+    const baseUrl =
+      process.env.NEXT_PUBLIC_API_BASE_URL || "https://rdspharma.cloud";
+    const cleanPath = src.startsWith("/") ? src : `/${src}`;
+    return `${baseUrl}${cleanPath}`;
   }
-
-  if (src.startsWith("http://") || src.startsWith("https://")) {
-    return src;
-  }
-
-  if (src.startsWith("/cdn/shop/")) {
-    return `https://www.rdspharma.online${src}`;
-  }
-
   return src;
 }
+
+/* ─── sub-components ──────────────────────────────────────────────────────── */
 
 function PlayIcon({ className = "h-6 w-6 text-white" }) {
   return (
@@ -53,16 +54,11 @@ function EmptyGallery() {
 }
 
 function MainSlide({ item, index, isPrimary, productTitle }) {
-  const label = getMediaRoleLabel(item);
   const resolvedSrc = resolveMediaSrc(item.src);
   const resolvedPoster = item.poster ? resolveMediaSrc(item.poster) : undefined;
 
   return (
     <div className="relative aspect-[4/5] overflow-hidden rounded-3xl bg-[#f7f7f4]">
-      {/* <span className="absolute left-4 top-4 z-10 inline-flex items-center rounded-full bg-white/90 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-soft-black shadow-sm backdrop-blur-sm">
-        {label}
-      </span> */}
-
       <span className="absolute bottom-4 right-4 z-10 rounded-full bg-white/90 px-3 py-1 text-xs font-medium text-soft-black shadow-sm backdrop-blur-sm">
         {String(index + 1).padStart(2, "0")}
       </span>
@@ -96,7 +92,6 @@ function MainSlide({ item, index, isPrimary, productTitle }) {
 }
 
 function ThumbSlide({ item, active, productTitle }) {
-  const label = getMediaRoleLabel(item);
   const resolvedSrc = resolveMediaSrc(item.src);
   const resolvedPoster = item.poster ? resolveMediaSrc(item.poster) : null;
 
@@ -122,9 +117,7 @@ function ThumbSlide({ item, active, productTitle }) {
           ) : (
             <div className="h-full w-full bg-[#1a1a1a]" />
           )}
-
           <div className="absolute inset-0 bg-black/15" />
-
           <div className="absolute inset-0 flex items-center justify-center">
             <div className="rounded-full bg-white/20 p-2 backdrop-blur-sm">
               <PlayIcon className="h-5 w-5 text-white" />
@@ -141,13 +134,11 @@ function ThumbSlide({ item, active, productTitle }) {
           className="object-cover"
         />
       )}
-
-      {/* <span className="absolute left-1.5 top-1.5 z-10 rounded-full bg-white/90 px-1.5 py-0.5 text-[9px] font-semibold uppercase tracking-wider text-soft-black shadow-sm">
-        {label}
-      </span> */}
     </div>
   );
 }
+
+/* ─── main gallery ────────────────────────────────────────────────────────── */
 
 export default function ProductGallery({ media, productTitle }) {
   const items = Array.isArray(media) && media.length > 0 ? media : [];
@@ -161,10 +152,8 @@ export default function ProductGallery({ media, productTitle }) {
 
   const handleSlideChange = useCallback((swiper) => {
     setActiveIndex(swiper.activeIndex);
-
     swiper.slides.forEach((slide, i) => {
       const video = slide.querySelector("video");
-
       if (video && i !== swiper.activeIndex) {
         video.pause();
       }

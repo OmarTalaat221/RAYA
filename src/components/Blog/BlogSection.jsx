@@ -4,7 +4,7 @@
 import { motion } from "framer-motion";
 import Link from "next/link";
 import { Swiper, SwiperSlide } from "swiper/react";
-import { Pagination, FreeMode } from "swiper/modules";
+import { Pagination, FreeMode, Autoplay } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/pagination";
 import "swiper/css/free-mode";
@@ -95,7 +95,7 @@ function MobileSwiper({ items }) {
     <>
       <style>{swiperStyles}</style>
       <Swiper
-        modules={[Pagination, FreeMode]}
+        modules={[Pagination, FreeMode, Autoplay]}
         className="blog-swiper !overflow-visible"
         breakpoints={{
           0: { slidesPerView: 1.1, spaceBetween: 12 },
@@ -109,6 +109,11 @@ function MobileSwiper({ items }) {
         grabCursor
         observer
         observeParents
+        autoplay={{
+          delay: 3500,
+          disableOnInteraction: false,
+          pauseOnMouseEnter: true,
+        }}
       >
         {items.map((item, index) => (
           <SwiperSlide key={item.id} className="!h-auto pb-8">

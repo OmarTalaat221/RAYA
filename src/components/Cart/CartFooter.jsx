@@ -2,12 +2,15 @@
 "use client";
 
 import { memo } from "react";
+import { Loader2 } from "lucide-react";
 import { formatMoney } from "./cart.utils";
 import "./cart-shimmer.css";
 
 const CartFooter = memo(function CartFooter({
   subtotal,
+  currency = "AED",
   qualifiesForFreeShipping,
+  loading = false,
 }) {
   return (
     <div
@@ -20,7 +23,7 @@ const CartFooter = memo(function CartFooter({
           Subtotal
         </span>
         <span className="font-poppins! text-lg font-bold text-soft-black sm:text-xl">
-          {formatMoney(subtotal)}
+          {formatMoney(subtotal, currency)}
         </span>
       </div>
 
@@ -38,28 +41,42 @@ const CartFooter = memo(function CartFooter({
       <div className="flex flex-col gap-2.5">
         {/* primary: COD */}
         <button
+          disabled={loading}
           className="cart-shimmer-btn relative flex h-[50px] w-full items-center
                      justify-center overflow-hidden rounded-xl bg-soft-black
                      font-poppins! text-[13px] font-semibold tracking-wide
                      text-white transition-all duration-200 hover:bg-[#222]
-                     active:scale-[0.98] focus-visible:outline-none
+                     active:scale-[0.98] disabled:cursor-not-allowed
+                     disabled:opacity-60 focus-visible:outline-none
                      focus-visible:ring-2 focus-visible:ring-soft-black/40
                      sm:h-[52px] sm:text-[13.5px]"
         >
-          <span className="relative z-10">Order Now — Cash on Delivery</span>
+          <span className="relative z-10 flex items-center gap-2">
+            {loading && (
+              <Loader2 size={16} strokeWidth={2} className="animate-spin" />
+            )}
+            Order Now — Cash on Delivery
+          </span>
         </button>
 
         {/* secondary: checkout */}
         <button
+          disabled={loading}
           className="cart-shimmer-btn-green relative flex h-[50px] w-full
                      items-center justify-center overflow-hidden rounded-xl
                      bg-main font-poppins! text-[13px] font-semibold
                      tracking-wide text-white transition-all duration-200
                      hover:bg-[#5aaa44] active:scale-[0.98]
+                     disabled:cursor-not-allowed disabled:opacity-60
                      focus-visible:outline-none focus-visible:ring-2
                      focus-visible:ring-main/40 sm:h-[52px] sm:text-[13.5px]"
         >
-          <span className="relative z-10">Check Out</span>
+          <span className="relative z-10 flex items-center gap-2">
+            {loading && (
+              <Loader2 size={16} strokeWidth={2} className="animate-spin" />
+            )}
+            Check Out
+          </span>
         </button>
       </div>
     </div>
