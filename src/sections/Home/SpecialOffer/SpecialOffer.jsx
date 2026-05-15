@@ -35,7 +35,7 @@ const AboutBackgroundPattern = React.memo(function AboutBackgroundPattern() {
         }
       >
         <Image
-          src="/assets/image/pattern-1.png"
+          src="/assets/image/pattern-4.png"
           alt=""
           fill
           quality={70}

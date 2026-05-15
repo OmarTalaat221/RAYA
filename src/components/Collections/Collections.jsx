@@ -1,7 +1,8 @@
 "use client";
 
-import { useEffect, useState, useCallback } from "react";
-import { motion } from "framer-motion";
+import React, { useEffect, useState, useCallback } from "react";
+import { motion, useReducedMotion } from "framer-motion";
+import Image from "next/image";
 import Link from "next/link";
 import { RefreshCw } from "lucide-react";
 import { Swiper, SwiperSlide } from "swiper/react";
@@ -13,6 +14,59 @@ import "swiper/css/free-mode";
 import CollectionCard, { cardVariant } from "./CollectionCard";
 import { getAllCategories } from "../../services/categories.service";
 import { adaptCategoriesToCollections } from "./category.adapter";
+
+// ─── Background Pattern ───────────────────────────────────────────────────────
+const AboutBackgroundPattern = React.memo(function AboutBackgroundPattern() {
+  const prefersReducedMotion = useReducedMotion();
+
+  return (
+    <div
+      aria-hidden="true"
+      className="
+        pointer-events-none absolute inset-0 z-0 select-none overflow-hidden
+        opacity-[0.08] sm:opacity-[0.12] md:opacity-[0.18] lg:opacity-[0.24] xl:opacity-[0.30]
+      "
+    >
+      <motion.div
+        className="relative h-full w-full scale-[1.02]"
+        animate={
+          prefersReducedMotion
+            ? undefined
+            : {
+                y: [0, -8, 0, 8, 0],
+              }
+        }
+        transition={
+          prefersReducedMotion
+            ? undefined
+            : {
+                duration: 18,
+                repeat: Infinity,
+                ease: "easeInOut",
+              }
+        }
+      >
+        <Image
+          src="/assets/image/pattern-1.png"
+          alt=""
+          fill
+          quality={70}
+          loading="lazy"
+          sizes="100vw"
+          className="object-cover object-center"
+        />
+      </motion.div>
+
+      <div
+        aria-hidden="true"
+        className="
+          absolute inset-0
+          bg-[linear-gradient(180deg,rgba(244,243,240,0.98)_0%,rgba(244,243,240,0.4)_20%,rgba(244,243,240,0.18)_58%,rgba(244,243,240,0.98)_100%)]
+        "
+      />
+    </div>
+  );
+});
 
 // ─── Static "All" card — always first ────────────────────────────────────────
 const ALL_COLLECTION_CARD = {
@@ -241,10 +295,7 @@ export default function Collections() {
     fetchCollections();
   }, [fetchCollections]);
 
-  // "All" card always first
   const items = [ALL_COLLECTION_CARD, ...apiItems];
-
-  // Desktop/Mobile: show up to 5 (3+2 layout)
   const displayItems = items.slice(0, 5);
 
   return (
@@ -256,8 +307,10 @@ export default function Collections() {
         }
       `}</style>
 
-      <section className="w-full bg-[#f4f3f0] py-8 sm:py-10 md:py-12 lg:py-16">
-        <div className="container mx-auto px-4 sm:px-6">
+      <section className="relative w-full overflow-hidden bg-[#f4f3f0] py-8 sm:py-10 md:py-12 lg:py-16">
+        <AboutBackgroundPattern />
+
+        <div className="container relative z-10 mx-auto px-4 sm:px-6">
           {/* ── Section Heading ── */}
           <motion.div
             className="mb-10 text-start md:mb-14 md:text-center"
