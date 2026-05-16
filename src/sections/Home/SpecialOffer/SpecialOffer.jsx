@@ -12,11 +12,11 @@ const AboutBackgroundPattern = React.memo(function AboutBackgroundPattern() {
       aria-hidden="true"
       className="
         pointer-events-none absolute inset-0 z-0 select-none overflow-hidden
-      opacity-[0.30]
+        opacity-[0.30]
       "
     >
       <motion.div
-        className="relative h-full w-full scale-[1.02]"
+        className="relative h-full w-full scale-[1.18] sm:scale-[1.12] md:scale-[1.06] lg:scale-[1.02]"
         animate={
           prefersReducedMotion
             ? undefined
@@ -40,8 +40,8 @@ const AboutBackgroundPattern = React.memo(function AboutBackgroundPattern() {
           fill
           quality={70}
           loading="lazy"
-          sizes="100vw"
-          className="object-cover object-center"
+          sizes="(max-width: 639px) 140vw, (max-width: 767px) 120vw, 100vw"
+          className="object-contain object-center md:object-cover md:object-center"
         />
       </motion.div>
 
@@ -58,7 +58,7 @@ const AboutBackgroundPattern = React.memo(function AboutBackgroundPattern() {
 
 export default function SpecialOffer() {
   return (
-    <section className="relative w-full overflow-hidden bg-[#f4f3f0]  md:block py-8 sm:py-10 md:py-12 lg:py-16 ">
+    <section className="relative w-full overflow-hidden bg-[#f4f3f0] md:block py-8 sm:py-10 md:py-12 lg:py-16">
       <AboutBackgroundPattern />
 
       <div className="container relative z-10 w-full px-4 sm:px-6 mx-auto flex flex-col items-center gap-10 sm:gap-12 md:gap-14 lg:flex-row lg:items-center lg:gap-16 xl:gap-20">

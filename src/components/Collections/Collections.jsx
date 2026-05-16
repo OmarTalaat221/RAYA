@@ -1,9 +1,10 @@
 "use client";
 
-import React, { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { motion, useReducedMotion } from "framer-motion";
 import Image from "next/image";
 import Link from "next/link";
+import React from "react";
 import { RefreshCw } from "lucide-react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Pagination, FreeMode, Autoplay } from "swiper/modules";
@@ -24,11 +25,11 @@ const AboutBackgroundPattern = React.memo(function AboutBackgroundPattern() {
       aria-hidden="true"
       className="
         pointer-events-none absolute inset-0 z-0 select-none overflow-hidden
-        opacity-[0.08] sm:opacity-[0.12] md:opacity-[0.18] lg:opacity-[0.24] xl:opacity-[0.30]
+        opacity-[0.30]
       "
     >
       <motion.div
-        className="relative h-full w-full scale-[1.02]"
+        className="relative h-full w-full scale-[1.18] sm:scale-[1.12] md:scale-[1.06] lg:scale-[1.02]"
         animate={
           prefersReducedMotion
             ? undefined
@@ -52,8 +53,8 @@ const AboutBackgroundPattern = React.memo(function AboutBackgroundPattern() {
           fill
           quality={70}
           loading="lazy"
-          sizes="100vw"
-          className="object-cover object-center"
+          sizes="(max-width: 639px) 140vw, (max-width: 767px) 120vw, 100vw"
+          className="object-contain object-center md:object-cover md:object-center"
         />
       </motion.div>
 
