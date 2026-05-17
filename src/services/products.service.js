@@ -29,5 +29,6 @@ export async function getProductsByCategorySlug(slug, options = {}) {
 
 export async function getProductBySlug(slug) {
   const response = await axiosInstance.get(`/products/${slug}`);
+  console.log(response.data, "single product");
   return response.data?.data;
 }
