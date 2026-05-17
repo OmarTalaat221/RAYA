@@ -322,14 +322,14 @@ const HeaderIcons = memo(function HeaderIcons({
       >
         <Search size={22} strokeWidth={1.5} />
       </button>
-
+      {/* 
       <Link
         aria-label="My Account"
         href="/login"
         className="text-soft-black hover:text-main transition-colors duration-200"
       >
         <User size={22} strokeWidth={1.5} />
-      </Link>
+      </Link> */}
 
       <button
         type="button"

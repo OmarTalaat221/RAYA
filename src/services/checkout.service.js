@@ -45,6 +45,38 @@ export async function createCheckoutSession({
   return response.data;
 }
 
+export async function createCODOrder({
+  cartItems = [],
+  shippingInfo = {},
+}) {
+  const deviceId = getOrCreateDeviceId();
+  const items = normalizeCartItems(cartItems);
+
+  if (!items.length) {
+    throw new Error("Your cart is empty.");
+  }
+
+  const response = await axiosInstance.post("/checkout/cod", {
+    items,
+    guestEmail: String(shippingInfo?.email ?? "").trim(),
+    cartToken: deviceId,
+    firstName: String(shippingInfo?.firstName ?? "").trim(),
+    lastName: String(shippingInfo?.lastName ?? "").trim(),
+    email: String(shippingInfo?.email ?? "").trim(),
+    phone: String(shippingInfo?.phone ?? "").trim(),
+    country: String(shippingInfo?.country ?? "").trim(),
+    state: String(shippingInfo?.state ?? "").trim(),
+    city: String(shippingInfo?.city ?? "").trim(),
+    zipCode: String(shippingInfo?.postalCode ?? "").trim(),
+    streetAddress: String(shippingInfo?.address ?? "").trim(),
+    apartment: String(shippingInfo?.apartment ?? "").trim(),
+    deliveryNotes: String(shippingInfo?.notes ?? "").trim(),
+    couponCode: "",
+  });
+
+  return response.data;
+}
+
 export async function getCheckoutSessionStatus(orderId, config = {}) {
   if (!orderId) {
     throw new Error("Order ID is required.");

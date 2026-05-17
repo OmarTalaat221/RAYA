@@ -9,7 +9,6 @@ import {
   EMPTY_HOME_DATA,
 } from "../../sections/Home/home.adapter";
 
-
 export default async function HomePage() {
   let homeData = EMPTY_HOME_DATA;
 

@@ -402,12 +402,18 @@ function CheckoutInner() {
 
   const hasPaymentSession = step === "payment" && !!clientSecret && !!orderId;
 
+  useEffect(() => {
+    if (initialized && items.length === 0 && !hasPaymentSession) {
+      router.replace("/");
+    }
+  }, [initialized, items.length, hasPaymentSession, router]);
+
   if (!initialized || loading || (expectsRestore && !restoreChecked)) {
     return <CheckoutSkeleton />;
   }
 
   if (initialized && items.length === 0 && !hasPaymentSession) {
-    return <EmptyCartState />;
+    return null;
   }
 
   return (

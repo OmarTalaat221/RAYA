@@ -2,6 +2,7 @@
 
 import { memo, useCallback, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
+import { useRouter } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
 import { X, AlertCircle } from "lucide-react";
 import { closeCart, fetchCart, clearError } from "../../store/cartSlice";
@@ -32,6 +33,7 @@ const DRAWER_TRANSITION = {
 
 const CartDrawer = memo(function CartDrawer() {
   const dispatch = useDispatch();
+  const router = useRouter();
   const isOpen = useSelector((s) => s.cart.isOpen);
   const items = useSelector((s) => s.cart.items);
   const subtotal = useSelector((s) => s.cart.subtotal);
@@ -49,6 +51,9 @@ const CartDrawer = memo(function CartDrawer() {
   const freeShippingThreshold = useSelector(
     (s) => s.cart.freeShippingThreshold
   );
+  
+  const geoCountry = useSelector((s) => s.geo?.country || "");
+  const isUAE = /^(ae|are|united arab emirates)$/i.test(geoCountry.trim());
 
   useEffect(() => {
     if (isOpen && !initialized) {
@@ -220,6 +225,14 @@ const CartDrawer = memo(function CartDrawer() {
                   currency={currency}
                   qualifiesForFreeShipping={qualifiesForFreeShipping}
                   loading={actionLoading}
+                  onCashOnDelivery={
+                    isUAE
+                      ? () => {
+                          dispatch(closeCart());
+                          router.push("/checkout/cod");
+                        }
+                      : undefined
+                  }
                 />
               </>
             )}

@@ -197,7 +197,10 @@ function SuccessContent() {
 
   useEffect(() => {
     if (!data) return;
-    const k = kind(data?.status);
+    const isCOD = searchParams.get("method") === "cod";
+    const rawStatus = data?.status;
+    const k = isCOD && norm(rawStatus) === "PENDING" ? "success" : kind(rawStatus);
+
     if (k !== "pending") return;
     if (pollRef.current >= MAX_POLLS) return;
     const t = window.setTimeout(() => {
@@ -205,15 +208,19 @@ function SuccessContent() {
       fetchStatus({ silent: true });
     }, POLL_INTERVAL);
     return () => window.clearTimeout(t);
-  }, [data, fetchStatus]);
+  }, [data, fetchStatus, searchParams]);
 
   useEffect(() => {
     if (!data || syncedRef.current) return;
-    if (kind(data?.status) === "success") {
+    const isCOD = searchParams.get("method") === "cod";
+    const rawStatus = data?.status;
+    const k = isCOD && norm(rawStatus) === "PENDING" ? "success" : kind(rawStatus);
+
+    if (k === "success") {
       syncedRef.current = true;
       dispatch(fetchCart());
     }
-  }, [data, dispatch]);
+  }, [data, dispatch, searchParams]);
 
   const handleRetry = useCallback(() => fetchStatus(), [fetchStatus]);
 
@@ -266,14 +273,28 @@ function SuccessContent() {
     );
   }
 
-  const k = kind(data?.status);
+  const method = searchParams.get("method");
+  const isCOD = method === "cod";
+
+  // For COD, treat PENDING as SUCCESS since payment is collected on delivery
+  const rawStatus = data?.status;
+  const k = isCOD && norm(rawStatus) === "PENDING" ? "success" : kind(rawStatus);
+
   const heading =
-    loading && !data ? "Checking Order Status" : HEADINGS[k] || "Order Update";
+    loading && !data
+      ? "Checking Order Status"
+      : isCOD && k === "success"
+        ? "Order Confirmed (COD)"
+        : HEADINGS[k] || "Order Update";
+
   const description =
     loading && !data
       ? "Please wait while we verify the latest payment status for your order."
-      : DESCRIPTIONS[k] || "We are checking the latest status of your order.";
-  const status = norm(data?.status) || "PENDING";
+      : isCOD && k === "success"
+        ? "Thank you for your purchase! Your Cash on Delivery order has been successfully placed."
+        : DESCRIPTIONS[k] || "We are checking the latest status of your order.";
+
+  const status = isCOD && norm(rawStatus) === "PENDING" ? "CONFIRMED" : norm(rawStatus) || "PENDING";
   const total = toNum(data?.total);
   const currencyCode = toCur(data?.currency);
   const email = data?.shippingAddress?.email || "";
