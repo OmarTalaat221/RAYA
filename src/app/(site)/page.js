@@ -17,7 +17,7 @@ export default async function HomePage() {
     const headersList = await headers();
     const forwardedFor = headersList.get("x-forwarded-for");
     const realIp = headersList.get("x-real-ip");
-    
+
     const extraHeaders = {};
     if (forwardedFor) extraHeaders["x-forwarded-for"] = forwardedFor;
     if (realIp) extraHeaders["x-real-ip"] = realIp;
