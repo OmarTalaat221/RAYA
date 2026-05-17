@@ -72,7 +72,7 @@ axiosInstance.interceptors.request.use(
     if (!isBrowser()) {
       try {
         const { headers } = await import("next/headers");
-        const headersList = headers();
+        const headersList = await headers();
         const forwardedFor = headersList.get("x-forwarded-for");
         const realIp = headersList.get("x-real-ip");
         

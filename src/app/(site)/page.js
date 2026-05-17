@@ -14,7 +14,7 @@ export default async function HomePage() {
   let homeData = EMPTY_HOME_DATA;
 
   try {
-    const headersList = headers();
+    const headersList = await headers();
     const forwardedFor = headersList.get("x-forwarded-for");
     const realIp = headersList.get("x-real-ip");
     
