@@ -322,3 +322,8 @@ export async function resetPassword({ email, otp, password, confirm }) {
     return handleServiceError(error);
   }
 }
+
+export async function getGeoInfo() {
+  const response = await axiosInstance.get("/auth/get-info");
+  return response.data;
+}

@@ -1,19 +1,79 @@
 "use client";
 
-import { useState, useEffect, useCallback, memo } from "react";
+import { useState, useEffect, useCallback, memo, Suspense } from "react";
 import { useSelector, useDispatch } from "react-redux";
+import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
-// import { fetchCart } from "@/store/cartSlice";
-// import { createPaymentIntent } from "@/services/checkout.service";
 import CheckoutShippingForm from "./CheckoutShippingForm";
 import CheckoutSummary from "./CheckoutSummary";
 import CheckoutPaymentStep from "./CheckoutPaymentStep";
 import { fetchCart } from "../../store/cartSlice";
-import { createPaymentIntent } from "../../services/checkout.service";
+import { createCheckoutSession } from "../../services/checkout.service";
 
 /* ═══════════════════════════════════════════════
-   Background blobs (same visual language as auth)
+   Session persistence for refresh recovery
+   ═══════════════════════════════════════════════ */
+
+const SESSION_KEY = "rds-checkout-session";
+const SESSION_TTL = 2 * 60 * 60 * 1000;
+
+function toNumber(v) {
+  const n = Number(v);
+  return Number.isFinite(n) ? n : 0;
+}
+
+function adaptServerSummary(data) {
+  return {
+    currency: data?.currency || "",
+    subtotal: toNumber(data?.subtotal),
+    shipping: 0,
+    discountAmount: toNumber(data?.discountAmount),
+    total: toNumber(data?.total),
+    orderItems: Array.isArray(data?.orderItems) ? data.orderItems : [],
+  };
+}
+
+function readSession(expectedOrderId) {
+  if (typeof window === "undefined") return null;
+  try {
+    const raw = window.sessionStorage.getItem(SESSION_KEY);
+    if (!raw) return null;
+    const parsed = JSON.parse(raw);
+    if (!parsed?.createdAt || Date.now() - parsed.createdAt > SESSION_TTL) {
+      window.sessionStorage.removeItem(SESSION_KEY);
+      return null;
+    }
+    if (expectedOrderId && parsed?.orderId !== expectedOrderId) return null;
+    return parsed;
+  } catch {
+    return null;
+  }
+}
+
+function writeSession(payload) {
+  if (typeof window === "undefined") return;
+  try {
+    window.sessionStorage.setItem(
+      SESSION_KEY,
+      JSON.stringify({ ...payload, createdAt: Date.now() })
+    );
+  } catch {
+    /* ignore */
+  }
+}
+
+function clearSession() {
+  if (typeof window === "undefined") return;
+  try {
+    window.sessionStorage.removeItem(SESSION_KEY);
+  } catch {
+    /* ignore */
+  }
+}
+
+/* ═══════════════════════════════════════════════
+   Background blobs
    ═══════════════════════════════════════════════ */
 
 const BackgroundBlobs = memo(function BackgroundBlobs() {
@@ -186,7 +246,7 @@ const CheckoutSkeleton = memo(function CheckoutSkeleton() {
 CheckoutSkeleton.displayName = "CheckoutSkeleton";
 
 /* ═══════════════════════════════════════════════
-   Submit Error Display
+   Submit Error Banner
    ═══════════════════════════════════════════════ */
 
 function SubmitErrorBanner({ error }) {
@@ -218,174 +278,185 @@ function SubmitErrorBanner({ error }) {
 }
 
 /* ═══════════════════════════════════════════════
-   Main CheckoutPage
+   Inner component that reads searchParams
    ═══════════════════════════════════════════════ */
 
-export default function CheckoutPage() {
+function CheckoutInner() {
   const dispatch = useDispatch();
+  const router = useRouter();
+  const searchParams = useSearchParams();
+
   const { items, subtotal, initialized, loading } = useSelector(
     (state) => state.cart
   );
 
   const [step, setStep] = useState("shipping");
   const [shippingData, setShippingData] = useState(null);
-  const [clientSecret, setClientSecret] = useState(null);
-  const [orderId, setOrderId] = useState(null);
+  const [clientSecret, setClientSecret] = useState("");
+  const [orderId, setOrderId] = useState("");
   const [serverSummary, setServerSummary] = useState(null);
   const [submitError, setSubmitError] = useState("");
-  const [isCreatingIntent, setIsCreatingIntent] = useState(false);
+  const [isCreatingSession, setIsCreatingSession] = useState(false);
+  const [restoreChecked, setRestoreChecked] = useState(false);
 
-  /* ── Ensure cart is loaded ── */
+  const stepParam = searchParams.get("step");
+  const orderIdParam = searchParams.get("orderId");
+  const expectsRestore = stepParam === "payment" && Boolean(orderIdParam);
+
   useEffect(() => {
     if (!initialized) {
       dispatch(fetchCart());
     }
   }, [initialized, dispatch]);
 
-  /* ── Handle shipping submit ── */
-  const handleShippingSubmit = useCallback(async (formData) => {
-    setIsCreatingIntent(true);
-    setSubmitError("");
-
-    try {
-      const response = await createPaymentIntent(formData);
-      const data = response.data || response;
-
-      setClientSecret(data.clientSecret);
-      setOrderId(data.orderId);
-      setServerSummary(data.summary || null);
-      setShippingData(formData);
-      setStep("payment");
-
-      window.scrollTo({ top: 0, behavior: "smooth" });
-    } catch (error) {
-      const message =
-        error?.response?.data?.message ||
-        error?.response?.data?.errors?.join("\n") ||
-        "Something went wrong. Please try again.";
-      setSubmitError(message);
-    } finally {
-      setIsCreatingIntent(false);
+  useEffect(() => {
+    if (!expectsRestore) {
+      setRestoreChecked(true);
+      return;
     }
-  }, []);
 
-  /* ── Handle back ── */
+    const stored = readSession(orderIdParam);
+
+    if (stored?.clientSecret) {
+      setStep("payment");
+      setClientSecret(stored.clientSecret);
+      setOrderId(stored.orderId || orderIdParam);
+      setServerSummary(stored.serverSummary || null);
+      setShippingData(stored.shippingData || null);
+      setSubmitError("");
+    } else {
+      clearSession();
+      setStep("shipping");
+      setClientSecret("");
+      setOrderId("");
+      setServerSummary(null);
+      setSubmitError(
+        "Your payment session could not be restored. Please review your shipping details and continue again."
+      );
+      router.replace("/checkout", { scroll: false });
+    }
+
+    setRestoreChecked(true);
+  }, [expectsRestore, orderIdParam, router]);
+
+  const handleShippingSubmit = useCallback(
+    async (formData) => {
+      setIsCreatingSession(true);
+      setSubmitError("");
+
+      try {
+        const response = await createCheckoutSession({
+          cartItems: items,
+          shippingInfo: formData,
+        });
+
+        const data = response?.data || response;
+        const nextSummary = adaptServerSummary(data);
+
+        setClientSecret(data?.clientSecret || "");
+        setOrderId(data?.orderId || "");
+        setServerSummary(nextSummary);
+        setShippingData(formData);
+        setStep("payment");
+
+        writeSession({
+          orderId: data?.orderId || "",
+          clientSecret: data?.clientSecret || "",
+          shippingData: formData,
+          serverSummary: nextSummary,
+        });
+
+        router.replace(
+          `/checkout?step=payment&orderId=${encodeURIComponent(
+            data?.orderId || ""
+          )}`,
+          { scroll: false }
+        );
+
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      } catch (error) {
+        const message =
+          error?.response?.data?.errors?.join("\n") ||
+          error?.response?.data?.message ||
+          error?.message ||
+          "Something went wrong. Please try again.";
+
+        setSubmitError(message);
+      } finally {
+        setIsCreatingSession(false);
+      }
+    },
+    [items, router]
+  );
+
   const handleBackToShipping = useCallback(() => {
+    clearSession();
     setStep("shipping");
-    setClientSecret(null);
+    setClientSecret("");
+    setOrderId("");
+    setServerSummary(null);
     setSubmitError("");
+    router.replace("/checkout", { scroll: false });
     window.scrollTo({ top: 0, behavior: "smooth" });
-  }, []);
+  }, [router]);
 
-  /* ── Stripe appearance (matches our design system) ── */
-  const stripeAppearance = {
-    theme: "stripe",
-    variables: {
-      colorPrimary: "#68bc52",
-      colorBackground: "#ffffff",
-      colorText: "#2d2d2d",
-      colorDanger: "#ef4444",
-      fontFamily: "Poppins, sans-serif",
-      borderRadius: "16px",
-      spacingUnit: "4px",
-    },
-    rules: {
-      ".Input": {
-        border: "1px solid rgba(0,0,0,0.1)",
-        boxShadow: "none",
-        padding: "12px 16px",
-        fontSize: "14px",
-        transition: "border-color 0.2s ease, box-shadow 0.2s ease",
-      },
-      ".Input:focus": {
-        border: "1px solid rgba(104,188,82,0.6)",
-        boxShadow: "0 0 0 4px rgba(104,188,82,0.1)",
-      },
-      ".Label": {
-        fontWeight: "500",
-        fontSize: "13px",
-        textTransform: "uppercase",
-        letterSpacing: "0.12em",
-        marginBottom: "8px",
-        color: "#2d2d2d",
-      },
-      ".Tab": {
-        borderRadius: "12px",
-        border: "1px solid rgba(0,0,0,0.1)",
-      },
-      ".Tab--selected": {
-        borderColor: "#68bc52",
-        backgroundColor: "rgba(104,188,82,0.04)",
-      },
-      ".Error": {
-        fontSize: "13px",
-        color: "#ef4444",
-      },
-    },
-  };
+  const hasPaymentSession = step === "payment" && !!clientSecret && !!orderId;
 
-  /* ── Loading state ── */
-  if (!initialized || loading) {
-    return (
-      <main className="relative flex min-h-screen items-start justify-center overflow-hidden bg-[#f4f3f0] px-4 py-10 font-poppins! sm:px-6 lg:px-8">
-        <BackgroundBlobs />
-        <div className="relative z-10 mx-auto w-full container">
-          <div className="mb-6 flex justify-center sm:mb-8">
-            <Link href="/" className="relative block h-[72px] w-[72px]">
-              <Image
-                src="https://res.cloudinary.com/dbvh5i83q/image/upload/v1776082859/rds_logo_xpmbfn.webp"
-                alt="RDS Pharma Logo"
-                fill
-                priority
-                sizes="72px"
-                className="object-contain"
-              />
-            </Link>
-          </div>
-          <div className="rounded-[30px] border border-black/5 bg-white/95 p-5 shadow-[0_24px_80px_rgba(45,45,45,0.10)] backdrop-blur-sm sm:p-8 lg:p-10">
-            <CheckoutSkeleton />
-          </div>
-        </div>
-      </main>
-    );
+  if (!initialized || loading || (expectsRestore && !restoreChecked)) {
+    return <CheckoutSkeleton />;
   }
 
-  /* ── Empty cart ── */
-  if (initialized && items.length === 0) {
-    return (
-      <main className="relative flex min-h-screen items-center justify-center overflow-hidden bg-[#f4f3f0] px-4 py-10 font-poppins! sm:px-6 lg:px-8">
-        <BackgroundBlobs />
-        <div className="relative z-10 mx-auto w-full max-w-[520px]">
-          <div className="mb-6 flex justify-center">
-            <Link href="/" className="relative block h-[72px] w-[72px]">
-              <Image
-                src="https://res.cloudinary.com/dbvh5i83q/image/upload/v1776082859/rds_logo_xpmbfn.webp"
-                alt="RDS Pharma Logo"
-                fill
-                priority
-                sizes="72px"
-                className="object-contain"
-              />
-            </Link>
-          </div>
-          <div className="rounded-[30px] border border-black/5 bg-white/95 p-6 shadow-[0_24px_80px_rgba(45,45,45,0.10)] backdrop-blur-sm sm:p-8">
-            <EmptyCartState />
-          </div>
-        </div>
-      </main>
-    );
+  if (initialized && items.length === 0 && !hasPaymentSession) {
+    return <EmptyCartState />;
   }
 
-  /* ── Determine if mock mode (no real Stripe) ── */
-  const isMockMode =
-    !clientSecret || clientSecret === "MOCK_SECRET_FOR_UI_TESTING";
+  return (
+    <>
+      <StepIndicator currentStep={step} />
 
+      <SubmitErrorBanner error={submitError} />
+
+      <div className="grid grid-cols-1 gap-8 lg:grid-cols-12 lg:gap-12">
+        <div className="lg:col-span-7">
+          {step === "shipping" && (
+            <CheckoutShippingForm
+              onSubmit={handleShippingSubmit}
+              loading={isCreatingSession}
+              initialData={shippingData}
+            />
+          )}
+
+          {step === "payment" && (
+            <CheckoutPaymentStep
+              orderId={orderId}
+              clientSecret={clientSecret}
+              onBack={handleBackToShipping}
+            />
+          )}
+        </div>
+
+        <div className="lg:col-span-5">
+          <CheckoutSummary
+            items={items}
+            subtotal={subtotal}
+            serverSummary={serverSummary}
+          />
+        </div>
+      </div>
+    </>
+  );
+}
+
+/* ═══════════════════════════════════════════════
+   Main Export
+   ═══════════════════════════════════════════════ */
+
+export default function CheckoutPage() {
   return (
     <main className="relative flex min-h-screen items-start justify-center overflow-hidden bg-[#f4f3f0] px-4 py-10 font-poppins! sm:px-6 lg:px-8">
       <BackgroundBlobs />
 
       <div className="relative z-10 mx-auto w-full container">
-        {/* ── Logo ── */}
         <div className="mb-6 flex justify-center sm:mb-8">
           <Link href="/" className="relative block h-[72px] w-[72px]">
             <Image
@@ -399,46 +470,12 @@ export default function CheckoutPage() {
           </Link>
         </div>
 
-        {/* ── Card ── */}
         <div className="rounded-[30px] border border-black/5 bg-white/95 p-5 shadow-[0_24px_80px_rgba(45,45,45,0.10)] backdrop-blur-sm sm:p-8 lg:p-10">
-          <StepIndicator currentStep={step} />
-
-          <SubmitErrorBanner error={submitError} />
-
-          <div className="grid grid-cols-1 gap-8 lg:grid-cols-12 lg:gap-12">
-            {/* ── Left: Form ── */}
-            <div className="lg:col-span-7">
-              {step === "shipping" && (
-                <CheckoutShippingForm
-                  onSubmit={handleShippingSubmit}
-                  loading={isCreatingIntent}
-                  initialData={shippingData}
-                />
-              )}
-
-              {step === "payment" && (
-                <CheckoutPaymentStep
-                  orderId={orderId}
-                  clientSecret={clientSecret}
-                  isMockMode={isMockMode}
-                  stripeAppearance={stripeAppearance}
-                  onBack={handleBackToShipping}
-                />
-              )}
-            </div>
-
-            {/* ── Right: Summary ── */}
-            <div className="lg:col-span-5">
-              <CheckoutSummary
-                items={items}
-                subtotal={subtotal}
-                serverSummary={serverSummary}
-              />
-            </div>
-          </div>
+          <Suspense fallback={<CheckoutSkeleton />}>
+            <CheckoutInner />
+          </Suspense>
         </div>
 
-        {/* ── Footer ── */}
         <div className="mt-6 flex items-center justify-center gap-2 text-center">
           <svg
             className="h-3.5 w-3.5 text-secondary"

@@ -1,4 +1,3 @@
-// components/Cart/CartDrawer.jsx
 "use client";
 
 import { memo, useCallback, useEffect } from "react";
@@ -12,7 +11,6 @@ import CartRecommendations from "./CartRecommendations";
 import CartFooter from "./CartFooter";
 import CartEmpty from "./CartEmpty";
 
-/* ── animation constants outside render ── */
 const BACKDROP_VARIANTS = {
   hidden: { opacity: 0 },
   visible: { opacity: 1 },
@@ -52,20 +50,17 @@ const CartDrawer = memo(function CartDrawer() {
     (s) => s.cart.freeShippingThreshold
   );
 
-  /* ── fetch cart on first open ── */
   useEffect(() => {
     if (isOpen && !initialized) {
       dispatch(fetchCart());
     }
   }, [isOpen, initialized, dispatch]);
 
-  /* ── close handler ── */
   const handleClose = useCallback(() => {
     dispatch(closeCart());
     dispatch(clearError());
   }, [dispatch]);
 
-  /* ── Escape key ── */
   useEffect(() => {
     if (!isOpen) return;
     const onKey = (e) => {
@@ -75,7 +70,6 @@ const CartDrawer = memo(function CartDrawer() {
     return () => document.removeEventListener("keydown", onKey);
   }, [isOpen, handleClose]);
 
-  /* ── lock body scroll ── */
   useEffect(() => {
     if (isOpen) {
       document.body.style.overflow = "hidden";
@@ -87,7 +81,6 @@ const CartDrawer = memo(function CartDrawer() {
     };
   }, [isOpen]);
 
-  /* ── retry fetch ── */
   const handleRetry = useCallback(() => {
     dispatch(clearError());
     dispatch(fetchCart());
@@ -95,11 +88,13 @@ const CartDrawer = memo(function CartDrawer() {
 
   const isEmpty = items.length === 0;
 
+  const currency =
+    items.length > 0 && items[0]?.currency ? items[0].currency : "AED";
+
   return (
     <AnimatePresence mode="wait">
       {isOpen && (
         <>
-          {/* ── backdrop ── */}
           <motion.div
             className="fixed inset-0 z-2499 bg-black/20 backdrop-blur-[2px]"
             variants={BACKDROP_VARIANTS}
@@ -111,7 +106,6 @@ const CartDrawer = memo(function CartDrawer() {
             aria-hidden="true"
           />
 
-          {/* ── drawer ── */}
           <motion.aside
             className="fixed right-0 top-0 z-2500 flex h-full w-full flex-col
                        bg-white shadow-[-8px_0_30px_rgba(0,0,0,0.08)]
@@ -125,7 +119,6 @@ const CartDrawer = memo(function CartDrawer() {
             aria-modal="true"
             aria-label="Shopping cart"
           >
-            {/* ─── header ─── */}
             <div
               className="flex items-center justify-between border-b border-gray-100
                          px-5 py-4 sm:px-6 sm:py-5"
@@ -163,7 +156,6 @@ const CartDrawer = memo(function CartDrawer() {
               </button>
             </div>
 
-            {/* ─── error banner ─── */}
             {error && (
               <div
                 className="mx-5 mt-3 flex items-center gap-2.5 rounded-xl border
@@ -188,7 +180,6 @@ const CartDrawer = memo(function CartDrawer() {
               </div>
             )}
 
-            {/* ─── loading state (first load) ─── */}
             {loading && !initialized ? (
               <div className="flex flex-1 items-center justify-center">
                 <div className="flex flex-col items-center gap-3">
@@ -202,13 +193,10 @@ const CartDrawer = memo(function CartDrawer() {
                 </div>
               </div>
             ) : isEmpty ? (
-              /* ─── empty state ─── */
               <CartEmpty onClose={handleClose} recommendations={[]} />
             ) : (
               <>
-                {/* ─── scrollable content ─── */}
                 <div className="flex-1 overflow-y-auto overscroll-contain">
-                  {/* free shipping */}
                   <div className="px-5 pt-4 sm:px-6">
                     <FreeShippingBar
                       qualifies={qualifiesForFreeShipping}
@@ -218,22 +206,18 @@ const CartDrawer = memo(function CartDrawer() {
                     />
                   </div>
 
-                  {/* cart items */}
                   <div className="px-5 py-4 sm:px-6">
                     <CartItemList items={items} />
                   </div>
 
-                  {/* recommendations — empty for now, ready for API */}
                   <CartRecommendations products={[]} />
 
-                  {/* bottom breathing room */}
                   <div className="h-2" />
                 </div>
 
-                {/* ─── sticky footer ─── */}
                 <CartFooter
                   subtotal={subtotal}
-                  currency={items[0]?.currency || "AED"}
+                  currency={currency}
                   qualifiesForFreeShipping={qualifiesForFreeShipping}
                   loading={actionLoading}
                 />

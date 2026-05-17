@@ -17,8 +17,7 @@ export function resolveMediaSrc(src) {
 }
 
 export function toAbsoluteUrl(path = "") {
-  const baseUrl =
-    process.env.NEXT_PUBLIC_SITE_URL || "https://www.rdspharma.online";
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://rdspharma.cloud";
 
   try {
     return new URL(path, baseUrl).toString();

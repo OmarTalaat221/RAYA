@@ -1,6 +1,6 @@
-// components/Blog/BlogSection.jsx
 "use client";
 
+import { useMemo } from "react";
 import { motion } from "framer-motion";
 import Link from "next/link";
 import { Swiper, SwiperSlide } from "swiper/react";
@@ -9,10 +9,8 @@ import "swiper/css";
 import "swiper/css/pagination";
 import "swiper/css/free-mode";
 
-import BlogCard, { blogCardVariant } from "./BlogCard";
-import { blogData } from "./blog";
+import BlogCard from "./BlogCard";
 
-// ─── Same variant names & values as Collections.jsx ──────────────────────────
 const containerVariant = {
   hidden: {},
   visible: {
@@ -41,7 +39,6 @@ const ctaVariant = {
   },
 };
 
-// ─── Swiper styles — same pattern as collections-swiper ──────────────────────
 const swiperStyles = `
   .blog-swiper .swiper-pagination-bullets {
     position: relative !important;
@@ -68,9 +65,6 @@ const swiperStyles = `
   }
 `;
 
-// ─────────────────────────────────────────────────────────────────────────────
-// Desktop Grid — 4 cols (blog cards are narrower than collection cards)
-// ─────────────────────────────────────────────────────────────────────────────
 function DesktopGrid({ items }) {
   return (
     <motion.div
@@ -87,9 +81,6 @@ function DesktopGrid({ items }) {
   );
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// Mobile Swiper — same config pattern as MobileSwiper in Collections
-// ─────────────────────────────────────────────────────────────────────────────
 function MobileSwiper({ items }) {
   return (
     <>
@@ -136,14 +127,19 @@ function MobileSwiper({ items }) {
   );
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// Main Section — identical shell to Collections.jsx
-// ─────────────────────────────────────────────────────────────────────────────
-export default function BlogSection() {
+export default function BlogSection({ blogs = [] }) {
+  const items = useMemo(() => {
+    const list = Array.isArray(blogs) ? blogs : [];
+    return list.slice(0, 3);
+  }, [blogs]);
+
+  if (items.length === 0) {
+    return null;
+  }
+
   return (
     <section className="w-full bg-[#f4f3f0] py-8 sm:py-10 md:py-12 lg:py-16">
       <div className="container mx-auto px-4 sm:px-6">
-        {/* ── Heading — same structure as Collections ──────────────────── */}
         <motion.div
           className="text-start md:text-center mb-10 md:mb-14"
           variants={headingVariant}
@@ -151,30 +147,25 @@ export default function BlogSection() {
           whileInView="visible"
           viewport={{ once: true, margin: "-60px" }}
         >
-          {/* Eyebrow — identical className pattern */}
           <div className="flex items-center justify-start gap-3">
             <span className="mb-2 block text-xs font-semibold uppercase tracking-[0.2em] text-main sm:text-sm font-garamond!">
               From the Journal
             </span>
           </div>
 
-          {/* Title — identical className pattern */}
           <h2 className="text-[clamp(2rem,5vw,3.5rem)] text-start font-bold leading-tight text-soft-black font-oswald!">
             Latest Articles
           </h2>
         </motion.div>
 
-        {/* ── Desktop grid ─────────────────────────────────────────────── */}
         <div className="hidden md:block">
-          <DesktopGrid items={blogData.slice(0, 3)} />
+          <DesktopGrid items={items} />
         </div>
 
-        {/* ── Mobile swiper ────────────────────────────────────────────── */}
         <div className="block md:hidden -mx-4">
-          <MobileSwiper items={blogData.slice(0, 3)} />
+          <MobileSwiper items={items} />
         </div>
 
-        {/* ── CTA — identical ghost button pattern ─────────────────────── */}
         <motion.div
           className="flex justify-center mt-10 md:mt-14"
           variants={ctaVariant}
@@ -184,17 +175,8 @@ export default function BlogSection() {
         >
           <Link
             href="/blog/news"
-            className={[
-              "group relative inline-flex items-center gap-2",
-              "overflow-hidden rounded-full",
-              "border border-soft-black/20 bg-white",
-              "px-8 py-3",
-              "text-sm font-semibold tracking-wide text-soft-black font-poppins!",
-              "transition-all duration-300",
-              "hover:border-main hover:text-main hover:shadow-md",
-            ].join(" ")}
+            className="group relative inline-flex items-center gap-2 overflow-hidden rounded-full border border-soft-black/20 bg-white px-8 py-3 text-sm font-semibold tracking-wide text-soft-black font-poppins! transition-all duration-300 hover:border-main hover:text-main hover:shadow-md"
           >
-            {/* Sweep bg — same as Collections CTA */}
             <span
               className="absolute inset-0 origin-left scale-x-0 rounded-full bg-main/5 transition-transform duration-500 group-hover:scale-x-100"
               aria-hidden="true"
@@ -202,7 +184,6 @@ export default function BlogSection() {
 
             <span className="relative z-10">View All Articles</span>
 
-            {/* Arrow — same SVG as Collections */}
             <svg
               xmlns="http://www.w3.org/2000/svg"
               width="14"

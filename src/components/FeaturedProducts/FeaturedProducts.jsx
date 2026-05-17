@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { motion } from "framer-motion";
 import Link from "next/link";
 import { Swiper, SwiperSlide } from "swiper/react";
@@ -9,7 +9,6 @@ import "swiper/css";
 import "swiper/css/pagination";
 
 import ProductCard from "./ProductCard";
-import { PRODUCTS } from "./products";
 import useCanHover from "../Catalog/useCanHover";
 
 const containerVariants = {
@@ -30,7 +29,9 @@ const itemVariants = {
   },
 };
 
-function ProductsSlider({ canHover }) {
+function ProductsSlider({ products, canHover }) {
+  const enableLoop = products.length > 1;
+
   return (
     <div className="relative">
       <style>{`
@@ -75,12 +76,12 @@ function ProductsSlider({ canHover }) {
           pauseOnMouseEnter: true,
         }}
         speed={700}
-        loop={PRODUCTS?.filter((p) => p.isOnSale)?.slice(0, 8).length > 1}
-        observer={true}
-        observeParents={true}
-        updateOnWindowResize={true}
-        watchOverflow={true}
-        grabCursor={true}
+        loop={enableLoop}
+        observer
+        observeParents
+        updateOnWindowResize
+        watchOverflow
+        grabCursor
         spaceBetween={16}
         slidesPerView={1.15}
         breakpoints={{
@@ -94,23 +95,29 @@ function ProductsSlider({ canHover }) {
           nextSlideMessage: "Next product",
         }}
       >
-        {PRODUCTS?.filter((p) => p.isOnSale)
-          ?.slice(0, 8)
-          .map((product, index) => (
-            <SwiperSlide key={product.id}>
-              <ProductCard
-                {...product}
-                priority={index < 2}
-                canHover={canHover}
-              />
-            </SwiperSlide>
-          ))}
+        {products.map((product, index) => (
+          <SwiperSlide key={product.id}>
+            <ProductCard
+              id={product.id}
+              title={product.title}
+              href={product.href}
+              frontImage={product.frontImage}
+              backImage={product.backImage}
+              oldPrice={product.oldPrice}
+              newPrice={product.newPrice}
+              currency={product.currency}
+              isOnSale={product.isOnSale}
+              priority={index < 2}
+              canHover={canHover}
+            />
+          </SwiperSlide>
+        ))}
       </Swiper>
     </div>
   );
 }
 
-function DesktopGrid({ canHover }) {
+function DesktopGrid({ products, canHover }) {
   return (
     <motion.div
       className="grid grid-cols-2 gap-5 lg:grid-cols-3 xl:grid-cols-4 xl:gap-6"
@@ -119,29 +126,45 @@ function DesktopGrid({ canHover }) {
       whileInView="visible"
       viewport={{ once: true, amount: 0.05 }}
     >
-      {PRODUCTS?.filter((p) => p.isOnSale)
-        ?.slice(0, 8)
-        .map((product, index) => (
-          <motion.div key={product.id} variants={itemVariants}>
-            <ProductCard
-              {...product}
-              priority={index < 4}
-              canHover={canHover}
-            />
-          </motion.div>
-        ))}
+      {products.map((product, index) => (
+        <motion.div key={product.id} variants={itemVariants}>
+          <ProductCard
+            id={product.id}
+            title={product.title}
+            href={product.href}
+            frontImage={product.frontImage}
+            backImage={product.backImage}
+            oldPrice={product.oldPrice}
+            newPrice={product.newPrice}
+            currency={product.currency}
+            isOnSale={product.isOnSale}
+            priority={index < 4}
+            canHover={canHover}
+          />
+        </motion.div>
+      ))}
     </motion.div>
   );
 }
 
-export default function FeaturedProducts() {
+export default function FeaturedProducts({ products = [] }) {
   const [mounted, setMounted] = useState(false);
-
   const canHover = useCanHover();
 
   useEffect(() => {
     setMounted(true);
   }, []);
+
+  const featured = useMemo(() => {
+    const list = Array.isArray(products) ? products : [];
+    const onSale = list.filter((p) => p.isOnSale);
+    const pool = onSale.length > 0 ? onSale : list;
+    return pool.slice(0, 8);
+  }, [products]);
+
+  if (featured.length === 0) {
+    return null;
+  }
 
   return (
     <section
@@ -149,12 +172,8 @@ export default function FeaturedProducts() {
       aria-label="Featured Products"
     >
       <div className="mx-auto w-full container">
-        {/* Header */}
         <div className="mb-10 px-4 sm:px-6 md:mb-14">
-          <span
-            className="mb-2 block text-xs font-semibold uppercase tracking-[0.2em] text-main sm:text-sm font-garamond!"
-            // style={{ fontFamily: "'Poppins', sans-serif" }}
-          >
+          <span className="mb-2 block text-xs font-semibold uppercase tracking-[0.2em] text-main sm:text-sm font-garamond!">
             Our Selection
           </span>
 
@@ -166,17 +185,16 @@ export default function FeaturedProducts() {
           </h2>
         </div>
 
-        {/* Mobile / Tablet slider */}
         <div className="px-4 sm:px-6 md:hidden">
-          {mounted ? <ProductsSlider canHover={canHover} /> : null}
+          {mounted ? (
+            <ProductsSlider products={featured} canHover={canHover} />
+          ) : null}
         </div>
 
-        {/* Desktop grid */}
-        <div className="hidden px-4 sm:px-6 md:block ">
-          <DesktopGrid canHover={canHover} />
+        <div className="hidden px-4 sm:px-6 md:block">
+          <DesktopGrid products={featured} canHover={canHover} />
         </div>
 
-        {/* CTA */}
         <div className="mt-10 flex justify-center px-4 sm:mt-14">
           <Link
             href="/collections/all"

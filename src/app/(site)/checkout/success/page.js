@@ -1,10 +1,8 @@
-// import CheckoutSuccess from "@/components/Checkout/CheckoutSuccess";
-
 import CheckoutSuccess from "../../../../components/Checkout/CheckoutSuccess";
 
 export const metadata = {
-  title: "Order Confirmed — RDS Pharma",
-  description: "Your order has been placed successfully.",
+  title: "Checkout Status — RDS Pharma",
+  description: "Review your order and payment status securely.",
 };
 
 export default function SuccessPage() {

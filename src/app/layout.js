@@ -12,10 +12,9 @@ import "./globals.css";
 import { NextIntlClientProvider } from "next-intl";
 import { getLocale, getMessages } from "next-intl/server";
 import AOSProvider from "../components/AOSProvider";
-import Header from "../sections/Common/Header/Header";
-// import StoreProvider from "../features/StoreProvider";
-import Footer from "../components/Footer/Footer";
+
 import ReduxProvider from "../store/ReduxProvider";
+import AppPreloader from "../sections/Common/AppPreloader/AppPreloader";
 
 export const metadata = {
   title: "Raya Pharmacy",
@@ -40,6 +39,9 @@ export default async function RootLayout({ children }) {
           <NextIntlClientProvider locale={locale} messages={messages}>
             {/* <StoreProvider> */}
             <AOSProvider>
+              <AppPreloader />
+
+              {/* </AppPreloader> */}
               {/* <Header /> */}
 
               {children}
