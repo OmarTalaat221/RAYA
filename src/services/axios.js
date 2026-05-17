@@ -59,22 +59,57 @@ const axiosInstance = axios.create({
 /* ─── request interceptor ─────────────────────────────────────────────────── */
 
 axiosInstance.interceptors.request.use(
-  (config) => {
+  async (config) => {
     config.headers = config.headers || {};
-    config.headers.lang = "en";
+    
+    if (typeof config.headers.set === "function") {
+      config.headers.set("lang", "en");
+    } else {
+      config.headers["lang"] = "en";
+    }
+
+    // ─── Geo/IP headers for SSR ───
+    if (!isBrowser()) {
+      try {
+        const { headers } = await import("next/headers");
+        const headersList = headers();
+        const forwardedFor = headersList.get("x-forwarded-for");
+        const realIp = headersList.get("x-real-ip");
+        
+        if (forwardedFor) {
+          if (typeof config.headers.set === "function") config.headers.set("x-forwarded-for", forwardedFor);
+          else config.headers["x-forwarded-for"] = forwardedFor;
+        }
+        if (realIp) {
+          if (typeof config.headers.set === "function") config.headers.set("x-real-ip", realIp);
+          else config.headers["x-real-ip"] = realIp;
+        }
+      } catch (error) {
+        // Safe to ignore: might be used outside request context or static generation
+      }
+    }
 
     // ─── Currency headers (read from Redux) ───
     const currency = getCurrencyFromStore();
     if (currency) {
-      config.headers["x-user-currency"] = currency;
-      config.headers["x-currency"] = currency;
+      if (typeof config.headers.set === "function") {
+        config.headers.set("x-user-currency", currency);
+        config.headers.set("x-currency", currency);
+      } else {
+        config.headers["x-user-currency"] = currency;
+        config.headers["x-currency"] = currency;
+      }
     }
 
     // ─── Auth token ───
     if (config.withToken === true) {
       const token = config.token || getStoredToken();
       if (token) {
-        config.headers.Authorization = `Bearer ${token}`;
+        if (typeof config.headers.set === "function") {
+          config.headers.set("Authorization", `Bearer ${token}`);
+        } else {
+          config.headers["Authorization"] = `Bearer ${token}`;
+        }
       }
     }
 
