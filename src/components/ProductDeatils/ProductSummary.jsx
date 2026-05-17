@@ -6,6 +6,7 @@ import { getStockUi } from "./utils";
 
 export default function ProductSummary({ product }) {
   const stockUi = getStockUi(product.stockStatus);
+  console.log(product, "product");
 
   return (
     <aside className="rounded-[32px] border border-black/5 bg-white p-6 shadow-[0_20px_60px_rgba(17,24,39,0.05)] sm:p-8">
