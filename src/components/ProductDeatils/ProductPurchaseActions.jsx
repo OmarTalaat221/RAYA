@@ -106,7 +106,7 @@ export default function ProductPurchaseActions({
   const isOutOfStock = stockStatus === "out_of_stock";
 
   const cartItem = items.find((item) => item.id === product?.id) || null;
-  const isInCart = Boolean(cartItem);
+  const isInCart = initialized ? Boolean(cartItem) : Boolean(product?.inCart);
   const isCartSyncing = !initialized && loading;
   const disablePurchaseAction =
     isSubmitting ||

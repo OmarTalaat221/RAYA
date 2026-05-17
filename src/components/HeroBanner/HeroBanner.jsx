@@ -5,7 +5,7 @@ import { ChevronLeft, ChevronRight, ArrowRight } from "lucide-react";
 import Link from "next/link";
 import BottomBg from "../../sections/Common/BottomBg/BottomBg";
 
-const AUTOPLAY_DELAY = 5000;
+const AUTOPLAY_DELAY = 10000;
 
 export default function HeroSlider({ banners = [] }) {
   const [current, setCurrent] = useState(0);

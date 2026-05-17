@@ -34,21 +34,61 @@ function getMediaImageByRole(media = [], role) {
 }
 
 /* ─── Banners ─── */
+/* ─── Banners ─── */
 function adaptBanner(banner, lang = "en") {
-  const product = banner?.product || null;
-  const translation = product
-    ? resolveTranslation(product?.translations, lang)
-    : null;
+  const targetType = banner?.targetType || "";
+  const target = banner?.target || null;
 
-  const slug = translation?.slug || "";
-  const productHref = slug ? `/products/${slug}` : "/collections/all";
+  let href = "/";
+  let alt = "RDS Pharma Banner";
+
+  switch (targetType) {
+    case "product": {
+      const translation = resolveTranslation(target?.translations, lang);
+      const slug = translation?.slug || "";
+      href = slug ? `/products/${slug}` : "/collections/all";
+      alt = translation?.title || alt;
+      break;
+    }
+
+    case "category": {
+      const translation = resolveTranslation(target?.translations, lang);
+      const slug = translation?.slug || "";
+      href = slug ? `/collections/${slug}` : "/collections/all";
+      alt = translation?.title || alt;
+      break;
+    }
+
+    case "blog": {
+      const translation = resolveTranslation(target?.blogTranslations, lang);
+      const slug = target?.slug || "";
+      href = slug ? `/blog/news/${slug}` : "/blog/news";
+      alt = translation?.title || alt;
+      break;
+    }
+
+    default: {
+      // fallback — try product first, then category, then blog
+      if (banner?.product) {
+        const translation = resolveTranslation(
+          banner.product?.translations,
+          lang
+        );
+        const slug = translation?.slug || "";
+        href = slug ? `/products/${slug}` : "/collections/all";
+        alt = translation?.title || alt;
+      }
+      break;
+    }
+  }
 
   return {
     id: banner?.id,
     image: resolveMediaSrc(banner?.image || ""),
-    alt: translation?.title || "RDS Pharma Banner",
-    href: productHref,
-    productId: banner?.productId || null,
+    alt,
+    href,
+    targetType,
+    targetId: banner?.targetId || null,
   };
 }
 
@@ -89,6 +129,7 @@ function adaptProduct(product, lang = "en") {
     sku: product?.sku || "",
     badge: product?.badge || "",
     stockStatus: product?.stockStatus || "",
+    inCart: Boolean(product?.inCart),
   };
 }
 

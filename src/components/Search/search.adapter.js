@@ -105,6 +105,7 @@ function adaptProductItem(item, lang = "en") {
     brand: item?.brand || "",
     stockStatus: item?.stockStatus || "",
     shortDescription: truncateText(translation?.shortDescription || "", 140),
+    inCart: Boolean(item?.inCart),
   };
 }
 

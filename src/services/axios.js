@@ -1,6 +1,7 @@
 // services/axios.js
 
 import axios from "axios";
+import { getOrCreateDeviceId } from "../utils/deviceId";
 
 const API_BASE_URL = "https://rdspharma.cloud";
 
@@ -112,6 +113,16 @@ axiosInstance.interceptors.request.use(
         } else {
           config.headers["Authorization"] = `Bearer ${token}`;
         }
+      }
+    }
+
+    // ─── Device ID ───
+    const deviceId = getOrCreateDeviceId();
+    if (deviceId) {
+      if (typeof config.headers.set === "function") {
+        config.headers.set("x-device-id", deviceId);
+      } else {
+        config.headers["x-device-id"] = deviceId;
       }
     }
 

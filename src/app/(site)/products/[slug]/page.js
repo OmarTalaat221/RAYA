@@ -90,6 +90,7 @@ function adaptProductForDetails(product, lang = "en") {
     frontImage: product.frontImage || "",
     backImage: product.backImage || "",
     media: buildProductMedia(product, title),
+    inCart: Boolean(product.inCart),
   };
 }
 

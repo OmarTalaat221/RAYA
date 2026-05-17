@@ -109,6 +109,8 @@ function ProductsSlider({ products, canHover }) {
               isOnSale={product.isOnSale}
               priority={index < 2}
               canHover={canHover}
+              // product={product}
+              inCart={product.inCart}
             />
           </SwiperSlide>
         ))}
@@ -140,6 +142,7 @@ function DesktopGrid({ products, canHover }) {
             isOnSale={product.isOnSale}
             priority={index < 4}
             canHover={canHover}
+            inCart={product.inCart}
           />
         </motion.div>
       ))}

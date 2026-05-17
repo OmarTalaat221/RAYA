@@ -1,12 +1,11 @@
 "use client";
 
-import { useState, useCallback, memo } from "react";
+import { useState, useCallback, useEffect, useRef, memo } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import Link from "next/link";
 import Image from "next/image";
 import SaleRibbon from "./SaleRibbon";
 import { addToCart, removeFromCart } from "../../store/cartSlice";
-// import { addToCart, removeFromCart } from "@/store/cartSlice";
 
 /* ═══════════════════════════════════════════════
    Cart Button
@@ -50,7 +49,6 @@ const CartToggleButton = memo(function CartToggleButton({
         <span className="h-3.5 w-3.5 animate-spin rounded-full border-2 border-current/30 border-t-current" />
       ) : isInCart ? (
         <>
-          {/* Trash icon */}
           <svg
             className="h-3.5 w-3.5"
             fill="none"
@@ -68,7 +66,6 @@ const CartToggleButton = memo(function CartToggleButton({
         </>
       ) : (
         <>
-          {/* Plus icon */}
           <svg
             className="h-3.5 w-3.5"
             fill="none"
@@ -107,18 +104,31 @@ export default function ProductCard({
   isOnSale = false,
   priority = false,
   canHover = false,
+  inCart = false,
 }) {
   const dispatch = useDispatch();
   const [isHovered, setIsHovered] = useState(false);
   const [localLoading, setLocalLoading] = useState(false);
 
-  /* ── Cart state ── */
-  const cartItems = useSelector((state) => state.cart.items);
-  const isInCart = cartItems.some((item) => item.id === id);
+  /* ═══════════════════════════════════════════════
+     Cart state
+     - Initial value comes from API (prop.inCart)
+     - Once user interacts → Redux becomes the source of truth
+     ═══════════════════════════════════════════════ */
+  const hasInteractedRef = useRef(false);
+
+  const isInCartFromRedux = useSelector((state) =>
+    state.cart.items.some((item) => item.id === id)
+  );
+
+  // Before any interaction → trust API
+  // After interaction → trust Redux
+  const isInCart = hasInteractedRef.current ? isInCartFromRedux : inCart;
 
   /* ── Actions ── */
   const handleAdd = useCallback(async () => {
     if (!id) return;
+    hasInteractedRef.current = true;
     setLocalLoading(true);
     try {
       await dispatch(addToCart({ productId: id, quantity: 1 })).unwrap();
@@ -131,6 +141,7 @@ export default function ProductCard({
 
   const handleRemove = useCallback(async () => {
     if (!id) return;
+    hasInteractedRef.current = true;
     setLocalLoading(true);
     try {
       await dispatch(removeFromCart({ productId: id })).unwrap();
@@ -207,7 +218,6 @@ export default function ProductCard({
 
         {/* ── Body ── */}
         <div className="flex flex-1 flex-col items-center px-4 py-5 text-center">
-          {/* Title (clickable → PDP) */}
           <Link href={href || "/catalog"}>
             <h3 className="min-h-[3.75rem] line-clamp-3 text-sm font-semibold leading-5 text-soft-black transition-colors duration-200 hover:text-main">
               {title}
