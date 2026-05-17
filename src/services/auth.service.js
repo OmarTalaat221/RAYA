@@ -329,9 +329,7 @@ export async function resetPassword({ email, otp, password, confirm }) {
  *
  * @param {object} extraHeaders - Optional headers to forward (e.g. client IP from SSR)
  */
-export async function getGeoInfo(extraHeaders = {}) {
-  const response = await axiosInstance.get("/auth/get-info", {
-    headers: extraHeaders,
-  });
+export async function getGeoInfo() {
+  const response = await axiosInstance.get("/auth/get-info");
   return response.data;
 }

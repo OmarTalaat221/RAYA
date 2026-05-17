@@ -8,15 +8,12 @@ import {
   adaptHomeResponse,
   EMPTY_HOME_DATA,
 } from "../../sections/Home/home.adapter";
-import { getClientGeoHeaders } from "../../utils/serverHeaders";
 
 export default async function HomePage() {
   let homeData = EMPTY_HOME_DATA;
 
   try {
-    const geoHeaders = await getClientGeoHeaders({ debug: true });
-
-    const response = await getHomeData(geoHeaders);
+    const response = await getHomeData();
     homeData = adaptHomeResponse(response, "en");
   } catch (error) {
     console.error("[HomePage] failed to fetch home data:", error);
