@@ -110,15 +110,31 @@ const NavMenu = memo(function NavMenu({ pathname, ariaLabel }) {
     updateIndicator(exists ? target : null);
   }, [hoveredHref, pathname, updateIndicator]);
 
-  /* recalc on resize */
+  /* recalc on resize and font load */
   useEffect(() => {
-    const handleResize = () => {
+    const handleRecalc = () => {
       const target = hoveredHref || pathname;
       const exists = NAV_ITEMS.some((i) => i.href === target);
       updateIndicator(exists ? target : null);
     };
-    window.addEventListener("resize", handleResize, { passive: true });
-    return () => window.removeEventListener("resize", handleResize);
+
+    window.addEventListener("resize", handleRecalc, { passive: true });
+    
+    if (typeof document !== "undefined" && document.fonts) {
+      document.fonts.ready.then(handleRecalc);
+    }
+
+    // Fallbacks for layout shifts (e.g., images or delayed font rendering)
+    const t1 = setTimeout(handleRecalc, 150);
+    const t2 = setTimeout(handleRecalc, 500);
+    const t3 = setTimeout(handleRecalc, 1000);
+
+    return () => {
+      window.removeEventListener("resize", handleRecalc);
+      clearTimeout(t1);
+      clearTimeout(t2);
+      clearTimeout(t3);
+    };
   }, [hoveredHref, pathname, updateIndicator]);
 
   const setLinkRef = useCallback(
