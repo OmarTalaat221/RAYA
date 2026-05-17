@@ -19,8 +19,10 @@ export default async function HomePage() {
     const realIp = headersList.get("x-real-ip");
 
     const extraHeaders = {};
-    if (forwardedFor) extraHeaders["x-forwarded-for"] = forwardedFor;
-    if (realIp) extraHeaders["x-real-ip"] = realIp;
+    const isLocalIp = (ip) => !ip || ip === "::1" || ip === "127.0.0.1" || ip.includes("localhost");
+    
+    if (forwardedFor && !isLocalIp(forwardedFor)) extraHeaders["x-forwarded-for"] = forwardedFor;
+    if (realIp && !isLocalIp(realIp)) extraHeaders["x-real-ip"] = realIp;
 
     const response = await getHomeData(extraHeaders);
     homeData = adaptHomeResponse(response, "en");

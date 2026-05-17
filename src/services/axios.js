@@ -76,11 +76,13 @@ axiosInstance.interceptors.request.use(
         const forwardedFor = headersList.get("x-forwarded-for");
         const realIp = headersList.get("x-real-ip");
         
-        if (forwardedFor) {
+        const isLocalIp = (ip) => !ip || ip === "::1" || ip === "127.0.0.1" || ip.includes("localhost");
+
+        if (forwardedFor && !isLocalIp(forwardedFor)) {
           if (typeof config.headers.set === "function") config.headers.set("x-forwarded-for", forwardedFor);
           else config.headers["x-forwarded-for"] = forwardedFor;
         }
-        if (realIp) {
+        if (realIp && !isLocalIp(realIp)) {
           if (typeof config.headers.set === "function") config.headers.set("x-real-ip", realIp);
           else config.headers["x-real-ip"] = realIp;
         }
