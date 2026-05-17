@@ -475,7 +475,7 @@ export default function Footer({
 
             {/* ── col 4: Settings / Social ────────────────── */}
             <div>
-              <SectionTitle isRTL={isRTL}>{t("settingsHeading")}</SectionTitle>
+              {/* <SectionTitle isRTL={isRTL}>{t("settingsHeading")}</SectionTitle>
 
               <div className="space-y-4">
                 <SelectField
@@ -495,14 +495,14 @@ export default function Footer({
                   options={regionOptions}
                   isRTL={isRTL}
                 />
-              </div>
+              </div> */}
 
-              <p className="mt-4 text-sm leading-6 text-white/72 font-poppins!">
+              {/* <p className="mt-4 text-sm leading-6 text-white/72 font-poppins!">
                 {t("selectorNote")}
-              </p>
+              </p> */}
 
               {socials?.length ? (
-                <div className="mt-7">
+                <div className="">
                   <SectionTitle isRTL={isRTL}>{t("followUs")}</SectionTitle>
 
                   <div className="flex flex-wrap gap-3">

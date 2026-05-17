@@ -12,15 +12,9 @@ import {
   X,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { PRODUCTS } from "../FeaturedProducts/products";
-import {
-  buildSearchPageHref,
-  formatMoney,
-  getOverlaySearchProducts,
-  getProductSearchHref,
-  getProductSearchImage,
-  getSearchSuggestions,
-} from "./search.utils";
+import { buildSearchPageHref, formatMoney } from "./search.utils";
+import { adaptSearchResponse, EMPTY_SEARCH_RESULTS } from "./search.adapter";
+import { getSearchSuggests } from "../../services/search.service";
 
 /* ─── debounce hook ─── */
 function useDebouncedValue(value, delay = 250) {
@@ -34,7 +28,7 @@ function useDebouncedValue(value, delay = 250) {
   return debounced;
 }
 
-/* ─── panel animation tokens ─── */
+/* ─── animation tokens ─── */
 const panelVariants = {
   hidden: { opacity: 0, y: -12 },
   visible: { opacity: 1, y: 0 },
@@ -49,58 +43,31 @@ const backdropVariants = {
   exit: { opacity: 0 },
 };
 
-/* ─── suggestion row ─── */
-const SuggestionRow = memo(function SuggestionRow({ suggestion, onSelect }) {
-  const handleClick = useCallback(
-    () => onSelect(suggestion.label),
-    [suggestion.label, onSelect]
+function isCanceledError(error) {
+  return (
+    error?.code === "ERR_CANCELED" ||
+    error?.name === "CanceledError" ||
+    error?.message === "canceled"
   );
+}
+
+/* ─── rows ─── */
+const CategoryRow = memo(function CategoryRow({ category, onSelect }) {
+  const handleClick = useCallback(() => {
+    onSelect(category.href);
+  }, [category.href, onSelect]);
 
   return (
     <button
       type="button"
       onClick={handleClick}
-      className="group flex w-full items-center justify-between gap-2 rounded-xl px-3 py-2 text-left transition-colors duration-150 hover:bg-[#f3faf0] sm:py-2.5"
-    >
-      <div className="min-w-0">
-        <p className="truncate font-poppins! text-[13px] font-medium text-soft-black">
-          {suggestion.label}
-        </p>
-        <p className="mt-0.5 font-poppins! text-[10px] uppercase tracking-[0.18em] text-secondary">
-          {suggestion.type}
-        </p>
-      </div>
-
-      <ArrowRight
-        size={14}
-        strokeWidth={1.8}
-        className="shrink-0 text-gray-300 transition-colors duration-150 group-hover:text-main"
-      />
-    </button>
-  );
-});
-
-/* ─── product row ─── */
-const ProductRow = memo(function ProductRow({ product, onSelect }) {
-  const imageSrc = getProductSearchImage(product);
-  const href = getProductSearchHref(product);
-  const price = product?.newPrice ?? product?.oldPrice;
-  const oldPrice =
-    product?.isOnSale && product?.oldPrice ? product.oldPrice : null;
-
-  const handleClick = useCallback(() => onSelect(href), [href, onSelect]);
-
-  return (
-    <button
-      type="button"
-      onClick={handleClick}
-      className="group flex w-full items-center gap-2.5 rounded-xl p-2 text-left transition-colors duration-150 hover:bg-[#f3faf0]"
+      className="group flex w-full items-center gap-3 rounded-xl p-2 text-left transition-colors duration-150 hover:bg-[#f3faf0]"
     >
       <div className="relative h-12 w-12 shrink-0 overflow-hidden rounded-lg bg-[#f5f5f3] sm:h-14 sm:w-14">
-        {imageSrc ? (
+        {category.image ? (
           <Image
-            src={imageSrc}
-            alt={product?.title || "Product"}
+            src={category.image}
+            alt={category.title}
             fill
             sizes="56px"
             className="object-cover"
@@ -109,26 +76,70 @@ const ProductRow = memo(function ProductRow({ product, onSelect }) {
       </div>
 
       <div className="min-w-0 flex-1">
-        {product?.brand ? (
+        <p className="font-oswald! text-[10px] uppercase tracking-[0.2em] text-main">
+          Category
+        </p>
+
+        <h4 className="mt-0.5 line-clamp-1 font-poppins! text-[13px] font-medium leading-snug text-soft-black">
+          {category.title}
+        </h4>
+      </div>
+
+      <ChevronRight
+        size={14}
+        strokeWidth={1.8}
+        className="shrink-0 text-gray-300 transition-colors duration-150 group-hover:text-main"
+      />
+    </button>
+  );
+});
+
+CategoryRow.displayName = "CategoryRow";
+
+const ProductRow = memo(function ProductRow({ product, onSelect }) {
+  const handleClick = useCallback(() => {
+    onSelect(product.href);
+  }, [product.href, onSelect]);
+
+  return (
+    <button
+      type="button"
+      onClick={handleClick}
+      className="group flex w-full items-center gap-2.5 rounded-xl p-2 text-left transition-colors duration-150 hover:bg-[#f3faf0]"
+    >
+      <div className="relative h-12 w-12 shrink-0 overflow-hidden rounded-lg bg-[#f5f5f3] sm:h-14 sm:w-14">
+        {product.image ? (
+          <Image
+            src={product.image}
+            alt={product.title || "Product"}
+            fill
+            sizes="56px"
+            className="object-cover"
+          />
+        ) : null}
+      </div>
+
+      <div className="min-w-0 flex-1">
+        {product.brand ? (
           <p className="font-oswald! text-[10px] uppercase tracking-[0.2em] text-main">
             {product.brand}
           </p>
         ) : null}
 
         <h4 className="mt-0.5 line-clamp-1 font-poppins! text-[13px] font-medium leading-snug text-soft-black">
-          {product?.title}
+          {product.title}
         </h4>
 
         <div className="mt-0.5 flex items-center gap-1.5 sm:mt-1">
-          {price != null ? (
+          {product.newPrice != null ? (
             <span className="font-poppins! text-[13px] font-semibold text-soft-black">
-              {formatMoney(price, product?.currency || "AED")}
+              {formatMoney(product.newPrice, product.currency)}
             </span>
           ) : null}
 
-          {oldPrice ? (
+          {product.isOnSale && product.oldPrice != null ? (
             <span className="font-poppins! text-[11px] text-secondary line-through">
-              {formatMoney(oldPrice, product?.currency || "AED")}
+              {formatMoney(product.oldPrice, product.currency)}
             </span>
           ) : null}
         </div>
@@ -137,53 +148,109 @@ const ProductRow = memo(function ProductRow({ product, onSelect }) {
       <ChevronRight
         size={14}
         strokeWidth={1.8}
-        className="shrink-0text-gray-300 transition-colors duration-150 group-hover:text-main"
+        className="shrink-0 text-gray-300 transition-colors duration-150 group-hover:text-main"
       />
     </button>
   );
 });
 
-/* ─── skeleton ─── */
-const SKELETON_SUGGESTIONS = [0, 1, 2];
-const SKELETON_PRODUCTS = [0, 1, 2, 3];
+ProductRow.displayName = "ProductRow";
 
-const LoadingSkeleton = memo(function LoadingSkeleton() {
+const BlogRow = memo(function BlogRow({ blog, onSelect }) {
+  const handleClick = useCallback(() => {
+    onSelect(blog.href);
+  }, [blog.href, onSelect]);
+
   return (
-    <div className="grid gap-4 md:grid-cols-[0.72fr_1.28fr]">
-      <div className="space-y-2">
-        {SKELETON_SUGGESTIONS.map((i) => (
-          <div
-            key={i}
-            className="animate-pulse rounded-xl bg-gray-50 px-3 py-2.5"
-          >
-            <div className="h-3 w-3/5 rounded-full bg-gray-200" />
-            <div className="mt-1.5 h-2.5 w-12 rounded-full bg-gray-100" />
-          </div>
-        ))}
+    <button
+      type="button"
+      onClick={handleClick}
+      className="group flex w-full items-center gap-2.5 rounded-xl p-2 text-left transition-colors duration-150 hover:bg-[#f3faf0]"
+    >
+      <div className="relative h-12 w-12 shrink-0 overflow-hidden rounded-lg bg-[#f5f5f3] sm:h-14 sm:w-14">
+        {blog.image ? (
+          <Image
+            src={blog.image}
+            alt={blog.title || "Blog post"}
+            fill
+            sizes="56px"
+            className="object-cover"
+          />
+        ) : null}
       </div>
 
-      <div className="space-y-2">
-        {SKELETON_PRODUCTS.map((i) => (
-          <div
-            key={i}
-            className="flex animate-pulse items-center gap-2.5 rounded-xl bg-gray-50 p-2"
-          >
-            <div className="h-12 w-12 rounded-lg bg-gray-200/70 sm:h-14 sm:w-14" />
-            <div className="flex-1 space-y-1.5">
-              <div className="h-2.5 w-12 rounded-full bg-gray-100" />
-              <div className="h-3 w-4/5 rounded-full bg-gray-200" />
-              <div className="h-3 w-1/3 rounded-full bg-gray-100" />
-            </div>
-          </div>
-        ))}
+      <div className="min-w-0 flex-1">
+        <div className="flex flex-wrap items-center gap-1.5">
+          {blog.category ? (
+            <p className="font-oswald! text-[10px] uppercase tracking-[0.2em] text-main">
+              {blog.category}
+            </p>
+          ) : null}
+          {blog.date ? (
+            <p className="text-[10px] uppercase tracking-[0.16em] text-secondary">
+              {blog.date}
+            </p>
+          ) : null}
+        </div>
+
+        <h4 className="mt-0.5 line-clamp-2 font-poppins! text-[13px] font-medium leading-snug text-soft-black">
+          {blog.title}
+        </h4>
       </div>
+
+      <ChevronRight
+        size={14}
+        strokeWidth={1.8}
+        className="shrink-0 text-gray-300 transition-colors duration-150 group-hover:text-main"
+      />
+    </button>
+  );
+});
+
+BlogRow.displayName = "BlogRow";
+
+/* ─── skeleton ─── */
+const SKELETON_ITEMS = [0, 1, 2, 3];
+
+const LoadingColumn = memo(function LoadingColumn() {
+  return (
+    <div className="space-y-2">
+      {SKELETON_ITEMS.map((i) => (
+        <div
+          key={i}
+          className="flex animate-pulse items-center gap-2.5 rounded-xl bg-gray-50 p-2"
+        >
+          <div className="h-12 w-12 rounded-lg bg-gray-200/70 sm:h-14 sm:w-14" />
+          <div className="flex-1 space-y-1.5">
+            <div className="h-2.5 w-12 rounded-full bg-gray-100" />
+            <div className="h-3 w-4/5 rounded-full bg-gray-200" />
+            <div className="h-3 w-1/3 rounded-full bg-gray-100" />
+          </div>
+        </div>
+      ))}
     </div>
   );
 });
 
-/* ─── empty state ─── */
+LoadingColumn.displayName = "LoadingColumn";
+
+const LoadingSkeleton = memo(function LoadingSkeleton() {
+  return (
+    <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+      <LoadingColumn />
+      <LoadingColumn />
+      <LoadingColumn />
+    </div>
+  );
+});
+
+LoadingSkeleton.displayName = "LoadingSkeleton";
+
+/* ─── states ─── */
 const EmptyResults = memo(function EmptyResults({ query, onSearch }) {
-  const handleClick = useCallback(() => onSearch(query), [query, onSearch]);
+  const handleClick = useCallback(() => {
+    onSearch(query);
+  }, [query, onSearch]);
 
   return (
     <div className="py-5 text-center sm:py-6">
@@ -210,11 +277,54 @@ const EmptyResults = memo(function EmptyResults({ query, onSearch }) {
   );
 });
 
+EmptyResults.displayName = "EmptyResults";
+
+const ErrorState = memo(function ErrorState({ onRetry }) {
+  return (
+    <div className="rounded-2xl border border-red-200 bg-red-50 px-4 py-4 text-center">
+      <p className="font-poppins! text-sm leading-6 text-red-600">
+        Something went wrong while fetching search results.
+      </p>
+
+      <button
+        type="button"
+        onClick={onRetry}
+        className="mt-3 inline-flex items-center justify-center rounded-full bg-main px-4 py-2 font-poppins! text-[13px] font-medium text-white transition-colors duration-150 hover:bg-[#5baa47]"
+      >
+        Try again
+      </button>
+    </div>
+  );
+});
+
+ErrorState.displayName = "ErrorState";
+
+/* ─── section block ─── */
+const ResultColumn = memo(function ResultColumn({ label, children }) {
+  return (
+    <div>
+      <p className="mb-1.5 font-oswald! text-[10px] uppercase tracking-[0.28em] text-main sm:mb-2">
+        {label}
+      </p>
+
+      <div className="space-y-0.5">{children}</div>
+    </div>
+  );
+});
+
+ResultColumn.displayName = "ResultColumn";
+
 /* ─── main overlay ─── */
 export default function SearchOverlay({ open = false, onClose }) {
   const router = useRouter();
   const inputRef = useRef(null);
+  const requestIdRef = useRef(0);
+
   const [query, setQuery] = useState("");
+  const [retryNonce, setRetryNonce] = useState(0);
+  const [results, setResults] = useState(EMPTY_SEARCH_RESULTS);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState("");
 
   const debouncedQuery = useDebouncedValue(query, 250);
 
@@ -222,35 +332,32 @@ export default function SearchOverlay({ open = false, onClose }) {
   const debouncedTrimmed = debouncedQuery.trim();
   const displayQuery = trimmed || debouncedTrimmed;
 
-  const isLoading = open && trimmed.length > 0 && trimmed !== debouncedTrimmed;
-
-  const suggestions = useMemo(
-    () => getSearchSuggestions(PRODUCTS, debouncedTrimmed, 4),
-    [debouncedTrimmed]
-  );
-
-  const products = useMemo(
-    () => getOverlaySearchProducts(PRODUCTS, debouncedTrimmed, 4),
-    [debouncedTrimmed]
-  );
+  const limitedResults = useMemo(() => {
+    return {
+      categories: (results.categories || []).slice(0, 4),
+      products: (results.products || []).slice(0, 4),
+      blogs: (results.blogs || []).slice(0, 4),
+    };
+  }, [results]);
 
   const hasQuery = displayQuery.length > 0;
-  const hasSuggestions = suggestions.length > 0;
-  const hasProducts = products.length > 0;
-  const hasResults = hasSuggestions || hasProducts;
-  const showEmpty = hasQuery && !hasResults && !isLoading;
-  const showDropdown = isLoading || hasQuery;
+  const hasCategories = limitedResults.categories.length > 0;
+  const hasProducts = limitedResults.products.length > 0;
+  const hasBlogs = limitedResults.blogs.length > 0;
+  const hasResults = hasCategories || hasProducts || hasBlogs;
+  const showEmpty = hasQuery && !isLoading && !error && !hasResults;
+  const showDropdown = hasQuery || isLoading || Boolean(error);
 
-  /* ─── handlers (stable refs) ─── */
   const navigateToSearch = useCallback(
     (q = "") => {
+      const nextQuery = String(q ?? "").trim();
       onClose();
-      router.push(buildSearchPageHref(String(q ?? "").trim()));
+      router.push(buildSearchPageHref(nextQuery));
     },
     [onClose, router]
   );
 
-  const navigateToProduct = useCallback(
+  const navigateToHref = useCallback(
     (href) => {
       onClose();
       router.push(href);
@@ -260,10 +367,14 @@ export default function SearchOverlay({ open = false, onClose }) {
 
   const handleClear = useCallback(() => {
     setQuery("");
+    setResults(EMPTY_SEARCH_RESULTS);
+    setError("");
     inputRef.current?.focus();
   }, []);
 
-  const handleInputChange = useCallback((e) => setQuery(e.target.value), []);
+  const handleInputChange = useCallback((e) => {
+    setQuery(e.target.value);
+  }, []);
 
   const handleInputKeyDown = useCallback(
     (e) => {
@@ -275,10 +386,58 @@ export default function SearchOverlay({ open = false, onClose }) {
     [navigateToSearch, query]
   );
 
-  const handleBottomAction = useCallback(
-    () => navigateToSearch(displayQuery),
-    [navigateToSearch, displayQuery]
-  );
+  const handleBottomAction = useCallback(() => {
+    navigateToSearch(displayQuery);
+  }, [navigateToSearch, displayQuery]);
+
+  const handleRetry = useCallback(() => {
+    setRetryNonce((prev) => prev + 1);
+  }, []);
+
+  /* ─── fetch API ─── */
+  useEffect(() => {
+    if (!open) return;
+
+    if (!debouncedTrimmed) {
+      setIsLoading(false);
+      setError("");
+      setResults(EMPTY_SEARCH_RESULTS);
+      return;
+    }
+
+    const currentRequestId = requestIdRef.current + 1;
+    requestIdRef.current = currentRequestId;
+
+    const controller = new AbortController();
+
+    setIsLoading(true);
+    setError("");
+
+    getSearchSuggests(debouncedTrimmed, { signal: controller.signal })
+      .then((response) => {
+        if (requestIdRef.current !== currentRequestId) return;
+        setResults(adaptSearchResponse(response, "en"));
+      })
+      .catch((fetchError) => {
+        if (isCanceledError(fetchError)) return;
+        if (requestIdRef.current !== currentRequestId) return;
+
+        console.error("[SearchOverlay] search fetch failed:", fetchError);
+        setResults(EMPTY_SEARCH_RESULTS);
+        setError(
+          fetchError?.response?.data?.message ||
+            "Something went wrong while fetching results."
+        );
+      })
+      .finally(() => {
+        if (requestIdRef.current !== currentRequestId) return;
+        setIsLoading(false);
+      });
+
+    return () => {
+      controller.abort();
+    };
+  }, [open, debouncedTrimmed, retryNonce]);
 
   /* ─── Escape key ─── */
   useEffect(() => {
@@ -295,14 +454,25 @@ export default function SearchOverlay({ open = false, onClose }) {
   /* ─── autofocus ─── */
   useEffect(() => {
     if (!open) return;
-    const id = window.setTimeout(() => inputRef.current?.focus(), 50);
+
+    const id = window.setTimeout(() => {
+      inputRef.current?.focus();
+    }, 50);
+
     return () => window.clearTimeout(id);
   }, [open]);
 
   /* ─── reset on close ─── */
   useEffect(() => {
     if (open) return;
-    const id = window.setTimeout(() => setQuery(""), 180);
+
+    const id = window.setTimeout(() => {
+      setQuery("");
+      setResults(EMPTY_SEARCH_RESULTS);
+      setIsLoading(false);
+      setError("");
+    }, 180);
+
     return () => window.clearTimeout(id);
   }, [open]);
 
@@ -310,7 +480,6 @@ export default function SearchOverlay({ open = false, onClose }) {
     <AnimatePresence initial={false}>
       {open ? (
         <>
-          {/* backdrop */}
           <motion.div
             key="search-backdrop"
             variants={backdropVariants}
@@ -323,7 +492,6 @@ export default function SearchOverlay({ open = false, onClose }) {
             aria-hidden="true"
           />
 
-          {/* panel */}
           <motion.div
             key="search-panel"
             variants={panelVariants}
@@ -336,9 +504,8 @@ export default function SearchOverlay({ open = false, onClose }) {
             aria-label="Site search"
             className="pointer-events-none fixed inset-x-0 top-0 z-1200 px-3 pt-2.5 sm:px-5 sm:pt-3.5 md:px-6 md:pt-4"
           >
-            <div className="mx-auto w-full max-w-[720px] lg:max-w-[860px]">
+            <div className="mx-auto w-full max-w-[720px] lg:max-w-[960px]">
               <div className="pointer-events-auto overflow-hidden rounded-2xl border border-white/70 bg-white/95 shadow-[0_12px_40px_rgba(0,0,0,0.10)] backdrop-blur-sm sm:rounded-[24px]">
-                {/* ─── input bar ─── */}
                 <div className="flex items-center gap-2.5 px-3.5 py-3 sm:gap-3 sm:px-5 sm:py-3.5">
                   <Search
                     size={18}
@@ -352,7 +519,7 @@ export default function SearchOverlay({ open = false, onClose }) {
                     value={query}
                     onChange={handleInputChange}
                     onKeyDown={handleInputKeyDown}
-                    placeholder="Search products, brands, categories…"
+                    placeholder="Search products, categories, blogs…"
                     autoComplete="off"
                     spellCheck="false"
                     className="h-8 flex-1 border-none bg-transparent font-poppins! text-sm text-soft-black outline-none placeholder:text-secondary sm:h-9 sm:text-[15px]"
@@ -387,12 +554,13 @@ export default function SearchOverlay({ open = false, onClose }) {
                   </button>
                 </div>
 
-                {/* ─── dropdown ─── */}
                 {showDropdown ? (
                   <div className="border-t border-gray-100 px-3.5 pb-3.5 pt-3 sm:px-5 sm:pb-4 sm:pt-3.5">
                     <div className="max-h-[55vh] overflow-y-auto sm:max-h-[380px]">
                       {isLoading ? (
                         <LoadingSkeleton />
+                      ) : error ? (
+                        <ErrorState onRetry={handleRetry} />
                       ) : showEmpty ? (
                         <EmptyResults
                           query={displayQuery}
@@ -400,48 +568,44 @@ export default function SearchOverlay({ open = false, onClose }) {
                         />
                       ) : (
                         <div className="space-y-3 sm:space-y-4">
-                          {/* two-column on md+, stacked on mobile */}
-                          <div className="grid gap-3 sm:gap-4 md:grid-cols-[0.72fr_1.28fr]">
-                            {/* suggestions */}
-                            {hasSuggestions ? (
-                              <div>
-                                <p className="mb-1.5 font-oswald! text-[10px] uppercase tracking-[0.28em] text-main sm:mb-2">
-                                  Suggestions
-                                </p>
-
-                                <div className="space-y-0.5">
-                                  {suggestions.map((s) => (
-                                    <SuggestionRow
-                                      key={s.id}
-                                      suggestion={s}
-                                      onSelect={navigateToSearch}
-                                    />
-                                  ))}
-                                </div>
-                              </div>
+                          <div className="grid gap-3 sm:gap-4 md:grid-cols-2 xl:grid-cols-3">
+                            {hasCategories ? (
+                              <ResultColumn label="Categories">
+                                {limitedResults.categories.map((category) => (
+                                  <CategoryRow
+                                    key={category.id}
+                                    category={category}
+                                    onSelect={navigateToHref}
+                                  />
+                                ))}
+                              </ResultColumn>
                             ) : null}
 
-                            {/* products */}
                             {hasProducts ? (
-                              <div>
-                                <p className="mb-1.5 font-oswald! text-[10px] uppercase tracking-[0.28em] text-main sm:mb-2">
-                                  Products
-                                </p>
+                              <ResultColumn label="Products">
+                                {limitedResults.products.map((product) => (
+                                  <ProductRow
+                                    key={product.id}
+                                    product={product}
+                                    onSelect={navigateToHref}
+                                  />
+                                ))}
+                              </ResultColumn>
+                            ) : null}
 
-                                <div className="space-y-0.5">
-                                  {products.map((p) => (
-                                    <ProductRow
-                                      key={p.id}
-                                      product={p}
-                                      onSelect={navigateToProduct}
-                                    />
-                                  ))}
-                                </div>
-                              </div>
+                            {hasBlogs ? (
+                              <ResultColumn label="Blogs">
+                                {limitedResults.blogs.map((blog) => (
+                                  <BlogRow
+                                    key={blog.id}
+                                    blog={blog}
+                                    onSelect={navigateToHref}
+                                  />
+                                ))}
+                              </ResultColumn>
                             ) : null}
                           </div>
 
-                          {/* bottom action */}
                           <button
                             type="button"
                             onClick={handleBottomAction}

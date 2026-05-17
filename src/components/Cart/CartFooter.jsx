@@ -28,14 +28,14 @@ const CartFooter = memo(function CartFooter({
       </div>
 
       {/* note */}
-      <p
-        className="font-poppins! mb-4 text-[11.5px] leading-relaxed
+      <div
+        className="font-poppins! !mb-4 text-[11.5px] leading-relaxed
                    text-gray-400 sm:text-xs"
       >
         {qualifiesForFreeShipping
           ? "Free shipping included • Taxes calculated at checkout"
           : "Shipping & taxes calculated at checkout"}
-      </p>
+      </div>
 
       {/* CTA buttons */}
       <div className="flex flex-col gap-2.5">

@@ -16,9 +16,11 @@ export default function BlogDetailsPage({
   relatedPosts = [],
 }) {
   const imageSrc = resolveMediaSrc(article.image);
-  const articleHtml = sanitizeRichText(article.content || "");
-  const ctaHref = article.ctaHref || "/";
-  const ctaLabel = article.ctaLabel || "Order it now from RDS";
+  const articleHtml = sanitizeRichText(article.excerpt || "");
+  const hasArticleBody = Boolean(articleHtml);
+  const ctaHref = article.ctaHref || "";
+  const ctaLabel = article.ctaLabel || "View Product";
+  const hasCta = Boolean(ctaHref);
 
   return (
     <div className="bg-[#f4f3f0]">
@@ -57,11 +59,11 @@ export default function BlogDetailsPage({
               {article.title}
             </h1>
 
-            {article.excerpt ? (
+            {/* {article.excerpt ? (
               <p className="mt-5 max-w-[60ch] font-poppins! text-base leading-8 text-[#5b5b5b] sm:text-[1.06rem]">
                 {article.excerpt}
               </p>
-            ) : null}
+            ) : null} */}
 
             <div className="mt-7 flex flex-wrap items-center gap-x-4 gap-y-3 border-y border-black/10 py-4">
               {article.publishedAt ? (
@@ -89,35 +91,44 @@ export default function BlogDetailsPage({
             </div>
           </header>
 
-          {/* ── Article body ── */}
-          <div className="mx-auto mt-8 w-full rounded-[28px] border border-black/5 bg-white px-5 py-7 shadow-[0_14px_40px_rgba(15,23,42,0.04)] sm:mt-10 sm:px-8 sm:py-10 lg:mt-12 lg:px-12 lg:py-12">
-            <div
-              className={`${styles.article} font-poppins!`}
-              dangerouslySetInnerHTML={{ __html: articleHtml }}
-            />
+          {/* ── Article body / CTA ── */}
+          {hasArticleBody || hasCta ? (
+            <div className="mx-auto mt-8 w-full rounded-[28px] border border-black/5 bg-white px-5 py-7 shadow-[0_14px_40px_rgba(15,23,42,0.04)] sm:mt-10 sm:px-8 sm:py-10 lg:mt-12 lg:px-12 lg:py-12">
+              {hasArticleBody ? (
+                <div
+                  className={`${styles.article} font-poppins!`}
+                  dangerouslySetInnerHTML={{ __html: articleHtml }}
+                />
+              ) : null}
 
-            {/* ── CTA block ── */}
-            <div className="mt-10 rounded-[22px] border border-main/15 bg-[#f8fbf5] px-5 py-5 sm:px-6 sm:py-6">
-              <p className="font-oswald! text-[11px] uppercase tracking-[0.28em] text-main">
-                Discover the product
-              </p>
-
-              <div className="mt-3 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-                <p className="max-w-[48ch] font-poppins! text-sm leading-7 text-[#5c5c5c] sm:text-[0.98rem]">
-                  Ready to bring this into your daily care ritual? Explore the
-                  featured product in a calm, seamless shopping flow.
-                </p>
-
-                <Link
-                  href={ctaHref}
-                  className="inline-flex h-11 shrink-0 items-center justify-center gap-2 rounded-full bg-main px-5 font-poppins! text-sm font-medium text-white transition-colors duration-200 hover:bg-[#5aa746]"
+              {hasCta ? (
+                <div
+                  className={`rounded-[22px] border border-main/15 bg-[#f8fbf5] px-5 py-5 sm:px-6 sm:py-6 ${
+                    hasArticleBody ? "mt-10" : ""
+                  }`}
                 >
-                  {ctaLabel}
-                  <ArrowRight size={16} />
-                </Link>
-              </div>
+                  <p className="font-oswald! text-[11px] uppercase tracking-[0.28em] text-main">
+                    Discover the product
+                  </p>
+
+                  <div className="mt-3 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                    <p className="max-w-[48ch] font-poppins! text-sm leading-7 text-[#5c5c5c] sm:text-[0.98rem]">
+                      Ready to bring this into your daily care ritual? Explore
+                      the featured product in a calm, seamless shopping flow.
+                    </p>
+
+                    <Link
+                      href={ctaHref}
+                      className="inline-flex h-11 shrink-0 items-center justify-center gap-2 rounded-full bg-main px-5 font-poppins! text-sm font-medium text-white transition-colors duration-200 hover:bg-[#5aa746]"
+                    >
+                      {ctaLabel}
+                      <ArrowRight size={16} />
+                    </Link>
+                  </div>
+                </div>
+              ) : null}
             </div>
-          </div>
+          ) : null}
 
           {/* ── Back to blog ── */}
           <footer className="mx-auto mt-8 w-full sm:mt-10">
