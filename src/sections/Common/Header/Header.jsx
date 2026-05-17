@@ -14,7 +14,7 @@ import {
 } from "react";
 import { usePathname } from "next/navigation";
 import { useSelector, useDispatch } from "react-redux";
-import { toggleCart } from "../../../store/cartSlice";
+import { toggleCart, fetchCart } from "../../../store/cartSlice";
 
 const SearchOverlay = dynamic(
   () => import("../../../components/Search/SearchOverlay"),
@@ -432,6 +432,13 @@ export default function Header() {
   const dispatch = useDispatch();
 
   const cartCount = useSelector((s) => s.cart.itemCount);
+  const cartInitialized = useSelector((s) => s.cart.initialized);
+
+  useEffect(() => {
+    if (!cartInitialized) {
+      dispatch(fetchCart());
+    }
+  }, [cartInitialized, dispatch]);
 
   const [menuOpen, setMenuOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);

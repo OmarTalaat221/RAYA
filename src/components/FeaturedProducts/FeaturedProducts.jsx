@@ -154,7 +154,7 @@ export default function FeaturedProducts({ products = [] }) {
   const [mounted, setMounted] = useState(false);
   const canHover = useCanHover();
 
-  console.log(products, "products");
+  // console.log(products, "products");
 
   useEffect(() => {
     setMounted(true);

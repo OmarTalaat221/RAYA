@@ -21,5 +21,11 @@ export function getOrCreateDeviceId() {
     deviceId = generateUUID();
     localStorage.setItem(DEVICE_ID_KEY, deviceId);
   }
+
+  // Ensure it's in cookies for SSR
+  if (!document.cookie.includes(`${DEVICE_ID_KEY}=`)) {
+    document.cookie = `${DEVICE_ID_KEY}=${deviceId}; path=/; max-age=31536000; SameSite=Lax`;
+  }
+
   return deviceId;
 }

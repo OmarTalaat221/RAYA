@@ -72,7 +72,7 @@ axiosInstance.interceptors.request.use(
     // ─── Geo/IP headers for SSR ───
     if (!isBrowser()) {
       try {
-        const { headers } = await import("next/headers");
+        const { headers, cookies } = await import("next/headers");
         const headersList = await headers();
         const forwardedFor = headersList.get("x-forwarded-for");
         const realIp = headersList.get("x-real-ip");
@@ -86,6 +86,13 @@ axiosInstance.interceptors.request.use(
         if (realIp && !isLocalIp(realIp)) {
           if (typeof config.headers.set === "function") config.headers.set("x-real-ip", realIp);
           else config.headers["x-real-ip"] = realIp;
+        }
+
+        const cookieStore = await cookies();
+        const deviceId = cookieStore.get("rds-device-id")?.value;
+        if (deviceId) {
+          if (typeof config.headers.set === "function") config.headers.set("x-device-id", deviceId);
+          else config.headers["x-device-id"] = deviceId;
         }
       } catch (error) {
         // Safe to ignore: might be used outside request context or static generation

@@ -145,6 +145,7 @@ export function adaptApiProduct(product, lang = "en") {
 
     translations: product.translations || [],
     raw: product,
+    inCart: product.inCart ?? false,
   };
 }
 

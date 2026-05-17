@@ -8,23 +8,13 @@ import {
   adaptHomeResponse,
   EMPTY_HOME_DATA,
 } from "../../sections/Home/home.adapter";
-import { headers } from "next/headers";
+
 
 export default async function HomePage() {
   let homeData = EMPTY_HOME_DATA;
 
   try {
-    const headersList = await headers();
-    const forwardedFor = headersList.get("x-forwarded-for");
-    const realIp = headersList.get("x-real-ip");
-
-    const extraHeaders = {};
-    const isLocalIp = (ip) => !ip || ip === "::1" || ip === "127.0.0.1" || ip.includes("localhost");
-    
-    if (forwardedFor && !isLocalIp(forwardedFor)) extraHeaders["x-forwarded-for"] = forwardedFor;
-    if (realIp && !isLocalIp(realIp)) extraHeaders["x-real-ip"] = realIp;
-
-    const response = await getHomeData(extraHeaders);
+    const response = await getHomeData();
     homeData = adaptHomeResponse(response, "en");
   } catch (error) {
     console.error("[HomePage] failed to fetch home data:", error);
@@ -35,7 +25,7 @@ export default async function HomePage() {
       <HeroBanner banners={homeData.banners} />
       <SpecialOffer />
       <FeaturedProducts products={homeData.products} />
-      <Collections />
+      <Collections categories={homeData.categories} />
       <BlogSection blogs={homeData.blogs} />
     </div>
   );

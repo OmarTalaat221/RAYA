@@ -271,32 +271,8 @@ function MobileSwiper({ items }) {
 }
 
 // ─── Main Section ────────────────────────────────────────────────────────────
-export default function Collections() {
-  const [apiItems, setApiItems] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState(null);
-
-  const fetchCollections = useCallback(async () => {
-    setIsLoading(true);
-    setError(null);
-    try {
-      const data = await getAllCategories({ page: 1, limit: 100 });
-      const adapted = adaptCategoriesToCollections(data?.items ?? [], "en");
-      setApiItems(adapted);
-    } catch (err) {
-      console.error("[Collections] Failed to fetch categories:", err);
-      setError(err.response?.data?.message || "Failed to load collections.");
-      setApiItems([]);
-    } finally {
-      setIsLoading(false);
-    }
-  }, []);
-
-  useEffect(() => {
-    fetchCollections();
-  }, [fetchCollections]);
-
-  const items = [ALL_COLLECTION_CARD, ...apiItems];
+export default function Collections({ categories = [] }) {
+  const items = [ALL_COLLECTION_CARD, ...categories];
   const displayItems = items.slice(0, 5);
 
   return (
@@ -331,93 +307,57 @@ export default function Collections() {
           </motion.div>
 
           {/* ── Content ── */}
-          {isLoading ? (
-            <>
-              <div className="hidden md:block">
-                <DesktopSkeletonInline />
-              </div>
-              <div className="block md:hidden">
-                <MobileSkeletonInline />
-              </div>
-            </>
-          ) : error ? (
-            <div className="flex flex-col items-center py-16">
-              <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-red-50">
-                <span className="text-2xl">⚠️</span>
-              </div>
-              <p className="font-poppins! mb-2 text-base font-medium text-soft-black">
-                Something went wrong
-              </p>
-              <p className="font-poppins! mb-6 max-w-sm text-center text-sm text-secondary">
-                {error}
-              </p>
-              <button
-                onClick={fetchCollections}
-                className="font-poppins! inline-flex items-center gap-2 rounded-xl
-                           bg-main px-6 py-2.5 text-[13px] font-semibold text-white
-                           transition-all duration-200 hover:bg-[#5aaa44]
-                           active:scale-[0.97] focus-visible:outline-none
-                           focus-visible:ring-2 focus-visible:ring-main/40"
-              >
-                <RefreshCw size={14} strokeWidth={2} />
-                Try Again
-              </button>
+          <>
+            <div className="hidden md:block">
+              <DesktopGrid items={displayItems} />
             </div>
-          ) : (
-            <>
-              <div className="hidden md:block">
-                <DesktopGrid items={displayItems} />
-              </div>
-              <div className="-mx-4 block md:hidden">
-                <MobileSwiper items={displayItems} />
-              </div>
-            </>
-          )}
+            <div className="-mx-4 block md:hidden">
+              <MobileSwiper items={displayItems} />
+            </div>
+          </>
 
           {/* ── CTA ── */}
-          {!isLoading && !error && (
-            <motion.div
-              className="mt-10 flex justify-center md:mt-14"
-              variants={ctaVariant}
-              initial="hidden"
-              whileInView="visible"
-              viewport={{ once: true }}
+          <motion.div
+            className="mt-10 flex justify-center md:mt-14"
+            variants={ctaVariant}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true }}
+          >
+            <Link
+              href="/collections"
+              className="group relative inline-flex items-center gap-2 overflow-hidden
+                         rounded-full border border-soft-black/20 bg-white px-8 py-3
+                         text-sm font-semibold tracking-wide text-soft-black
+                         transition-all duration-300 hover:border-main hover:text-main
+                         hover:shadow-md"
+              style={{ fontFamily: "'Poppins', sans-serif" }}
             >
-              <Link
-                href="/collections"
-                className="group relative inline-flex items-center gap-2 overflow-hidden
-                           rounded-full border border-soft-black/20 bg-white px-8 py-3
-                           text-sm font-semibold tracking-wide text-soft-black
-                           transition-all duration-300 hover:border-main hover:text-main
-                           hover:shadow-md"
-                style={{ fontFamily: "'Poppins', sans-serif" }}
+              <span
+                className="absolute inset-0 origin-left scale-x-0 rounded-full
+                           bg-main/5 transition-transform duration-500
+                           group-hover:scale-x-100"
+                aria-hidden="true"
+              />
+              <span className="relative z-10">View All Collections</span>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="14"
+                height="14"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                className="relative z-10 transition-transform duration-300
+                           group-hover:translate-x-1"
+                aria-hidden="true"
               >
-                <span
-                  className="absolute inset-0 origin-left scale-x-0 rounded-full
-                             bg-main/5 transition-transform duration-500
-                             group-hover:scale-x-100"
-                  aria-hidden="true"
-                />
-                <span className="relative z-10">View All Collections</span>
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="14"
-                  height="14"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2.5"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  className="relative z-10 transition-transform duration-300
-                             group-hover:translate-x-1"
-                  aria-hidden="true"
-                >
-                  <path d="M5 12h14M12 5l7 7-7 7" />
-                </svg>
-              </Link>
-            </motion.div>
-          )}
+                <path d="M5 12h14M12 5l7 7-7 7" />
+              </svg>
+            </Link>
+          </motion.div>
         </div>
       </section>
     </>

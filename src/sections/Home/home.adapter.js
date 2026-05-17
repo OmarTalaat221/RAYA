@@ -150,6 +150,8 @@ function adaptBlog(blog, lang = "en") {
   };
 }
 
+import { adaptCategoriesToCollections } from "../../components/Collections/category.adapter";
+
 /* ─── Main adapter ─── */
 export function adaptHomeResponse(apiData, lang = "en") {
   const root = apiData?.data ?? apiData ?? {};
@@ -157,11 +159,13 @@ export function adaptHomeResponse(apiData, lang = "en") {
   const rawBanners = Array.isArray(root?.banners) ? root.banners : [];
   const rawProducts = Array.isArray(root?.products) ? root.products : [];
   const rawBlogs = Array.isArray(root?.blogs) ? root.blogs : [];
+  const rawCategories = Array.isArray(root?.categories) ? root.categories : [];
 
   return {
     banners: rawBanners.map((banner) => adaptBanner(banner, lang)),
     products: rawProducts.map((product) => adaptProduct(product, lang)),
     blogs: rawBlogs.map((blog) => adaptBlog(blog, lang)),
+    categories: adaptCategoriesToCollections(rawCategories, lang),
   };
 }
 
@@ -169,4 +173,5 @@ export const EMPTY_HOME_DATA = {
   banners: [],
   products: [],
   blogs: [],
+  categories: [],
 };

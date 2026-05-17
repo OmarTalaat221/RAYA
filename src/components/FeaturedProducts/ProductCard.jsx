@@ -112,23 +112,19 @@ export default function ProductCard({
 
   /* ═══════════════════════════════════════════════
      Cart state
-     - Initial value comes from API (prop.inCart)
-     - Once user interacts → Redux becomes the source of truth
      ═══════════════════════════════════════════════ */
-  const hasInteractedRef = useRef(false);
+  const cartItems = useSelector((state) => state.cart.items);
+  const isCartInitialized = useSelector((state) => state.cart.initialized);
 
-  const isInCartFromRedux = useSelector((state) =>
-    state.cart.items.some((item) => item.id === id)
-  );
-
-  // Before any interaction → trust API
-  // After interaction → trust Redux
-  const isInCart = hasInteractedRef.current ? isInCartFromRedux : inCart;
+  // If Redux hasn't finished loading the cart yet, use the API's initial state
+  // Once Redux is loaded, Redux becomes the source of truth.
+  const isInCart = isCartInitialized
+    ? cartItems.some((item) => item.id === id)
+    : inCart;
 
   /* ── Actions ── */
   const handleAdd = useCallback(async () => {
     if (!id) return;
-    hasInteractedRef.current = true;
     setLocalLoading(true);
     try {
       await dispatch(addToCart({ productId: id, quantity: 1 })).unwrap();
@@ -141,7 +137,6 @@ export default function ProductCard({
 
   const handleRemove = useCallback(async () => {
     if (!id) return;
-    hasInteractedRef.current = true;
     setLocalLoading(true);
     try {
       await dispatch(removeFromCart({ productId: id })).unwrap();

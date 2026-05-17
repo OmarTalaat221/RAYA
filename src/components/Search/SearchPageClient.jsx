@@ -294,6 +294,7 @@ export default function SearchPageClient({
                 isOnSale={product.isOnSale}
                 priority={index < 4}
                 canHover={canHover}
+                inCart={product.inCart}
               />
             ))}
           </div>

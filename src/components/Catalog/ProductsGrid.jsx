@@ -34,6 +34,7 @@ export default function ProductsGrid({
           isOnSale={product.isOnSale}
           priority={index === 0}
           canHover={canHover}
+          inCart={product.inCart}
         />
       ))}
     </div>
