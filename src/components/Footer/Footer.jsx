@@ -21,6 +21,7 @@ const legalLinks = [
   { key: "privacy", href: "/privacy-policy" },
   { key: "terms", href: "/terms-and-conditions" },
   { key: "returns", href: "/return-policy" },
+  { key: "shipping", href: "/shipping-policy" },
 ];
 
 // ─── fallback store ───────────────────────────────────────
@@ -538,7 +539,7 @@ export default function Footer({
                 {t("copyright", { year })}
               </p>
 
-              {/* <nav
+              <nav
                 aria-label={t("legalNavLabel")}
                 className="flex flex-wrap gap-x-5 gap-y-2"
               >
@@ -551,7 +552,7 @@ export default function Footer({
                     {t(`legal.${item.key}`)}
                   </Link>
                 ))}
-              </nav> */}
+              </nav>
             </div>
           </div>
         </div>

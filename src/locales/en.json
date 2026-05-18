@@ -33,7 +33,8 @@
     "legal": {
       "privacy": "Privacy Policy",
       "terms": "Terms & Conditions",
-      "returns": "Return Policy"
+      "returns": "Return Policy",
+      "shipping": "Shipping Policy"
     }
   }
 }
