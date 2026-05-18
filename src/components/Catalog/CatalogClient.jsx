@@ -1,6 +1,5 @@
 "use client";
 
-import { useEffect, useState, useCallback, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import useCanHover from "./useCanHover";
 import useFilters from "./useFilters";
@@ -9,190 +8,44 @@ import ActiveFilters from "./ActiveFilters";
 import ProductsGrid from "./ProductsGrid";
 import LoadMoreButton from "./LoadMoreButton";
 import EmptyState from "./EmptyState";
-import {
-  getProducts,
-  getProductsByCategorySlug,
-} from "../../services/products.service";
-import { adaptApiProducts } from "./product.adapter";
-import { sortToApiParams } from "./sort.utils";
-import { availabilityToApiParam, priceRangeToApiParam } from "./filters.utils";
 
 const PRODUCTS_PER_PAGE = 12;
 
 /**
- * source = "all"            → GET /products
- * source = "category:<slug>" → GET /products/category/<slug>
+ * source = "all"            → Server driven
+ * source = "category:<slug>" → Server driven
  */
 function isServerSource(source) {
   return typeof source === "string" && source.length > 0;
 }
 
 export default function CatalogClient({
-  products: initialProducts = [],
+  products = [],
+  pagination = null,
+  highestPrice = 0,
   title = "All Products",
   subtitle = "",
   currency = "AED",
-  source = null, // "all" | "category:skincare" | null (static)
+  source = null,
 }) {
   const canHover = useCanHover();
   const serverDriven = isServerSource(source);
 
-  // ─── Server-driven state ────────────────────────────────────────────────────
-  const [serverProducts, setServerProducts] = useState([]);
-  const [serverPagination, setServerPagination] = useState({
-    page: 1,
-    totalPages: 1,
-    totalItems: 0,
-    hasNextPage: false,
-  });
-  const [highestPrice, setHighestPrice] = useState(0);
-  const [isLoading, setIsLoading] = useState(serverDriven);
-
-  const productsForFilters = serverDriven ? serverProducts : initialProducts;
-
-  const filters = useFilters(productsForFilters, {
+  const filters = useFilters(products, {
     serverDriven,
     serverHighestPrice: highestPrice,
   });
 
-  // ─── API fetcher ────────────────────────────────────────────────────────────
-  const fetchFromApi = useCallback(
-    async ({ page, sortBy, sortOrder, in_stock, priceRange }) => {
-      if (!serverDriven) return;
-
-      setIsLoading(true);
-
-      try {
-        const params = {
-          page,
-          limit: PRODUCTS_PER_PAGE,
-          sortBy,
-          sortOrder,
-          in_stock,
-          priceRange,
-        };
-
-        let response;
-
-        if (source === "all") {
-          response = await getProducts(params);
-        } else if (source.startsWith("category:")) {
-          const slug = source.replace("category:", "");
-          response = await getProductsByCategorySlug(slug, params);
-        }
-
-        const payload = response?.data ?? response;
-        const productsBlock =
-          payload?.products ?? payload?.data?.products ?? payload;
-
-        if (!productsBlock) {
-          setServerProducts([]);
-          setServerPagination({
-            page: 1,
-            totalPages: 1,
-            totalItems: 0,
-            hasNextPage: false,
-          });
-          setHighestPrice(0);
-          return;
-        }
-
-        let rawItems = [];
-
-        if (Array.isArray(productsBlock.items)) {
-          rawItems = productsBlock.items;
-        } else if (Array.isArray(payload?.items)) {
-          rawItems = payload.items;
-        } else if (Array.isArray(productsBlock)) {
-          rawItems = productsBlock;
-        }
-
-        if (rawItems.length > 0 && Array.isArray(rawItems[0]?.products)) {
-          rawItems = rawItems.flatMap((item) => item.products || []);
-        }
-
-        const adapted = adaptApiProducts(rawItems, "en");
-        setServerProducts(adapted);
-
-        const pagination =
-          productsBlock.pagination ?? payload?.pagination ?? {};
-
-        setServerPagination({
-          page: pagination.page ?? page,
-          totalPages: pagination.totalPages ?? 1,
-          totalItems: pagination.totalItems ?? adapted.length,
-          hasNextPage: Boolean(pagination.hasNextPage),
-        });
-
-        const apiHighest = Number(
-          payload?.highestPrice ??
-            payload?.highest_price ??
-            payload?.data?.highestPrice ??
-            payload?.data?.highest_price ??
-            0
-        );
-
-        if (Number.isFinite(apiHighest) && apiHighest > 0) {
-          setHighestPrice(apiHighest);
-        }
-      } catch (error) {
-        console.error("[CatalogClient] fetch failed:", error);
-        setServerProducts([]);
-        setServerPagination({
-          page: 1,
-          totalPages: 1,
-          totalItems: 0,
-          hasNextPage: false,
-        });
-        setHighestPrice(0);
-      } finally {
-        setIsLoading(false);
-      }
-    },
-    [serverDriven, source]
-  );
-  // ─── Build API params from filters ──────────────────────────────────────────
-  const apiQuery = useMemo(() => {
-    const { sortBy, sortOrder } = sortToApiParams(filters.sortBy);
-    const in_stock = availabilityToApiParam(filters.availability);
-    const priceRange = priceRangeToApiParam(
-      filters.debouncedPrice,
-      highestPrice
-    );
-
-    return {
-      page: filters.currentPage,
-      sortBy,
-      sortOrder,
-      in_stock,
-      priceRange,
-    };
-  }, [
-    filters.sortBy,
-    filters.currentPage,
-    filters.availability,
-    filters.debouncedPrice,
-    highestPrice,
-  ]);
-
-  // ─── Trigger fetch on query change ──────────────────────────────────────────
-  useEffect(() => {
-    if (!serverDriven) return;
-    fetchFromApi(apiQuery);
-  }, [serverDriven, apiQuery, fetchFromApi]);
-
-  // ─── Derived display state ──────────────────────────────────────────────────
   const totalPages = serverDriven
-    ? serverPagination.totalPages
+    ? (pagination?.totalPages || 1)
     : filters.totalPages;
 
   const totalItems = serverDriven
-    ? serverPagination.totalItems
+    ? (pagination?.totalItems || 0)
     : filters.totalFiltered;
 
   const showEmpty =
-    !isLoading &&
-    (serverDriven ? serverProducts.length === 0 : filters.totalFiltered === 0);
+    serverDriven ? products.length === 0 : filters.totalFiltered === 0;
 
   return (
     <>
@@ -245,17 +98,7 @@ export default function CatalogClient({
 
       <div className="min-h-[400px]">
         <AnimatePresence mode="wait">
-          {isLoading ? (
-            <motion.div
-              key="loading"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.2 }}
-            >
-              <ProductsGrid products={[]} isLoading />
-            </motion.div>
-          ) : showEmpty ? (
+          {showEmpty ? (
             <EmptyState key="empty" onClear={filters.clearAllFilters} />
           ) : (
             <motion.div

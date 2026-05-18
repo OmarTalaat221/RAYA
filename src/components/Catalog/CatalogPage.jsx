@@ -2,6 +2,8 @@ import CatalogClient from "./CatalogClient";
 
 export default function CatalogPage({
   products = [],
+  pagination = null,
+  highestPrice = 0,
   title = "All Products",
   subtitle = "Explore our carefully curated collection of premium skincare, wellness, and pharmacy essentials.",
   currency = "AED",
@@ -12,6 +14,8 @@ export default function CatalogPage({
       <div className="container mx-auto px-4 sm:px-6">
         <CatalogClient
           products={products}
+          pagination={pagination}
+          highestPrice={highestPrice}
           title={title}
           subtitle={subtitle}
           currency={currency}

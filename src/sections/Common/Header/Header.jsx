@@ -1,9 +1,8 @@
-// sections/Common/Header/Header.jsx
 "use client";
 
 import Link from "next/link";
 import dynamic from "next/dynamic";
-import { Search, User, ShoppingBag, Menu, X, Globe } from "lucide-react";
+import { Search, ShoppingBag, Menu, X } from "lucide-react";
 import {
   useState,
   useEffect,
@@ -26,26 +25,15 @@ const CartDrawer = dynamic(
   { ssr: false }
 );
 
-/* ─── isomorphic layout effect (avoid SSR warnings) ─── */
 const useIsoLayoutEffect =
   typeof window !== "undefined" ? useLayoutEffect : useEffect;
 
-/* ─── Constants ─── */
 const NAV_ITEMS = [
   { label: "Home", href: "/" },
   { label: "Products", href: "/collections/all" },
-  // { label: "Skinage", href: "/collections/skinage" },
-  // { label: "Denefis", href: "/collections/denefis" },
-  // { label: "Offers", href: "/collections/offers" },
-
   { label: "Brands", href: "/collections" },
   { label: "Blog", href: "/blog/news" },
   { label: "Contact", href: "/contact" },
-];
-
-const LANGUAGES = [
-  { code: "en", label: "English", short: "EN" },
-  { code: "ar", label: "العربية", short: "AR" },
 ];
 
 const INDICATOR_TRANSITION =
@@ -72,16 +60,12 @@ const Logo = memo(function Logo({ size = "default" }) {
   );
 });
 
-/* ─── Desktop Nav with Sliding Pill ─── */
+/* ─── Desktop Nav ─── */
 const NavMenu = memo(function NavMenu({ pathname, ariaLabel }) {
   const navRef = useRef(null);
   const linkRefs = useRef({});
   const [hoveredHref, setHoveredHref] = useState(null);
-  const [indicator, setIndicator] = useState({
-    opacity: 0,
-    x: 0,
-    width: 0,
-  });
+  const [indicator, setIndicator] = useState({ opacity: 0, x: 0, width: 0 });
 
   const updateIndicator = useCallback((href) => {
     if (!href) {
@@ -103,14 +87,12 @@ const NavMenu = memo(function NavMenu({ pathname, ariaLabel }) {
     });
   }, []);
 
-  /* recalc on hover / pathname change */
   useIsoLayoutEffect(() => {
     const target = hoveredHref || pathname;
     const exists = NAV_ITEMS.some((i) => i.href === target);
     updateIndicator(exists ? target : null);
   }, [hoveredHref, pathname, updateIndicator]);
 
-  /* recalc on resize and font load */
   useEffect(() => {
     const handleRecalc = () => {
       const target = hoveredHref || pathname;
@@ -119,12 +101,10 @@ const NavMenu = memo(function NavMenu({ pathname, ariaLabel }) {
     };
 
     window.addEventListener("resize", handleRecalc, { passive: true });
-    
     if (typeof document !== "undefined" && document.fonts) {
       document.fonts.ready.then(handleRecalc);
     }
 
-    // Fallbacks for layout shifts (e.g., images or delayed font rendering)
     const t1 = setTimeout(handleRecalc, 150);
     const t2 = setTimeout(handleRecalc, 500);
     const t3 = setTimeout(handleRecalc, 1000);
@@ -145,16 +125,13 @@ const NavMenu = memo(function NavMenu({ pathname, ariaLabel }) {
     []
   );
 
-  const handleMouseLeave = useCallback(() => setHoveredHref(null), []);
-
   return (
     <nav aria-label={ariaLabel} className="hidden lg:flex flex-1">
       <ul
         ref={navRef}
-        onMouseLeave={handleMouseLeave}
+        onMouseLeave={() => setHoveredHref(null)}
         className="relative flex items-center justify-center gap-0.5 xl:gap-1 w-full"
       >
-        {/* sliding pill */}
         <span
           aria-hidden="true"
           className="absolute top-1/2 left-0 h-9 rounded-full bg-main/50 pointer-events-none"
@@ -197,103 +174,6 @@ const NavMenu = memo(function NavMenu({ pathname, ariaLabel }) {
     </nav>
   );
 });
-
-/* ─── Language Dropdown ─── */
-// const LanguageDropdown = memo(function LanguageDropdown() {
-//   const [open, setOpen] = useState(false);
-//   const [current, setCurrent] = useState("en");
-//   const ref = useRef(null);
-
-//   const close = useCallback(() => setOpen(false), []);
-//   const toggle = useCallback(() => setOpen((p) => !p), []);
-
-//   useEffect(() => {
-//     if (!open) return;
-
-//     const handleClickOutside = (e) => {
-//       if (ref.current && !ref.current.contains(e.target)) close();
-//     };
-//     const handleEscape = (e) => {
-//       if (e.key === "Escape") close();
-//     };
-
-//     document.addEventListener("mousedown", handleClickOutside);
-//     document.addEventListener("keydown", handleEscape);
-//     return () => {
-//       document.removeEventListener("mousedown", handleClickOutside);
-//       document.removeEventListener("keydown", handleEscape);
-//     };
-//   }, [open, close]);
-
-//   const handleSelect = useCallback((code) => {
-//     setCurrent(code);
-//     setOpen(false);
-//     // TODO: integrate with next-intl locale switching
-//   }, []);
-
-//   const currentLang = LANGUAGES.find((l) => l.code === current);
-
-//   return (
-//     <div ref={ref} className="relative">
-//       <button
-//         type="button"
-//         onClick={toggle}
-//         aria-label="Change language"
-//         aria-expanded={open}
-//         aria-haspopup="listbox"
-//         className="flex items-center gap-1.5 text-soft-black hover:text-main transition-colors duration-200"
-//       >
-//         <Globe size={20} strokeWidth={1.5} />
-//         <span className="text-[11px] font-semibold tracking-wider hidden sm:inline">
-//           {currentLang.short}
-//         </span>
-//       </button>
-
-//       <div
-//         role="listbox"
-//         className={`
-//           absolute right-0 top-full mt-3 min-w-[150px]
-//           bg-white rounded-xl border border-gray-100
-//           shadow-[0_12px_32px_rgba(0,0,0,0.08)]
-//           overflow-hidden origin-top-right z-50
-//           transition-all duration-200 ease-out
-//           ${
-//             open
-//               ? "opacity-100 scale-100 translate-y-0 pointer-events-auto"
-//               : "opacity-0 scale-95 -translate-y-1 pointer-events-none"
-//           }
-//         `}
-//       >
-//         {LANGUAGES.map((lang) => {
-//           const isActive = lang.code === current;
-//           return (
-//             <button
-//               key={lang.code}
-//               type="button"
-//               role="option"
-//               aria-selected={isActive}
-//               onClick={() => handleSelect(lang.code)}
-//               className={`
-//                 w-full flex items-center justify-between gap-3
-//                 px-4 py-2.5 text-sm transition-colors duration-150
-//                 ${
-//                   isActive
-//                     ? "text-main bg-main/5 font-semibold"
-//                     : "text-soft-black hover:bg-[#f7f7f7]"
-//                 }
-//               `}
-//             >
-//               <span>{lang.label}</span>
-//               {isActive && (
-//                 <span className="w-1.5 h-1.5 rounded-full bg-main" />
-//               )}
-//             </button>
-//           );
-//         })}
-//       </div>
-//     </div>
-//   );
-// });
 
 /* ─── Mobile Nav Link ─── */
 const MobileNavLink = memo(function MobileNavLink({ item, pathname, onClick }) {
@@ -338,14 +218,6 @@ const HeaderIcons = memo(function HeaderIcons({
       >
         <Search size={22} strokeWidth={1.5} />
       </button>
-      {/* 
-      <Link
-        aria-label="My Account"
-        href="/login"
-        className="text-soft-black hover:text-main transition-colors duration-200"
-      >
-        <User size={22} strokeWidth={1.5} />
-      </Link> */}
 
       <button
         type="button"
@@ -366,17 +238,18 @@ const HeaderIcons = memo(function HeaderIcons({
           </span>
         )}
       </button>
-
-      {/* <LanguageDropdown /> */}
     </div>
   );
 });
 
 /* ─── Top Bar ─── */
-const TopBar = memo(function TopBar() {
+const TopBar = memo(function TopBar({ compact = false }) {
   return (
-    <div className="w-full bg-main py-2 px-4">
-      <p className="text-center text-white font-semibold tracking-wide text-[11px] sm:text-xs md:text-sm leading-snug">
+    <div className={`w-full bg-main ${compact ? "py-1.5" : "py-2"} px-4`}>
+      <p
+        className={`text-center text-white font-semibold tracking-wide leading-snug
+                    ${compact ? "text-[10px] sm:text-[11px]" : "text-[11px] sm:text-xs md:text-sm"}`}
+      >
         <span className="hidden sm:inline">
           UAE Delivery Free Over 150AED Within 2Days &nbsp;|&nbsp; GCC Free over
           600AED Within 4Days
@@ -510,8 +383,8 @@ export default function Header() {
 
   return (
     <>
-      {/* ── static header ── */}
-      <header className="relative z-[1000]">
+      {/* ── Static header (TopBar + Main Nav) ── */}
+      <header className="relative z-[40]">
         <TopBar />
 
         <div className="w-full bg-white border-b border-gray-100">
@@ -548,57 +421,58 @@ export default function Header() {
         </div>
       </header>
 
-      {/* ── fixed header ── */}
-      <header
+      {/* ── Fixed header (TopBar + Nav) — appears on scroll ── */}
+      <div
         aria-hidden={!showFixed}
         className={`
-          fixed top-0 left-0 right-0 z-50
-          bg-white border-b border-gray-100 shadow-sm
-          transition-all duration-300 ease-in-out
-          ${
-            showFixed
-              ? "translate-y-0 opacity-100"
-              : "-translate-y-full opacity-0 pointer-events-none"
-          }
+          fixed top-0 left-0 right-0 z-[1000]
+          transition-transform duration-300 ease-in-out
+          ${showFixed ? "translate-y-0" : "-translate-y-full"}
         `}
       >
-        <div className="container mx-auto">
-          <div className="flex items-center justify-between py-2 gap-4">
-            <Link
-              href="/"
-              className="flex-shrink-0"
-              aria-label="RDS Pharma Home"
-              tabIndex={showFixed ? 0 : -1}
-            >
-              <Logo size="small" />
-            </Link>
+        {/* TopBar first (on top) */}
+        <TopBar compact />
 
-            <NavMenu pathname={pathname} ariaLabel="Fixed main navigation" />
+        {/* Then the nav */}
+        <header className="bg-white shadow-sm border-b border-gray-100">
+          <div className="container mx-auto">
+            <div className="flex items-center justify-between py-2 gap-4">
+              <Link
+                href="/"
+                className="flex-shrink-0"
+                aria-label="RDS Pharma Home"
+                tabIndex={showFixed ? 0 : -1}
+              >
+                <Logo size="small" />
+              </Link>
 
-            <div className="flex items-center gap-2 sm:px-0 px-2">
-              <HeaderIcons
-                cartCount={cartCount}
-                onSearchClick={openSearch}
-                onCartClick={openCart}
-              />
-              <HamburgerBtn menuOpen={menuOpen} toggleMenu={toggleMenu} />
+              <NavMenu pathname={pathname} ariaLabel="Fixed main navigation" />
+
+              <div className="flex items-center gap-2 sm:px-0 px-2">
+                <HeaderIcons
+                  cartCount={cartCount}
+                  onSearchClick={openSearch}
+                  onCartClick={openCart}
+                />
+                <HamburgerBtn menuOpen={menuOpen} toggleMenu={toggleMenu} />
+              </div>
             </div>
           </div>
-        </div>
 
-        {showFixed && (
-          <MobileMenu
-            visible={menuOpen}
-            pathname={pathname}
-            closeMenu={closeMenu}
-          />
-        )}
-      </header>
+          {showFixed && (
+            <MobileMenu
+              visible={menuOpen}
+              pathname={pathname}
+              closeMenu={closeMenu}
+            />
+          )}
+        </header>
+      </div>
 
-      {/* ── overlays ── */}
+      {/* ── Mobile menu backdrop ── */}
       {menuOpen && (
         <div
-          className="fixed inset-0 bg-black/20 z-40 lg:hidden"
+          className="fixed inset-0 bg-black/20 z-[30] lg:hidden"
           onClick={closeMenu}
           aria-hidden="true"
         />

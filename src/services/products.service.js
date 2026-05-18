@@ -29,6 +29,49 @@ export async function getProductsByCategorySlug(slug, options = {}) {
 
 export async function getProductBySlug(slug) {
   const response = await axiosInstance.get(`/products/${slug}`);
-  console.log(response.data, "single product");
   return response.data?.data;
+}
+
+/* ─── Sitemap helper ─────────────────────────────────────────────────────── */
+
+/**
+ * Fetches ALL products (paginated) for sitemap generation.
+ * Returns only the minimum fields needed: slug + updatedAt.
+ */
+export async function getAllProductsForSitemap({ pageSize = 100 } = {}) {
+  const allItems = [];
+  let page = 1;
+  let hasNextPage = true;
+
+  while (hasNextPage) {
+    try {
+      const data = await getProducts({ page, limit: pageSize });
+      const items = data?.products?.items ?? [];
+      const pagination = data?.products?.pagination ?? {};
+
+      for (const item of items) {
+        const slug = item?.translations?.[0]?.slug || item?.slug || null;
+        if (!slug) continue;
+
+        allItems.push({
+          slug,
+          updatedAt: item.updatedAt || item.createdAt || null,
+        });
+      }
+
+      hasNextPage = Boolean(pagination.hasNextPage);
+      page += 1;
+
+      // Safety limit: max 500 pages (50k items)
+      if (page > 500) break;
+    } catch (error) {
+      console.error(
+        `[Sitemap] Failed to fetch products page ${page}:`,
+        error?.message
+      );
+      break;
+    }
+  }
+
+  return allItems;
 }

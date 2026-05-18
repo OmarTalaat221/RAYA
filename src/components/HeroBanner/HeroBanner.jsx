@@ -10,7 +10,7 @@ const AUTOPLAY_DELAY = 10000;
 export default function HeroSlider({ banners = [] }) {
   const [current, setCurrent] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
-  const [headerHeight, setHeaderHeight] = useState(0);
+  const [heroHeight, setHeroHeight] = useState("100vh");
 
   const slides = Array.isArray(banners) ? banners : [];
   const total = slides.length;
@@ -34,14 +34,38 @@ export default function HeroSlider({ banners = [] }) {
     }
   }, [total, current]);
 
+  /* ── Calculate hero height = viewport - header ── */
   useEffect(() => {
-    const measure = () => {
+    const calculateHeight = () => {
+      // Find static header (first header element)
       const header = document.querySelector("header");
-      if (header) setHeaderHeight(header.offsetHeight);
+      if (header) {
+        const headerHeight = header.offsetHeight;
+        // Use svh for better mobile support, fallback to vh
+        setHeroHeight(`calc(100svh - ${headerHeight}px)`);
+      }
     };
-    measure();
-    window.addEventListener("resize", measure, { passive: true });
-    return () => window.removeEventListener("resize", measure);
+
+    // Initial calculation
+    calculateHeight();
+
+    // Recalculate on resize
+    window.addEventListener("resize", calculateHeight, { passive: true });
+
+    // Recalculate after fonts load (might affect header height)
+    if (typeof document !== "undefined" && document.fonts) {
+      document.fonts.ready.then(calculateHeight);
+    }
+
+    // Fallback recalculations
+    const t1 = setTimeout(calculateHeight, 100);
+    const t2 = setTimeout(calculateHeight, 500);
+
+    return () => {
+      window.removeEventListener("resize", calculateHeight);
+      clearTimeout(t1);
+      clearTimeout(t2);
+    };
   }, []);
 
   const goTo = useCallback(
@@ -101,7 +125,7 @@ export default function HeroSlider({ banners = [] }) {
     return (
       <section
         className="relative w-full bg-[#1a1a1a] overflow-hidden"
-        style={{ minHeight: "200px" }}
+        style={{ minHeight: heroHeight }}
         aria-label="Hero Slider"
       >
         <BottomBg />
@@ -114,22 +138,25 @@ export default function HeroSlider({ banners = [] }) {
   return (
     <section
       className="relative w-full bg-[#1a1a1a] select-none overflow-hidden"
-      style={{ maxHeight: `calc(100vh - ${headerHeight}px)`, height: "100%" }}
+      style={{
+        height: heroHeight,
+        minHeight: "400px", // Fallback minimum
+        maxHeight: "100svh",
+      }}
       aria-label="Hero Slider"
       onMouseEnter={() => setIsPaused(true)}
       onMouseLeave={() => setIsPaused(false)}
       onTouchStart={handleTouchStart}
       onTouchEnd={handleTouchEnd}
     >
-      <div className="relative w-full">
+      {/* Slides */}
+      <div className="relative w-full h-full">
         {slides.map((slide, index) => (
           <div
             key={slide.id}
             aria-hidden={index !== current}
+            className="absolute inset-0 w-full h-full"
             style={{
-              position: index === current ? "relative" : "absolute",
-              inset: 0,
-              width: "100%",
               opacity: index === current ? 1 : 0,
               zIndex: index === current ? 10 : 0,
               transition: "opacity 0.6s ease-in-out",
@@ -143,30 +170,25 @@ export default function HeroSlider({ banners = [] }) {
               loading={index === 0 ? "eager" : "lazy"}
               fetchPriority={index === 0 ? "high" : "auto"}
               decoding="async"
-              style={{
-                display: "block",
-                width: "100%",
-                height: "auto",
-                objectFit: "unset",
-                objectPosition: "center",
-              }}
+              className="w-full h-full object-cover object-center"
             />
           </div>
         ))}
       </div>
 
-      {/* Controls */}
-      <div
-        className="absolute inset-0 z-20 pointer-events-none"
-        style={{ height: "100%" }}
-      >
+      {/* Controls overlay */}
+      <div className="absolute inset-0 z-20 pointer-events-none">
         <div className="relative w-full h-full pointer-events-auto">
+          {/* Prev/Next arrows */}
           {total > 1 && (
             <>
               <button
                 onClick={goPrev}
                 aria-label="Previous slide"
-                className="hidden sm:flex absolute left-3 md:left-5 top-1/2 -translate-y-1/2 w-9 h-9 md:w-11 md:h-11 items-center justify-center rounded-full bg-main/70 hover:bg-main backdrop-blur-sm border border-white/60 text-white shadow-sm hover:shadow-md transition-all"
+                className="hidden sm:flex absolute left-3 md:left-5 top-1/2 -translate-y-1/2 
+                           w-9 h-9 md:w-11 md:h-11 items-center justify-center rounded-full 
+                           bg-main/70 hover:bg-main backdrop-blur-sm border border-white/60 
+                           text-white shadow-sm hover:shadow-md transition-all"
               >
                 <ChevronLeft size={18} strokeWidth={2} />
               </button>
@@ -174,21 +196,32 @@ export default function HeroSlider({ banners = [] }) {
               <button
                 onClick={goNext}
                 aria-label="Next slide"
-                className="hidden sm:flex absolute right-3 md:right-5 top-1/2 -translate-y-1/2 w-9 h-9 md:w-11 md:h-11 items-center justify-center rounded-full bg-main/70 hover:bg-main backdrop-blur-sm border border-white/60 text-white shadow-sm hover:shadow-md transition-all"
+                className="hidden sm:flex absolute right-3 md:right-5 top-1/2 -translate-y-1/2 
+                           w-9 h-9 md:w-11 md:h-11 items-center justify-center rounded-full 
+                           bg-main/70 hover:bg-main backdrop-blur-sm border border-white/60 
+                           text-white shadow-sm hover:shadow-md transition-all"
               >
                 <ChevronRight size={18} strokeWidth={2} />
               </button>
             </>
           )}
 
-          {/* Shop Now */}
-          <div className="absolute right-3 bottom-4 xsm:right-auto xsm:left-1/2 xsm:-translate-x-1/2 xsm:bottom-14 sm:bottom-16 md:bottom-20">
+          {/* Shop Now button */}
+          <div
+            className="absolute right-3 bottom-4 xsm:right-auto xsm:left-1/2 
+                          xsm:-translate-x-1/2 xsm:bottom-14 sm:bottom-16 md:bottom-20"
+          >
             <Link
               href={activeSlide.href}
-              className="group relative inline-flex items-center gap-2 bg-main text-white rounded-full px-5 py-2 sm:px-7 sm:py-3 text-xs sm:text-sm md:text-base font-semibold tracking-wide whitespace-nowrap overflow-hidden transition-all hover:shadow-xl hover:shadow-main/30 hover:scale-105"
+              className="group relative inline-flex items-center gap-2 bg-main text-white 
+                         rounded-full px-5 py-2 sm:px-7 sm:py-3 text-xs sm:text-sm md:text-base 
+                         font-semibold tracking-wide whitespace-nowrap overflow-hidden 
+                         transition-all hover:shadow-xl hover:shadow-main/30 hover:scale-105"
             >
               <span
-                className="absolute inset-0 bg-gradient-to-r from-transparent via-white/25 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700"
+                className="absolute inset-0 bg-gradient-to-r from-transparent via-white/25 
+                           to-transparent -translate-x-full group-hover:translate-x-full 
+                           transition-transform duration-700"
                 aria-hidden="true"
               />
               <span className="relative z-10">Shop Now</span>
@@ -203,7 +236,10 @@ export default function HeroSlider({ banners = [] }) {
           {/* Dots + Counter */}
           {total > 1 && (
             <div className="absolute left-1/2 -translate-x-1/2 bottom-3 sm:bottom-4 md:bottom-5">
-              <div className="hidden sm:flex items-center gap-2 sm:gap-3 bg-black/25 backdrop-blur-sm rounded-full px-3 py-1.5 sm:px-4 sm:py-2">
+              <div
+                className="hidden sm:flex items-center gap-2 sm:gap-3 bg-black/25 
+                              backdrop-blur-sm rounded-full px-3 py-1.5 sm:px-4 sm:py-2"
+              >
                 <div
                   className="flex items-center gap-1 sm:gap-1.5"
                   role="tablist"
@@ -232,10 +268,6 @@ export default function HeroSlider({ banners = [] }) {
           )}
         </div>
       </div>
-
-      <style>{`
-        @keyframes progressBar { from { width: 0%; } to { width: 100%; } }
-      `}</style>
 
       <BottomBg />
     </section>

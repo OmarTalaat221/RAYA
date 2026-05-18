@@ -51,7 +51,7 @@ const CartDrawer = memo(function CartDrawer() {
   const freeShippingThreshold = useSelector(
     (s) => s.cart.freeShippingThreshold
   );
-  
+
   const geoCountry = useSelector((s) => s.geo?.country || "");
   const isUAE = /^(ae|are|united arab emirates)$/i.test(geoCountry.trim());
 
@@ -100,6 +100,7 @@ const CartDrawer = memo(function CartDrawer() {
     <AnimatePresence mode="wait">
       {isOpen && (
         <>
+          {/* Backdrop */}
           <motion.div
             className="fixed inset-0 z-2499 bg-black/20 backdrop-blur-[2px]"
             variants={BACKDROP_VARIANTS}
@@ -111,10 +112,11 @@ const CartDrawer = memo(function CartDrawer() {
             aria-hidden="true"
           />
 
+          {/* Drawer - NOT full width on mobile */}
           <motion.aside
-            className="fixed right-0 top-0 z-2500 flex h-full w-full flex-col
-                       bg-white shadow-[-8px_0_30px_rgba(0,0,0,0.08)]
-                       sm:w-[420px] md:w-[460px] lg:w-[480px]"
+            className="fixed inset-y-0 right-0 z-2500 flex w-[88%] max-w-[400px] 
+                       flex-col bg-white shadow-[-8px_0_30px_rgba(0,0,0,0.08)]
+                       sm:w-[420px] sm:max-w-none md:w-[460px] lg:w-[480px]"
             variants={DRAWER_VARIANTS}
             initial="hidden"
             animate="visible"
@@ -124,21 +126,22 @@ const CartDrawer = memo(function CartDrawer() {
             aria-modal="true"
             aria-label="Shopping cart"
           >
+            {/* Header */}
             <div
-              className="flex items-center justify-between border-b border-gray-100
-                         px-5 py-4 sm:px-6 sm:py-5"
+              className="flex shrink-0 items-center justify-between border-b 
+                         border-gray-100 px-4 py-4 sm:px-6 sm:py-5"
             >
-              <div className="flex items-baseline gap-2.5">
+              <div className="flex items-baseline gap-2">
                 <h2
-                  className="font-oswald! text-xl font-semibold uppercase
+                  className="font-oswald! text-lg font-semibold uppercase
                              tracking-wide text-soft-black sm:text-2xl"
                 >
                   Your Cart
                 </h2>
                 {itemCount > 0 && (
                   <span
-                    className="rounded-full bg-main/10 px-2.5 py-0.5 text-xs
-                               font-semibold text-main"
+                    className="rounded-full bg-main/10 px-2 py-0.5 text-[10px]
+                               font-semibold text-main sm:px-2.5 sm:text-xs"
                   >
                     {itemCount} {itemCount === 1 ? "item" : "items"}
                   </span>
@@ -146,53 +149,55 @@ const CartDrawer = memo(function CartDrawer() {
               </div>
               <button
                 onClick={handleClose}
-                className="group flex h-9 w-9 items-center justify-center rounded-full
+                className="group flex h-8 w-8 items-center justify-center rounded-full
                            transition-colors duration-200 hover:bg-gray-100
                            focus-visible:outline-none focus-visible:ring-2
-                           focus-visible:ring-main/40"
+                           focus-visible:ring-main/40 sm:h-9 sm:w-9"
                 aria-label="Close cart"
               >
                 <X
-                  size={20}
+                  size={18}
                   strokeWidth={1.8}
                   className="text-gray-500 transition-colors duration-200
-                             group-hover:text-soft-black"
+                             group-hover:text-soft-black sm:size-5"
                 />
               </button>
             </div>
 
+            {/* Error */}
             {error && (
               <div
-                className="mx-5 mt-3 flex items-center gap-2.5 rounded-xl border
-                           border-red-100 bg-red-50/60 px-4 py-3 sm:mx-6"
+                className="mx-4 mt-3 flex shrink-0 items-center gap-2 rounded-xl 
+                           border border-red-100 bg-red-50/60 px-3 py-2.5 sm:mx-6 sm:gap-2.5 sm:px-4 sm:py-3"
               >
                 <AlertCircle
-                  size={16}
+                  size={14}
                   strokeWidth={2}
-                  className="shrink-0 text-red-400"
+                  className="shrink-0 text-red-400 sm:size-4"
                 />
-                <p className="font-poppins! flex-1 text-[12.5px] font-medium text-red-600">
+                <p className="font-poppins! flex-1 text-[11px] font-medium text-red-600 sm:text-[12.5px]">
                   {error}
                 </p>
                 <button
                   onClick={handleRetry}
-                  className="font-poppins! shrink-0 text-[12px] font-semibold
+                  className="font-poppins! shrink-0 text-[11px] font-semibold
                              text-red-500 underline underline-offset-2
-                             transition-colors duration-200 hover:text-red-700"
+                             transition-colors duration-200 hover:text-red-700 sm:text-[12px]"
                 >
                   Retry
                 </button>
               </div>
             )}
 
+            {/* Content */}
             {loading && !initialized ? (
               <div className="flex flex-1 items-center justify-center">
                 <div className="flex flex-col items-center gap-3">
                   <div
-                    className="h-8 w-8 animate-spin rounded-full border-[2.5px]
-                               border-gray-200 border-t-main"
+                    className="h-7 w-7 animate-spin rounded-full border-[2.5px]
+                               border-gray-200 border-t-main sm:h-8 sm:w-8"
                   />
-                  <span className="font-poppins! text-sm text-gray-400">
+                  <span className="font-poppins! text-xs text-gray-400 sm:text-sm">
                     Loading your cart…
                   </span>
                 </div>
@@ -201,8 +206,9 @@ const CartDrawer = memo(function CartDrawer() {
               <CartEmpty onClose={handleClose} recommendations={[]} />
             ) : (
               <>
+                {/* Scrollable content */}
                 <div className="flex-1 overflow-y-auto overscroll-contain">
-                  <div className="px-5 pt-4 sm:px-6">
+                  <div className="px-4 pt-3 sm:px-6 sm:pt-4">
                     <FreeShippingBar
                       qualifies={qualifiesForFreeShipping}
                       remaining={freeShippingRemaining}
@@ -211,7 +217,7 @@ const CartDrawer = memo(function CartDrawer() {
                     />
                   </div>
 
-                  <div className="px-5 py-4 sm:px-6">
+                  <div className="px-4 py-3 sm:px-6 sm:py-4">
                     <CartItemList items={items} />
                   </div>
 
@@ -220,6 +226,7 @@ const CartDrawer = memo(function CartDrawer() {
                   <div className="h-2" />
                 </div>
 
+                {/* Footer */}
                 <CartFooter
                   subtotal={subtotal}
                   currency={currency}
