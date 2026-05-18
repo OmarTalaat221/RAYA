@@ -12,16 +12,24 @@ import "swiper/css/thumbs";
 
 /* ─── resolve image paths ─────────────────────────────────────────────────── */
 
+const IMAGE_BASE_URL = process.env.NEXT_PUBLIC_IMAGE_URL || process.env.NEXT_PUBLIC_API_BASE_URL || "https://rdspharma.cloud";
+
 function resolveMediaSrc(src) {
   if (!src) return "";
-  if (src.startsWith("http://") || src.startsWith("https://")) return src;
-  if (src.startsWith("/cdn/shop/")) return `https://www.rdspharma.online${src}`;
-  if (src.startsWith("uploads/") || src.startsWith("/uploads/")) {
-    const baseUrl =
-      process.env.NEXT_PUBLIC_API_BASE_URL || "https://rdspharma.cloud";
-    const cleanPath = src.startsWith("/") ? src : `/${src}`;
-    return `${baseUrl}${cleanPath}`;
+
+  if (src.startsWith("http://") || src.startsWith("https://")) {
+    return src;
   }
+
+  if (src.startsWith("/cdn/shop/")) {
+    return `https://www.rdspharma.online${src}`;
+  }
+
+  if (src.startsWith("uploads/") || src.startsWith("/uploads/")) {
+    const cleanPath = src.startsWith("/") ? src : `/${src}`;
+    return `${IMAGE_BASE_URL}${cleanPath}`;
+  }
+
   return src;
 }
 

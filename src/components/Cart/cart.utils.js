@@ -13,12 +13,20 @@ export function formatMoney(value, currency = "AED") {
 
 export function resolveMediaSrc(src) {
   if (!src) return "";
-  if (src.startsWith("http://") || src.startsWith("https://")) return src;
-  if (src.startsWith("/cdn/shop/")) return `https://www.rdspharma.online${src}`;
+
+  if (src.startsWith("http://") || src.startsWith("https://")) {
+    return src;
+  }
+
+  if (src.startsWith("/cdn/shop/")) {
+    return `https://www.rdspharma.online${src}`;
+  }
+
   if (src.startsWith("uploads/") || src.startsWith("/uploads/")) {
     const cleanPath = src.startsWith("/") ? src : `/${src}`;
     return `${IMAGE_BASE_URL}${cleanPath}`;
   }
+
   return src;
 }
 

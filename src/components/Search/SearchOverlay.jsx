@@ -101,6 +101,8 @@ const ProductRow = memo(function ProductRow({ product, onSelect }) {
     onSelect(product.href);
   }, [product.href, onSelect]);
 
+  console.log(product, "product");
+
   return (
     <button
       type="button"
@@ -108,9 +110,9 @@ const ProductRow = memo(function ProductRow({ product, onSelect }) {
       className="group flex w-full items-center gap-2.5 rounded-xl p-2 text-left transition-colors duration-150 hover:bg-[#f3faf0]"
     >
       <div className="relative h-12 w-12 shrink-0 overflow-hidden rounded-lg bg-[#f5f5f3] sm:h-14 sm:w-14">
-        {product.image ? (
+        {product.frontImage ? (
           <Image
-            src={product.image}
+            src={product.frontImage}
             alt={product.title || "Product"}
             fill
             sizes="56px"

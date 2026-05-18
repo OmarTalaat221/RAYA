@@ -2,6 +2,9 @@ import sanitizeHtml from "sanitize-html";
 
 // ─── Media ────────────────────────────────────────────────────────────────────
 
+const IMAGE_BASE_URL =
+  process.env.NEXT_PUBLIC_IMAGE_URL || "https://rdspharma.cloud";
+
 export function resolveMediaSrc(src) {
   if (!src) return "";
 
@@ -11,6 +14,11 @@ export function resolveMediaSrc(src) {
 
   if (src.startsWith("/cdn/shop/")) {
     return `https://www.rdspharma.online${src}`;
+  }
+
+  if (src.startsWith("uploads/") || src.startsWith("/uploads/")) {
+    const cleanPath = src.startsWith("/") ? src : `/${src}`;
+    return `${IMAGE_BASE_URL}${cleanPath}`;
   }
 
   return src;
