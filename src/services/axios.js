@@ -54,6 +54,7 @@ const axiosInstance = axios.create({
     "Content-Type": "application/json",
     Accept: "application/json",
     lang: "en",
+    "Accept-Language": "en",
   },
 });
 
@@ -65,8 +66,10 @@ axiosInstance.interceptors.request.use(
     
     if (typeof config.headers.set === "function") {
       config.headers.set("lang", "en");
+      config.headers.set("Accept-Language", "en");
     } else {
       config.headers["lang"] = "en";
+      config.headers["Accept-Language"] = "en";
     }
 
     // ─── Geo/IP headers for SSR ───
