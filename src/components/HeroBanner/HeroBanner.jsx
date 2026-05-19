@@ -5,12 +5,12 @@ import { ChevronLeft, ChevronRight, ArrowRight } from "lucide-react";
 import Link from "next/link";
 import BottomBg from "../../sections/Common/BottomBg/BottomBg";
 
-const AUTOPLAY_DELAY = 10000;
+const AUTOPLAY_DELAY = 5000;
 
 export default function HeroSlider({ banners = [] }) {
   const [current, setCurrent] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
-  const [heroHeight, setHeroHeight] = useState("100vh");
+  const [headerHeight, setHeaderHeight] = useState(0);
 
   const slides = Array.isArray(banners) ? banners : [];
   const total = slides.length;
@@ -34,38 +34,15 @@ export default function HeroSlider({ banners = [] }) {
     }
   }, [total, current]);
 
-  /* ── Calculate hero height = viewport - header ── */
+  /* ── Measure header height (old behavior) ── */
   useEffect(() => {
-    const calculateHeight = () => {
-      // Find static header (first header element)
+    const measure = () => {
       const header = document.querySelector("header");
-      if (header) {
-        const headerHeight = header.offsetHeight;
-        // Use svh for better mobile support, fallback to vh
-        setHeroHeight(`calc(100svh - ${headerHeight}px)`);
-      }
+      if (header) setHeaderHeight(header.offsetHeight);
     };
-
-    // Initial calculation
-    calculateHeight();
-
-    // Recalculate on resize
-    window.addEventListener("resize", calculateHeight, { passive: true });
-
-    // Recalculate after fonts load (might affect header height)
-    if (typeof document !== "undefined" && document.fonts) {
-      document.fonts.ready.then(calculateHeight);
-    }
-
-    // Fallback recalculations
-    const t1 = setTimeout(calculateHeight, 100);
-    const t2 = setTimeout(calculateHeight, 500);
-
-    return () => {
-      window.removeEventListener("resize", calculateHeight);
-      clearTimeout(t1);
-      clearTimeout(t2);
-    };
+    measure();
+    window.addEventListener("resize", measure, { passive: true });
+    return () => window.removeEventListener("resize", measure);
   }, []);
 
   const goTo = useCallback(
@@ -81,6 +58,7 @@ export default function HeroSlider({ banners = [] }) {
   const goPrev = useCallback(() => goTo(currentRef.current - 1), [goTo]);
   const goNext = useCallback(() => goTo(currentRef.current + 1), [goTo]);
 
+  /* ── Autoplay — single interval (old behavior) ── */
   useEffect(() => {
     if (total < 2) return;
 
@@ -93,6 +71,7 @@ export default function HeroSlider({ banners = [] }) {
     return () => clearInterval(timerRef.current);
   }, [total, goTo]);
 
+  /* ── Keyboard ── */
   useEffect(() => {
     const handleKey = (e) => {
       if (e.key === "ArrowLeft") goPrev();
@@ -102,6 +81,7 @@ export default function HeroSlider({ banners = [] }) {
     return () => window.removeEventListener("keydown", handleKey);
   }, [goPrev, goNext]);
 
+  /* ── Touch ── */
   const touchStartX = useRef(null);
   const touchStartY = useRef(null);
 
@@ -121,11 +101,12 @@ export default function HeroSlider({ banners = [] }) {
     touchStartY.current = null;
   };
 
+  /* ── Empty state ── */
   if (total === 0) {
     return (
       <section
         className="relative w-full bg-[#1a1a1a] overflow-hidden"
-        style={{ minHeight: heroHeight }}
+        style={{ minHeight: "200px" }}
         aria-label="Hero Slider"
       >
         <BottomBg />
@@ -138,25 +119,23 @@ export default function HeroSlider({ banners = [] }) {
   return (
     <section
       className="relative w-full bg-[#1a1a1a] select-none overflow-hidden"
-      style={{
-        height: heroHeight,
-        minHeight: "400px", // Fallback minimum
-        maxHeight: "100svh",
-      }}
+      style={{ maxHeight: `calc(100vh - ${headerHeight}px)`, height: "100%" }}
       aria-label="Hero Slider"
       onMouseEnter={() => setIsPaused(true)}
       onMouseLeave={() => setIsPaused(false)}
       onTouchStart={handleTouchStart}
       onTouchEnd={handleTouchEnd}
     >
-      {/* Slides */}
-      <div className="relative w-full h-full">
+      {/* Slides — old behavior: natural image height */}
+      <div className="relative w-full">
         {slides.map((slide, index) => (
           <div
             key={slide.id}
             aria-hidden={index !== current}
-            className="absolute inset-0 w-full h-full"
             style={{
+              position: index === current ? "relative" : "absolute",
+              inset: 0,
+              width: "100%",
               opacity: index === current ? 1 : 0,
               zIndex: index === current ? 10 : 0,
               transition: "opacity 0.6s ease-in-out",
@@ -165,19 +144,30 @@ export default function HeroSlider({ banners = [] }) {
           >
             <img
               src={slide.image}
+              srcSet={slide.srcset || undefined}
+              sizes="100vw"
               alt={slide.alt}
               draggable={false}
               loading={index === 0 ? "eager" : "lazy"}
               fetchPriority={index === 0 ? "high" : "auto"}
               decoding="async"
-              className="w-full h-full object-cover object-center"
+              style={{
+                display: "block",
+                width: "100%",
+                height: "auto",
+                objectFit: "unset",
+                objectPosition: "center",
+              }}
             />
           </div>
         ))}
       </div>
 
       {/* Controls overlay */}
-      <div className="absolute inset-0 z-20 pointer-events-none">
+      <div
+        className="absolute inset-0 z-20 pointer-events-none"
+        style={{ height: "100%" }}
+      >
         <div className="relative w-full h-full pointer-events-auto">
           {/* Prev/Next arrows */}
           {total > 1 && (
@@ -207,10 +197,7 @@ export default function HeroSlider({ banners = [] }) {
           )}
 
           {/* Shop Now button */}
-          <div
-            className="absolute right-3 bottom-4 xsm:right-auto xsm:left-1/2 
-                          xsm:-translate-x-1/2 xsm:bottom-14 sm:bottom-16 md:bottom-20"
-          >
+          <div className="absolute right-3 bottom-4 xsm:right-auto xsm:left-1/2 xsm:-translate-x-1/2 xsm:bottom-14 sm:bottom-16 md:bottom-20">
             <Link
               href={activeSlide.href}
               className="group relative inline-flex items-center gap-2 bg-main text-white 
@@ -236,10 +223,7 @@ export default function HeroSlider({ banners = [] }) {
           {/* Dots + Counter */}
           {total > 1 && (
             <div className="absolute left-1/2 -translate-x-1/2 bottom-3 sm:bottom-4 md:bottom-5">
-              <div
-                className="hidden sm:flex items-center gap-2 sm:gap-3 bg-black/25 
-                              backdrop-blur-sm rounded-full px-3 py-1.5 sm:px-4 sm:py-2"
-              >
+              <div className="hidden sm:flex items-center gap-2 sm:gap-3 bg-black/25 backdrop-blur-sm rounded-full px-3 py-1.5 sm:px-4 sm:py-2">
                 <div
                   className="flex items-center gap-1 sm:gap-1.5"
                   role="tablist"
@@ -268,6 +252,10 @@ export default function HeroSlider({ banners = [] }) {
           )}
         </div>
       </div>
+
+      <style>{`
+        @keyframes progressBar { from { width: 0%; } to { width: 100%; } }
+      `}</style>
 
       <BottomBg />
     </section>
