@@ -4,7 +4,7 @@ import { useEffect, useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { useDispatch, useSelector } from "react-redux";
 import Image from "next/image";
-import { addToCart } from "../../store/cartSlice";
+import { addToCart, removeFromCart } from "../../store/cartSlice";
 import { setBuyNowItem } from "../../utils/buyNow";
 
 function isUAECountry(country) {
@@ -64,11 +64,15 @@ export default function ProductStickyBar({ product }) {
     };
   }, [product?.id]);
 
-  const handleAdd = useCallback(async () => {
-    if (!product?.id || isAdding || isInCart || isOutOfStock) return;
+  const handleCartToggle = useCallback(async () => {
+    if (!product?.id || isAdding || (isOutOfStock && !isInCart)) return;
     setIsAdding(true);
     try {
-      await dispatch(addToCart({ productId: product.id, quantity: 1 })).unwrap();
+      if (isInCart) {
+        await dispatch(removeFromCart({ productId: product.id })).unwrap();
+      } else {
+        await dispatch(addToCart({ productId: product.id, quantity: 1 })).unwrap();
+      }
     } catch {
       /* handled by Redux */
     } finally {
@@ -149,24 +153,30 @@ export default function ProductStickyBar({ product }) {
             disabled={isOutOfStock}
             className="hidden h-10 items-center justify-center gap-1.5 rounded-xl bg-soft-black px-4 text-xs font-semibold uppercase tracking-[0.1em] text-white shadow-[0_6px_16px_rgba(45,45,45,0.2)] transition hover:bg-[#1a1a1a] disabled:cursor-not-allowed disabled:opacity-50 xsm:inline-flex sm:h-11 sm:px-5"
           >
-            <BoltIcon />
+            {/* <BoltIcon /> */}
             <span>Buy</span>
           </button>
 
           {/* ── Add to Cart / Added ── */}
           <button
             type="button"
-            onClick={handleAdd}
-            disabled={isAdding || isInCart || isOutOfStock}
-            className={`inline-flex h-10 shrink-0 items-center justify-center gap-1.5 rounded-xl px-4 text-xs font-semibold uppercase tracking-[0.1em] text-white transition sm:h-11 sm:px-5 ${
+            onClick={handleCartToggle}
+            disabled={isAdding || (isOutOfStock && !isInCart)}
+            className={`inline-flex h-10 shrink-0 items-center justify-center gap-1.5 rounded-xl px-4 text-xs font-semibold uppercase tracking-[0.1em] transition sm:h-11 sm:px-5 ${
               isInCart
-                ? "cursor-not-allowed bg-main/60 opacity-70"
-                : "bg-main shadow-[0_6px_16px_rgba(104,188,82,0.28)] hover:bg-[#5eae49] disabled:cursor-not-allowed disabled:opacity-60"
+                ? "bg-red-50 text-red-600 hover:bg-red-100 disabled:opacity-50"
+                : "bg-main text-white shadow-[0_6px_16px_rgba(104,188,82,0.28)] hover:bg-[#5eae49] disabled:cursor-not-allowed disabled:opacity-60"
             }`}
-            aria-label={isInCart ? "Already in cart" : "Add to cart"}
+            aria-label={isInCart ? "Remove from cart" : "Add to cart"}
           >
             {isAdding ? (
-              <span className="h-3.5 w-3.5 animate-spin rounded-full border-2 border-white/40 border-t-white" />
+              <span
+                className={`h-3.5 w-3.5 animate-spin rounded-full border-2 ${
+                  isInCart
+                    ? "border-red-600/40 border-t-red-600"
+                    : "border-white/40 border-t-white"
+                }`}
+              />
             ) : isInCart ? (
               <>
                 <svg
@@ -174,15 +184,11 @@ export default function ProductStickyBar({ product }) {
                   fill="none"
                   viewBox="0 0 24 24"
                   stroke="currentColor"
-                  strokeWidth={2.5}
+                  strokeWidth={2}
                 >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M5 13l4 4L19 7"
-                  />
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M20 12H4" />
                 </svg>
-                <span>Added</span>
+                <span>Remove</span>
               </>
             ) : (
               <span>Add to Cart</span>

@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useDispatch, useSelector } from "react-redux";
-import { addToCart, fetchCart } from "../../store/cartSlice";
+import { addToCart, fetchCart, removeFromCart } from "../../store/cartSlice";
 import { setBuyNowItem } from "../../utils/buyNow";
 
 /* ── tiny inline icons ── */
@@ -156,12 +156,9 @@ export default function ProductPurchaseActions({
   const cartItem = items.find((item) => item.id === product?.id) || null;
   const isInCart = initialized ? Boolean(cartItem) : Boolean(product?.inCart);
   const isCartSyncing = !initialized && loading;
-  const disableAddAction =
-    isSubmitting ||
-    actionLoading ||
-    isCartSyncing ||
-    isInCart ||
-    isOutOfStock;
+  const disableButton = isInCart
+    ? isSubmitting || actionLoading || isCartSyncing
+    : isSubmitting || actionLoading || isCartSyncing || isOutOfStock;
 
   useEffect(() => {
     return () => {
@@ -197,38 +194,42 @@ export default function ProductPurchaseActions({
     setQuantity(value);
   }
 
-  function getAddButtonText() {
+  function getButtonText() {
     if (isCartSyncing) return "Loading...";
     if (isSubmitting && submitMode === "add") return "Adding...";
-    if (isInCart) return "Added";
+    if (isSubmitting && submitMode === "remove") return "Removing...";
+    if (isInCart) return "Remove from Cart";
     return "Add to Cart";
   }
 
-  async function handleAddToCart() {
-    if (!product?.id || disableAddAction) return;
+  async function handleCartToggle() {
+    if (!product?.id || disableButton) return;
 
     setIsSubmitting(true);
-    setSubmitMode("add");
+    setSubmitMode(isInCart ? "remove" : "add");
     setCartError("");
 
     try {
-      const action = await dispatch(
-        addToCart({
-          productId: product.id,
-          quantity,
-        })
-      );
+      let action;
+      if (isInCart) {
+        action = await dispatch(removeFromCart({ productId: product.id }));
+      } else {
+        action = await dispatch(
+          addToCart({
+            productId: product.id,
+            quantity,
+          })
+        );
+      }
 
-      if (addToCart.rejected.match(action)) {
+      if (action.error) {
         throw new Error(
-          action.payload ||
-            action.error?.message ||
-            "Failed to add product to cart."
+          action.payload || action.error?.message || "Failed to update cart."
         );
       }
     } catch (error) {
-      console.error("[PDP] Add to cart failed:", error);
-      setCartError(error.message || "Failed to add product to cart.");
+      console.error("[PDP] Cart action failed:", error);
+      setCartError(error.message || "Failed to update cart.");
     } finally {
       setIsSubmitting(false);
       setSubmitMode("");
@@ -356,12 +357,12 @@ export default function ProductPurchaseActions({
 
         <button
           type="button"
-          disabled={disableAddAction}
-          onClick={handleAddToCart}
-          className={`inline-flex h-12 items-center justify-center rounded-2xl px-6 text-sm font-semibold text-white transition ${
+          disabled={disableButton}
+          onClick={handleCartToggle}
+          className={`inline-flex h-12 items-center justify-center rounded-2xl px-6 text-sm font-semibold transition ${
             isInCart
-              ? "cursor-not-allowed bg-main/60 opacity-70"
-              : "bg-main hover:brightness-95 disabled:cursor-not-allowed disabled:opacity-50"
+              ? "bg-red-50 text-red-600 hover:bg-red-100 disabled:opacity-50"
+              : "bg-main text-white hover:brightness-95 disabled:cursor-not-allowed disabled:opacity-50"
           }`}
         >
           {isInCart && !isSubmitting && (
@@ -370,16 +371,12 @@ export default function ProductPurchaseActions({
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"
-              strokeWidth={2.5}
+              strokeWidth={2}
             >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M5 13l4 4L19 7"
-              />
+              <path strokeLinecap="round" strokeLinejoin="round" d="M20 12H4" />
             </svg>
           )}
-          {getAddButtonText()}
+          {getButtonText()}
         </button>
       </div>
 
@@ -395,7 +392,7 @@ export default function ProductPurchaseActions({
         disabled={isOutOfStock || isSubmitting || actionLoading}
         className="group relative mt-3 inline-flex h-14 w-full items-center justify-center gap-2 overflow-hidden rounded-2xl bg-soft-black px-6 text-sm font-semibold uppercase tracking-[0.14em] text-white shadow-[0_12px_28px_rgba(45,45,45,0.25)] transition hover:bg-[#1a1a1a] hover:shadow-[0_16px_36px_rgba(45,45,45,0.32)] disabled:cursor-not-allowed disabled:opacity-50"
       >
-        <BoltIcon />
+        {/* <BoltIcon /> */}
         <span>Buy Now</span>
       </button>
 
