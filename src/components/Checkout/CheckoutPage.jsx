@@ -10,6 +10,7 @@ import CheckoutSummary from "./CheckoutSummary";
 import CheckoutPaymentStep from "./CheckoutPaymentStep";
 import { fetchCart } from "../../store/cartSlice";
 import { createCheckoutSession } from "../../services/checkout.service";
+import { getBuyNowItem, clearBuyNowItem } from "../../utils/buyNow";
 
 /* ═══════════════════════════════════════════════
    Session persistence for refresh recovery
@@ -299,15 +300,44 @@ function CheckoutInner() {
   const [isCreatingSession, setIsCreatingSession] = useState(false);
   const [restoreChecked, setRestoreChecked] = useState(false);
 
+  /* ── Buy Now mode detection ── */
+  const [buyNowItem, setBuyNowItemState] = useState(null);
+  const [buyNowChecked, setBuyNowChecked] = useState(false);
+
   const stepParam = searchParams.get("step");
   const orderIdParam = searchParams.get("orderId");
   const expectsRestore = stepParam === "payment" && Boolean(orderIdParam);
 
+  /* ── Read buy now item once on mount ── */
   useEffect(() => {
+    const item = getBuyNowItem();
+    setBuyNowItemState(item);
+    setBuyNowChecked(true);
+  }, []);
+
+  const isBuyNowMode = Boolean(buyNowItem?.productId);
+
+  /* ── Build effective items: buy-now item OR cart items ── */
+  const effectiveItems = isBuyNowMode
+    ? [
+        {
+          id: buyNowItem.productId,
+          quantity: buyNowItem.quantity || 1,
+          title: buyNowItem.title || "",
+          image: buyNowItem.image || "",
+          price: buyNowItem.price || 0,
+          currency: buyNowItem.currency || "AED",
+        },
+      ]
+    : items;
+
+  useEffect(() => {
+    // skip cart fetch if in buy now mode
+    if (isBuyNowMode) return;
     if (!initialized) {
       dispatch(fetchCart());
     }
-  }, [initialized, dispatch]);
+  }, [initialized, dispatch, isBuyNowMode]);
 
   useEffect(() => {
     if (!expectsRestore) {
@@ -346,7 +376,7 @@ function CheckoutInner() {
 
       try {
         const response = await createCheckoutSession({
-          cartItems: items,
+          cartItems: effectiveItems,
           shippingInfo: formData,
         });
 
@@ -365,6 +395,11 @@ function CheckoutInner() {
           shippingData: formData,
           serverSummary: nextSummary,
         });
+
+        // Clear buy-now flag once session is created (order is locked in)
+        if (isBuyNowMode) {
+          clearBuyNowItem();
+        }
 
         router.replace(
           `/checkout?step=payment&orderId=${encodeURIComponent(
@@ -386,7 +421,7 @@ function CheckoutInner() {
         setIsCreatingSession(false);
       }
     },
-    [items, router]
+    [effectiveItems, router, isBuyNowMode]
   );
 
   const handleBackToShipping = useCallback(() => {
@@ -402,19 +437,41 @@ function CheckoutInner() {
 
   const hasPaymentSession = step === "payment" && !!clientSecret && !!orderId;
 
+  /* ── Redirect to home if cart is empty AND not in buy-now mode AND no payment session ── */
   useEffect(() => {
+    if (!buyNowChecked) return;
+    if (isBuyNowMode) return;
     if (initialized && items.length === 0 && !hasPaymentSession) {
       router.replace("/");
     }
-  }, [initialized, items.length, hasPaymentSession, router]);
+  }, [
+    initialized,
+    items.length,
+    hasPaymentSession,
+    router,
+    isBuyNowMode,
+    buyNowChecked,
+  ]);
 
-  if (!initialized || loading || (expectsRestore && !restoreChecked)) {
+  /* ── Loading state ── */
+  if (!buyNowChecked) {
     return <CheckoutSkeleton />;
   }
 
-  if (initialized && items.length === 0 && !hasPaymentSession) {
+  if (!isBuyNowMode && (!initialized || loading)) {
+    return <CheckoutSkeleton />;
+  }
+
+  if (expectsRestore && !restoreChecked) {
+    return <CheckoutSkeleton />;
+  }
+
+  if (!isBuyNowMode && initialized && items.length === 0 && !hasPaymentSession) {
     return null;
   }
+
+  /* ── Summary subtotal calculation for buy-now ── */
+  const effectiveSubtotal = isBuyNowMode ? (buyNowItem.price || 0) * (buyNowItem.quantity || 1) : subtotal;
 
   return (
     <>
@@ -443,8 +500,8 @@ function CheckoutInner() {
 
         <div className="lg:col-span-5">
           <CheckoutSummary
-            items={items}
-            subtotal={subtotal}
+            items={effectiveItems}
+            subtotal={effectiveSubtotal}
             serverSummary={serverSummary}
           />
         </div>

@@ -9,6 +9,7 @@ import CheckoutShippingForm from "./CheckoutShippingForm";
 import CheckoutSummary from "./CheckoutSummary";
 import { fetchCart } from "../../store/cartSlice";
 import { createCODOrder } from "../../services/checkout.service";
+import { getBuyNowItem, clearBuyNowItem } from "../../utils/buyNow";
 
 /* ═══════════════════════════════════════════════
    Background blobs
@@ -149,11 +150,37 @@ function CheckoutCODInner() {
   const [submitError, setSubmitError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  /* ── Buy Now mode detection ── */
+  const [buyNowItem, setBuyNowItemState] = useState(null);
+  const [buyNowChecked, setBuyNowChecked] = useState(false);
+
   useEffect(() => {
+    const item = getBuyNowItem();
+    setBuyNowItemState(item);
+    setBuyNowChecked(true);
+  }, []);
+
+  const isBuyNowMode = Boolean(buyNowItem?.productId);
+
+  const effectiveItems = isBuyNowMode
+    ? [
+        {
+          id: buyNowItem.productId,
+          quantity: buyNowItem.quantity || 1,
+          title: buyNowItem.title || "",
+          image: buyNowItem.image || "",
+          price: buyNowItem.price || 0,
+          currency: buyNowItem.currency || "AED",
+        },
+      ]
+    : items;
+
+  useEffect(() => {
+    if (isBuyNowMode) return;
     if (!initialized) {
       dispatch(fetchCart());
     }
-  }, [initialized, dispatch]);
+  }, [initialized, dispatch, isBuyNowMode]);
 
   const handleShippingSubmit = useCallback(
     async (formData) => {
@@ -162,12 +189,16 @@ function CheckoutCODInner() {
 
       try {
         const response = await createCODOrder({
-          cartItems: items,
+          cartItems: effectiveItems,
           shippingInfo: formData,
         });
 
         const data = response?.data || response;
         setShippingData(formData);
+
+        if (isBuyNowMode) {
+          clearBuyNowItem();
+        }
 
         router.replace(
           `/checkout/success?orderId=${encodeURIComponent(
@@ -189,22 +220,30 @@ function CheckoutCODInner() {
         setIsSubmitting(false);
       }
     },
-    [items, router]
+    [effectiveItems, router, isBuyNowMode]
   );
 
   useEffect(() => {
+    if (!buyNowChecked) return;
+    if (isBuyNowMode) return;
     if (initialized && items.length === 0) {
       router.replace("/");
     }
-  }, [initialized, items.length, router]);
+  }, [initialized, items.length, router, isBuyNowMode, buyNowChecked]);
 
-  if (!initialized || loading) {
+  if (!buyNowChecked) {
     return <CheckoutSkeleton />;
   }
 
-  if (initialized && items.length === 0) {
+  if (!isBuyNowMode && (!initialized || loading)) {
+    return <CheckoutSkeleton />;
+  }
+
+  if (!isBuyNowMode && initialized && items.length === 0) {
     return null;
   }
+
+  const effectiveSubtotal = isBuyNowMode ? (buyNowItem.price || 0) * (buyNowItem.quantity || 1) : subtotal;
 
   return (
     <>
@@ -228,8 +267,8 @@ function CheckoutCODInner() {
 
         <div className="lg:col-span-5">
           <CheckoutSummary
-            items={items}
-            subtotal={subtotal}
+            items={effectiveItems}
+            subtotal={effectiveSubtotal}
           />
         </div>
       </div>

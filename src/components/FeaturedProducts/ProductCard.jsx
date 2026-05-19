@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback, useEffect, useRef, memo } from "react";
+import { useState, useCallback, memo } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import Link from "next/link";
 import Image from "next/image";
@@ -15,38 +15,32 @@ const CartToggleButton = memo(function CartToggleButton({
   isInCart,
   isLoading,
   onAdd,
-  onRemove,
 }) {
   const handleClick = useCallback(
     (e) => {
       e.preventDefault();
       e.stopPropagation();
 
-      if (isLoading) return;
-
-      if (isInCart) {
-        onRemove();
-      } else {
-        onAdd();
-      }
+      if (isLoading || isInCart) return;
+      onAdd();
     },
-    [isInCart, isLoading, onAdd, onRemove]
+    [isInCart, isLoading, onAdd]
   );
 
   return (
     <button
       type="button"
       onClick={handleClick}
-      disabled={isLoading}
-      aria-label={isInCart ? "Remove from cart" : "Add to cart"}
-      className={`flex h-10 w-full items-center justify-center gap-2 rounded-xl text-xs font-semibold uppercase tracking-[0.1em] transition duration-200 disabled:opacity-60 disabled:cursor-not-allowed ${
+      disabled={isLoading || isInCart}
+      aria-label={isInCart ? "Already in cart" : "Add to cart"}
+      className={`flex h-10 w-full items-center justify-center gap-2 rounded-xl text-xs font-semibold uppercase tracking-[0.1em] text-white transition duration-200 ${
         isInCart
-          ? "bg-red-50 text-red-500 hover:bg-red-100"
-          : "bg-main/8 text-main hover:bg-main/15"
+          ? "cursor-not-allowed bg-main/60 opacity-70"
+          : "bg-main hover:bg-[#5eae49] disabled:cursor-not-allowed disabled:opacity-60"
       }`}
     >
       {isLoading ? (
-        <span className="h-3.5 w-3.5 animate-spin rounded-full border-2 border-current/30 border-t-current" />
+        <span className="h-3.5 w-3.5 animate-spin rounded-full border-2 border-white/40 border-t-white" />
       ) : isInCart ? (
         <>
           <svg
@@ -54,15 +48,15 @@ const CartToggleButton = memo(function CartToggleButton({
             fill="none"
             viewBox="0 0 24 24"
             stroke="currentColor"
-            strokeWidth={2}
+            strokeWidth={2.5}
           >
             <path
               strokeLinecap="round"
               strokeLinejoin="round"
-              d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+              d="M5 13l4 4L19 7"
             />
           </svg>
-          Remove
+          Added
         </>
       ) : (
         <>
@@ -116,8 +110,6 @@ export default function ProductCard({
   const cartItems = useSelector((state) => state.cart.items);
   const isCartInitialized = useSelector((state) => state.cart.initialized);
 
-  // If Redux hasn't finished loading the cart yet, use the API's initial state
-  // Once Redux is loaded, Redux becomes the source of truth.
   const isInCart = isCartInitialized
     ? cartItems.some((item) => item.id === id)
     : inCart;
@@ -128,18 +120,6 @@ export default function ProductCard({
     setLocalLoading(true);
     try {
       await dispatch(addToCart({ productId: id, quantity: 1 })).unwrap();
-    } catch {
-      /* error handled by Redux */
-    } finally {
-      setLocalLoading(false);
-    }
-  }, [id, dispatch]);
-
-  const handleRemove = useCallback(async () => {
-    if (!id) return;
-    setLocalLoading(true);
-    try {
-      await dispatch(removeFromCart({ productId: id })).unwrap();
     } catch {
       /* error handled by Redux */
     } finally {
@@ -244,7 +224,6 @@ export default function ProductCard({
               isInCart={isInCart}
               isLoading={localLoading}
               onAdd={handleAdd}
-              onRemove={handleRemove}
             />
           </div>
         </div>

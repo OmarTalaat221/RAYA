@@ -46,24 +46,38 @@ const CheckoutSummary = memo(function CheckoutSummary({
       Array.isArray(serverSummary?.orderItems) &&
       serverSummary.orderItems.length
     ) {
-      return serverSummary.orderItems.map((item) => ({
-        id: item?.id || item?.productId,
-        title: item?.productName || "Product",
-        image: resolveOrderItemImage(item),
-        quantity: toNumber(item?.quantity) || 1,
-        price: toNumber(item?.unitPrice),
-        currency: toCurrency(item?.currency || serverSummary?.currency),
-      }));
+      return serverSummary.orderItems.map((item) => {
+        const product = item?.product || {};
+        const translations = Array.isArray(product?.translations) ? product.translations : [];
+        const translation = translations.find(t => t.lang === "en") || translations[0] || {};
+        const accurateTitle = item?.productName || product?.title || translation?.title || item?.title || "Product";
+
+        return {
+          id: item?.id || item?.productId,
+          title: accurateTitle,
+          image: resolveOrderItemImage(item),
+          quantity: toNumber(item?.quantity) || 1,
+          price: toNumber(item?.unitPrice),
+          currency: toCurrency(item?.currency || serverSummary?.currency),
+        };
+      });
     }
 
-    return (items || []).map((item) => ({
-      id: item?.id,
-      title: item?.title || "Product",
-      image: resolveImage(item?.image || ""),
-      quantity: toNumber(item?.quantity) || 1,
-      price: toNumber(item?.price),
-      currency: toCurrency(item?.currency),
-    }));
+    return (items || []).map((item) => {
+      const product = item?.product || {};
+      const translations = Array.isArray(product?.translations) ? product.translations : [];
+      const translation = translations.find(t => t.lang === "en") || translations[0] || {};
+      const accurateTitle = item?.title || product?.title || translation?.title || "Product";
+
+      return {
+        id: item?.id,
+        title: accurateTitle,
+        image: resolveImage(item?.image || ""),
+        quantity: toNumber(item?.quantity) || 1,
+        price: toNumber(item?.price),
+        currency: toCurrency(item?.currency),
+      };
+    });
   }, [items, serverSummary]);
 
   const currencyCode = toCurrency(

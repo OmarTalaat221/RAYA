@@ -1,8 +1,10 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { useRouter } from "next/navigation";
 import { useDispatch, useSelector } from "react-redux";
-import { addToCart, fetchCart, removeFromCart } from "../../store/cartSlice";
+import { addToCart, fetchCart } from "../../store/cartSlice";
+import { setBuyNowItem } from "../../utils/buyNow";
 
 /* ── tiny inline icons ── */
 function MinusIcon() {
@@ -48,6 +50,37 @@ function LockIcon() {
   );
 }
 
+function BoltIcon() {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      className="h-4 w-4"
+      fill="currentColor"
+      aria-hidden="true"
+    >
+      <path d="M13 2 4.5 13.5h6L9 22l9.5-12h-6L13 2Z" />
+    </svg>
+  );
+}
+
+function TruckIcon() {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      className="h-4 w-4"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.8"
+      aria-hidden="true"
+    >
+      <path d="M3 7h11v9H3z" />
+      <path d="M14 10h4l3 3v3h-7" />
+      <circle cx="7" cy="18" r="2" />
+      <circle cx="17" cy="18" r="2" />
+    </svg>
+  );
+}
+
 function ShareIcon() {
   return (
     <svg
@@ -81,6 +114,17 @@ function LinkIcon() {
   );
 }
 
+/* ── UAE country detection ── */
+function isUAECountry(country) {
+  if (!country) return false;
+  const normalized = String(country).trim().toUpperCase();
+  return (
+    normalized === "AE" ||
+    normalized === "UAE" ||
+    normalized === "UNITED ARAB EMIRATES"
+  );
+}
+
 export default function ProductPurchaseActions({
   product,
   stockStatus,
@@ -88,6 +132,7 @@ export default function ProductPurchaseActions({
   shortDescription,
 }) {
   const dispatch = useDispatch();
+  const router = useRouter();
 
   const {
     items = [],
@@ -95,6 +140,9 @@ export default function ProductPurchaseActions({
     loading,
     actionLoading,
   } = useSelector((state) => state.cart);
+
+  const geoCountry = useSelector((state) => state.geo?.country);
+  const isUAE = isUAECountry(geoCountry);
 
   const [quantity, setQuantity] = useState(1);
   const [copied, setCopied] = useState(false);
@@ -108,11 +156,12 @@ export default function ProductPurchaseActions({
   const cartItem = items.find((item) => item.id === product?.id) || null;
   const isInCart = initialized ? Boolean(cartItem) : Boolean(product?.inCart);
   const isCartSyncing = !initialized && loading;
-  const disablePurchaseAction =
+  const disableAddAction =
     isSubmitting ||
     actionLoading ||
     isCartSyncing ||
-    (!isInCart && isOutOfStock);
+    isInCart ||
+    isOutOfStock;
 
   useEffect(() => {
     return () => {
@@ -148,43 +197,21 @@ export default function ProductPurchaseActions({
     setQuantity(value);
   }
 
-  function getPrimaryButtonText() {
+  function getAddButtonText() {
     if (isCartSyncing) return "Loading...";
     if (isSubmitting && submitMode === "add") return "Adding...";
-    if (isSubmitting && submitMode === "remove") return "Removing...";
-    if (isInCart) return "Remove from Cart";
+    if (isInCart) return "Added";
     return "Add to Cart";
   }
 
-  async function handlePrimaryAction() {
-    if (!product?.id || disablePurchaseAction) return;
+  async function handleAddToCart() {
+    if (!product?.id || disableAddAction) return;
 
     setIsSubmitting(true);
+    setSubmitMode("add");
     setCartError("");
 
     try {
-      if (isInCart) {
-        setSubmitMode("remove");
-
-        const action = await dispatch(
-          removeFromCart({
-            productId: product.id,
-          })
-        );
-
-        if (removeFromCart.rejected.match(action)) {
-          throw new Error(
-            action.payload ||
-              action.error?.message ||
-              "Failed to remove product from cart."
-          );
-        }
-
-        return;
-      }
-
-      setSubmitMode("add");
-
       const action = await dispatch(
         addToCart({
           productId: product.id,
@@ -200,17 +227,50 @@ export default function ProductPurchaseActions({
         );
       }
     } catch (error) {
-      console.error("[PDP] Cart action failed:", error);
-      setCartError(
-        error.message ||
-          (isInCart
-            ? "Failed to remove product from cart."
-            : "Failed to add product to cart.")
-      );
+      console.error("[PDP] Add to cart failed:", error);
+      setCartError(error.message || "Failed to add product to cart.");
     } finally {
       setIsSubmitting(false);
       setSubmitMode("");
     }
+  }
+
+  function getProductImage() {
+    const media = Array.isArray(product?.media) ? product.media : [];
+    const primary =
+      media.find((m) => m?.type === "image" && m?.isPrimary) ||
+      media.find((m) => m?.type === "image");
+    return product?.frontImage || primary?.src || product?.backImage || "";
+  }
+
+  function handleBuyNow() {
+    if (!product?.id || isOutOfStock || isSubmitting) return;
+
+    setBuyNowItem({
+      productId: product.id,
+      quantity,
+      title: productTitle,
+      image: getProductImage(),
+      price: product.newPrice || product.price || 0,
+      currency: product.currency || "AED",
+    });
+
+    router.push("/checkout");
+  }
+
+  function handleCashOnDelivery() {
+    if (!product?.id || isOutOfStock || isSubmitting) return;
+
+    setBuyNowItem({
+      productId: product.id,
+      quantity,
+      title: productTitle,
+      image: getProductImage(),
+      price: product.newPrice || product.price || 0,
+      currency: product.currency || "AED",
+    });
+
+    router.push("/checkout/cod");
   }
 
   async function handleCopyLink() {
@@ -243,7 +303,10 @@ export default function ProductPurchaseActions({
   }
 
   return (
-    <section className="rounded-[28px] border border-black/5 bg-[#f7f7f4] p-4 sm:p-5">
+    <section
+      data-purchase-actions
+      className="rounded-[28px] border border-black/5 bg-[#f7f7f4] p-4 sm:p-5"
+    >
       {/* ── qty + add to cart ── */}
       <div className="grid gap-4 sm:grid-cols-[140px_minmax(0,1fr)] sm:items-end">
         <div>
@@ -293,15 +356,30 @@ export default function ProductPurchaseActions({
 
         <button
           type="button"
-          disabled={disablePurchaseAction}
-          onClick={handlePrimaryAction}
-          className={`inline-flex h-12 items-center justify-center rounded-2xl px-6 text-sm font-semibold text-white transition disabled:cursor-not-allowed disabled:opacity-50 ${
+          disabled={disableAddAction}
+          onClick={handleAddToCart}
+          className={`inline-flex h-12 items-center justify-center rounded-2xl px-6 text-sm font-semibold text-white transition ${
             isInCart
-              ? "bg-red-500 hover:bg-red-600"
-              : "bg-main hover:brightness-95"
+              ? "cursor-not-allowed bg-main/60 opacity-70"
+              : "bg-main hover:brightness-95 disabled:cursor-not-allowed disabled:opacity-50"
           }`}
         >
-          {getPrimaryButtonText()}
+          {isInCart && !isSubmitting && (
+            <svg
+              className="mr-2 h-4 w-4"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              strokeWidth={2.5}
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M5 13l4 4L19 7"
+              />
+            </svg>
+          )}
+          {getAddButtonText()}
         </button>
       </div>
 
@@ -310,14 +388,29 @@ export default function ProductPurchaseActions({
         <p className="font-poppins! mt-3 text-sm text-red-500">{cartError}</p>
       )}
 
-      {/* ── buy now ── */}
+      {/* ── buy now (prominent) ── */}
       <button
         type="button"
+        onClick={handleBuyNow}
         disabled={isOutOfStock || isSubmitting || actionLoading}
-        className="mt-3 inline-flex h-12 w-full items-center justify-center rounded-2xl border border-black/8 bg-white px-6 text-sm font-semibold text-soft-black transition hover:border-main hover:text-main disabled:cursor-not-allowed disabled:opacity-50"
+        className="group relative mt-3 inline-flex h-14 w-full items-center justify-center gap-2 overflow-hidden rounded-2xl bg-soft-black px-6 text-sm font-semibold uppercase tracking-[0.14em] text-white shadow-[0_12px_28px_rgba(45,45,45,0.25)] transition hover:bg-[#1a1a1a] hover:shadow-[0_16px_36px_rgba(45,45,45,0.32)] disabled:cursor-not-allowed disabled:opacity-50"
       >
-        Buy Now
+        <BoltIcon />
+        <span>Buy Now</span>
       </button>
+
+      {/* ── cash on delivery (UAE only) ── */}
+      {isUAE && (
+        <button
+          type="button"
+          onClick={handleCashOnDelivery}
+          disabled={isOutOfStock || isSubmitting || actionLoading}
+          className="mt-2.5 inline-flex h-12 w-full items-center justify-center gap-2 rounded-2xl border border-black/10 bg-white px-6 text-sm font-semibold text-soft-black transition hover:border-main hover:text-main disabled:cursor-not-allowed disabled:opacity-50"
+        >
+          <TruckIcon />
+          <span>Cash on Delivery</span>
+        </button>
+      )}
 
       {/* ── secure note ── */}
       <div className="mt-4 flex items-start gap-3 rounded-2xl border border-main/10 bg-white p-4">

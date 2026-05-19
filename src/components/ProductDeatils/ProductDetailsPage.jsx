@@ -1,6 +1,7 @@
 import ProductGallery from "./ProductGallery";
 import ProductSummary from "./ProductSummary";
 import ProductContentSections from "./ProductContentSections";
+import ProductStickyBar from "./ProductStickyBar";
 
 export default function ProductDetailsPage({ product }) {
   return (
@@ -21,6 +22,9 @@ export default function ProductDetailsPage({ product }) {
         shortDescription={product.shortDescription}
         contentSections={product.contentSections}
       />
+
+      {/* ── sticky bottom bar (mobile + desktop) ── */}
+      <ProductStickyBar product={product} />
     </article>
   );
 }

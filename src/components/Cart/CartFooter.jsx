@@ -6,6 +6,7 @@ import { useDispatch } from "react-redux";
 import { Loader2 } from "lucide-react";
 import { closeCart } from "../../store/cartSlice";
 import { formatMoney } from "./cart.utils";
+import { clearBuyNowItem } from "../../utils/buyNow";
 import "./cart-shimmer.css";
 
 const CartFooter = memo(function CartFooter({
@@ -20,12 +21,14 @@ const CartFooter = memo(function CartFooter({
 
   const handleCheckout = useCallback(() => {
     if (loading) return;
+    clearBuyNowItem();
     dispatch(closeCart());
     router.push("/checkout");
   }, [loading, dispatch, router]);
 
   const handleCOD = useCallback(() => {
     if (loading || typeof onCashOnDelivery !== "function") return;
+    clearBuyNowItem();
     onCashOnDelivery();
   }, [loading, onCashOnDelivery]);
 
