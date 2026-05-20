@@ -78,6 +78,11 @@ function adaptProductForDetails(product, lang = "en") {
     newPrice,
     currency: product.currency || "AED",
     isOnSale: Boolean(product.isOnSale),
+
+    /* ── NEW ── */
+    discountPercentage: toNumber(product.discountPercentage) || 0,
+    discountValue: toNumber(product.discountValue) || 0,
+
     brand: product.brand || "",
     sku: product.sku || "",
     badge: typeof product.badge === "string" ? product.badge.trim() : "",

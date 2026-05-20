@@ -1,5 +1,3 @@
-// services/blogs.service.js
-
 import axiosInstance from "./axios";
 
 export async function getAllBlogs(page = 1, limit = 6) {
@@ -14,6 +12,11 @@ export async function getBlogById(id) {
   return response.data;
 }
 
+export async function getBlogBySlug(slug) {
+  const response = await axiosInstance.get(`/blogs/slug/${slug}`);
+  return response.data;
+}
+
 /* ─── Sitemap helper ─────────────────────────────────────────────────────── */
 
 export async function getAllBlogsForSitemap({ pageSize = 50 } = {}) {
@@ -25,26 +28,13 @@ export async function getAllBlogsForSitemap({ pageSize = 50 } = {}) {
     try {
       const response = await getAllBlogs(page, pageSize);
 
-      // 🔍 DEBUG
-      console.log(
-        `[Sitemap-Blogs] Page ${page} raw response:`,
-        JSON.stringify(response).slice(0, 300)
-      );
-
-      // Response shape: { message, status, lang, data: { items, pagination } }
       const payload = response?.data ?? response;
       const items = Array.isArray(payload?.items) ? payload.items : [];
       const pagination = payload?.pagination ?? {};
 
-      // 🔍 DEBUG
-      console.log(`[Sitemap-Blogs] Page ${page} → ${items.length} items found`);
-
       for (const item of items) {
         const slug = item?.slug;
-        if (!slug) {
-          console.warn(`[Sitemap-Blogs] Item missing slug:`, item?.id);
-          continue;
-        }
+        if (!slug) continue;
 
         let latestUpdate = item.updatedAt || item.createdAt || null;
 
@@ -84,6 +74,5 @@ export async function getAllBlogsForSitemap({ pageSize = 50 } = {}) {
     }
   }
 
-  console.log(`[Sitemap-Blogs] Total items collected: ${allItems.length}`);
   return allItems;
 }

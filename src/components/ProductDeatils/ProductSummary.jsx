@@ -56,6 +56,7 @@ export default function ProductSummary({ product }) {
           newPrice={product.newPrice}
           badge={product.badge}
           isOnSale={product.isOnSale}
+          discountPercentage={product.discountPercentage}
         />
       </div>
 

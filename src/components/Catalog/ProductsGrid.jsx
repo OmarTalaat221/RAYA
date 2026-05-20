@@ -32,6 +32,7 @@ export default function ProductsGrid({
           newPrice={product.newPrice}
           currency={product.currency}
           isOnSale={product.isOnSale}
+          discountPercentage={product.discountPercentage}
           priority={index === 0}
           canHover={canHover}
           inCart={product.inCart}

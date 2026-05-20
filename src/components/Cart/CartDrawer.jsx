@@ -43,13 +43,13 @@ const CartDrawer = memo(function CartDrawer() {
   const error = useSelector((s) => s.cart.error);
   const initialized = useSelector((s) => s.cart.initialized);
   const qualifiesForFreeShipping = useSelector(
-    (s) => s.cart.qualifiesForFreeShipping
+    (s) => s.cart.qualifiesForFreeShipping,
   );
   const freeShippingRemaining = useSelector(
-    (s) => s.cart.freeShippingRemaining
+    (s) => s.cart.freeShippingRemaining,
   );
   const freeShippingThreshold = useSelector(
-    (s) => s.cart.freeShippingThreshold
+    (s) => s.cart.freeShippingThreshold,
   );
 
   const geoCountry = useSelector((s) => s.geo?.country || "");

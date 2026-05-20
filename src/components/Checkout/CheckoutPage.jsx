@@ -32,6 +32,7 @@ function adaptServerSummary(data) {
     discountAmount: toNumber(data?.discountAmount),
     total: toNumber(data?.total),
     orderItems: Array.isArray(data?.orderItems) ? data.orderItems : [],
+    coupon: data?.coupon || null,
   };
 }
 
@@ -57,7 +58,7 @@ function writeSession(payload) {
   try {
     window.sessionStorage.setItem(
       SESSION_KEY,
-      JSON.stringify({ ...payload, createdAt: Date.now() })
+      JSON.stringify({ ...payload, createdAt: Date.now() }),
     );
   } catch {
     /* ignore */
@@ -164,49 +165,6 @@ const StepIndicator = memo(function StepIndicator({ currentStep }) {
 StepIndicator.displayName = "StepIndicator";
 
 /* ═══════════════════════════════════════════════
-   Empty Cart
-   ═══════════════════════════════════════════════ */
-
-const EmptyCartState = memo(function EmptyCartState() {
-  return (
-    <div className="flex flex-col items-center justify-center py-16 text-center">
-      <div className="mb-6 flex h-20 w-20 items-center justify-center rounded-full bg-black/5">
-        <svg
-          className="h-9 w-9 text-secondary"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
-          strokeWidth={1.5}
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 00-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 00-16.536-1.84M7.5 14.25L5.106 5.272M6 20.25a.75.75 0 11-1.5 0 .75.75 0 011.5 0zm12.75 0a.75.75 0 11-1.5 0 .75.75 0 011.5 0z"
-          />
-        </svg>
-      </div>
-
-      <h2 className="mb-2 text-xl font-oswald! text-soft-black">
-        Your cart is empty
-      </h2>
-
-      <p className="mb-8 max-w-[36ch] text-sm leading-6 text-secondary">
-        Add some products to your cart before proceeding to checkout.
-      </p>
-
-      <Link
-        href="/collections"
-        className="inline-flex h-12 items-center justify-center gap-2 rounded-2xl bg-main px-8 text-sm font-medium uppercase tracking-[0.14em] text-white shadow-[0_12px_28px_rgba(104,188,82,0.24)] transition duration-200 hover:bg-[#5eae49]"
-      >
-        Browse Products
-      </Link>
-    </div>
-  );
-});
-
-EmptyCartState.displayName = "EmptyCartState";
-
-/* ═══════════════════════════════════════════════
    Loading Skeleton
    ═══════════════════════════════════════════════ */
 
@@ -231,10 +189,6 @@ const CheckoutSkeleton = memo(function CheckoutSkeleton() {
           <div className="h-[72px] rounded-2xl bg-black/5" />
           <div className="h-[72px] rounded-2xl bg-black/5" />
           <div className="h-[72px] rounded-2xl bg-black/5" />
-          <div className="grid grid-cols-2 gap-4">
-            <div className="h-[72px] rounded-2xl bg-black/5" />
-            <div className="h-[72px] rounded-2xl bg-black/5" />
-          </div>
         </div>
         <div className="lg:col-span-5">
           <div className="h-80 rounded-[20px] bg-black/5" />
@@ -288,8 +242,13 @@ function CheckoutInner() {
   const searchParams = useSearchParams();
 
   const { items, subtotal, initialized, loading } = useSelector(
-    (state) => state.cart
+    (state) => state.cart,
   );
+
+  /* ── coupon from Redux ── */
+  const coupon = useSelector((state) => state.cart.coupon);
+  const couponDiscount = useSelector((state) => state.cart.couponDiscount);
+  const cartTotal = useSelector((state) => state.cart.total);
 
   const [step, setStep] = useState("shipping");
   const [shippingData, setShippingData] = useState(null);
@@ -308,7 +267,6 @@ function CheckoutInner() {
   const orderIdParam = searchParams.get("orderId");
   const expectsRestore = stepParam === "payment" && Boolean(orderIdParam);
 
-  /* ── Read buy now item once on mount ── */
   useEffect(() => {
     const item = getBuyNowItem();
     setBuyNowItemState(item);
@@ -317,7 +275,6 @@ function CheckoutInner() {
 
   const isBuyNowMode = Boolean(buyNowItem?.productId);
 
-  /* ── Build effective items: buy-now item OR cart items ── */
   const effectiveItems = isBuyNowMode
     ? [
         {
@@ -332,7 +289,6 @@ function CheckoutInner() {
     : items;
 
   useEffect(() => {
-    // skip cart fetch if in buy now mode
     if (isBuyNowMode) return;
     if (!initialized) {
       dispatch(fetchCart());
@@ -361,7 +317,7 @@ function CheckoutInner() {
       setOrderId("");
       setServerSummary(null);
       setSubmitError(
-        "Your payment session could not be restored. Please review your shipping details and continue again."
+        "Your payment session could not be restored. Please review your shipping details and continue again.",
       );
       router.replace("/checkout", { scroll: false });
     }
@@ -378,6 +334,7 @@ function CheckoutInner() {
         const response = await createCheckoutSession({
           cartItems: effectiveItems,
           shippingInfo: formData,
+          couponCode: coupon?.code || "",
         });
 
         const data = response?.data || response;
@@ -396,16 +353,15 @@ function CheckoutInner() {
           serverSummary: nextSummary,
         });
 
-        // Clear buy-now flag once session is created (order is locked in)
         if (isBuyNowMode) {
           clearBuyNowItem();
         }
 
         router.replace(
           `/checkout?step=payment&orderId=${encodeURIComponent(
-            data?.orderId || ""
+            data?.orderId || "",
           )}`,
-          { scroll: false }
+          { scroll: false },
         );
 
         window.scrollTo({ top: 0, behavior: "smooth" });
@@ -421,7 +377,7 @@ function CheckoutInner() {
         setIsCreatingSession(false);
       }
     },
-    [effectiveItems, router, isBuyNowMode]
+    [effectiveItems, router, isBuyNowMode, coupon?.code],
   );
 
   const handleBackToShipping = useCallback(() => {
@@ -437,7 +393,6 @@ function CheckoutInner() {
 
   const hasPaymentSession = step === "payment" && !!clientSecret && !!orderId;
 
-  /* ── Redirect to home if cart is empty AND not in buy-now mode AND no payment session ── */
   useEffect(() => {
     if (!buyNowChecked) return;
     if (isBuyNowMode) return;
@@ -453,7 +408,6 @@ function CheckoutInner() {
     buyNowChecked,
   ]);
 
-  /* ── Loading state ── */
   if (!buyNowChecked) {
     return <CheckoutSkeleton />;
   }
@@ -466,12 +420,32 @@ function CheckoutInner() {
     return <CheckoutSkeleton />;
   }
 
-  if (!isBuyNowMode && initialized && items.length === 0 && !hasPaymentSession) {
+  if (
+    !isBuyNowMode &&
+    initialized &&
+    items.length === 0 &&
+    !hasPaymentSession
+  ) {
     return null;
   }
 
-  /* ── Summary subtotal calculation for buy-now ── */
-  const effectiveSubtotal = isBuyNowMode ? (buyNowItem.price || 0) * (buyNowItem.quantity || 1) : subtotal;
+  const effectiveSubtotal = isBuyNowMode
+    ? (buyNowItem.price || 0) * (buyNowItem.quantity || 1)
+    : subtotal;
+
+  /* ── Build client-side summary for shipping step (before server confirms) ── */
+  const clientSummary =
+    !isBuyNowMode && coupon?.code && couponDiscount > 0
+      ? {
+          currency: items[0]?.currency || "AED",
+          subtotal,
+          shipping: 0,
+          discountAmount: couponDiscount,
+          total: cartTotal,
+          orderItems: [],
+          coupon,
+        }
+      : null;
 
   return (
     <>
@@ -502,7 +476,7 @@ function CheckoutInner() {
           <CheckoutSummary
             items={effectiveItems}
             subtotal={effectiveSubtotal}
-            serverSummary={serverSummary}
+            serverSummary={serverSummary || clientSummary}
           />
         </div>
       </div>

@@ -226,3 +226,43 @@ export function adaptBlogDetail(apiData, fallbackListItem = null) {
     meta_keywords: metaKeywords,
   };
 }
+
+/* ═══════════════════════════════════════════════
+   Related Blogs Adapter
+   ═══════════════════════════════════════════════ */
+
+/**
+ * Adapts a single item from relatedBlogs array
+ * into the shape that RelatedPosts / BlogCard expects.
+ *
+ * BlogCard needs:
+ *   id, title, excerpt, category, date, image, srcSet, slug, href
+ */
+export function adaptRelatedBlog(item) {
+  if (!item?.slug) return null;
+
+  const translation = getTranslation(item.blogTranslations);
+
+  const title = translation.title || item.title || titleFromSlug(item.slug);
+
+  const excerpt =
+    translation.excerpt ||
+    translation.description ||
+    item.excerpt ||
+    item.description ||
+    "";
+
+  const category = translation.category || item.category || "";
+
+  return {
+    id: item.id || item.slug,
+    title,
+    excerpt,
+    category,
+    date: item.date || "",
+    image: item.image || "",
+    srcSet: resolveSrcSet(item.srcSet),
+    slug: item.slug,
+    href: `/blog/news/${item.slug}`,
+  };
+}

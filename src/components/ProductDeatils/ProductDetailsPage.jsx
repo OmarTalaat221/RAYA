@@ -68,9 +68,9 @@ export default function ProductDetailsPage({ product }) {
         contentSections={product.contentSections}
       />
 
-      <RelatedProducts currentProductId={product.id} />
-
       <ProductReviews productId={product.id} />
+
+      <RelatedProducts currentProductId={product.id} />
 
       <ProductStickyBar product={product} />
     </article>

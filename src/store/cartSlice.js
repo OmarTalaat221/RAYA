@@ -7,11 +7,34 @@ import {
   updateCartItem,
   clearCartApi,
 } from "../services/cart.service";
+import { applyCouponApi } from "../services/checkout.service";
 import { adaptCartResponse } from "../components/Cart/cart.adapter";
 
 const FREE_SHIPPING_THRESHOLD = 250;
+const COUPON_STORAGE_KEY = "rds-coupon";
 
 /* ─── helpers ─────────────────────────────────────────────────────────────── */
+
+function persistCoupon(coupon) {
+  if (typeof window === "undefined") return;
+  try {
+    if (coupon) {
+      sessionStorage.setItem(COUPON_STORAGE_KEY, JSON.stringify(coupon));
+    } else {
+      sessionStorage.removeItem(COUPON_STORAGE_KEY);
+    }
+  } catch {}
+}
+
+function readPersistedCoupon() {
+  if (typeof window === "undefined") return null;
+  try {
+    const raw = sessionStorage.getItem(COUPON_STORAGE_KEY);
+    return raw ? JSON.parse(raw) : null;
+  } catch {
+    return null;
+  }
+}
 
 const recalculate = (state) => {
   const localSubtotal = state.items.reduce(
@@ -25,6 +48,10 @@ const recalculate = (state) => {
     FREE_SHIPPING_THRESHOLD - state.subtotal
   );
   state.qualifiesForFreeShipping = state.subtotal >= FREE_SHIPPING_THRESHOLD;
+
+  // total after discount
+  const discount = Number(state.couponDiscount || 0);
+  state.total = Math.max(0, state.subtotal - discount);
 };
 
 const applyCartData = (state, cartData) => {
@@ -127,7 +154,58 @@ export const clearEntireCart = createAsyncThunk(
   }
 );
 
+/* ─── coupon thunks ───────────────────────────────────────────────────────── */
+
+export const applyCoupon = createAsyncThunk(
+  "cart/applyCoupon",
+  async (couponCode, { getState, rejectWithValue }) => {
+    try {
+      const state = getState();
+      const cartItems = state.cart.items;
+
+      if (!cartItems.length) {
+        return rejectWithValue("Your cart is empty.");
+      }
+
+      const response = await applyCouponApi({ cartItems, couponCode });
+      return response?.data || null;
+    } catch (error) {
+      console.error("[Cart] applyCoupon failed:", error);
+      return rejectWithValue(
+        error.response?.data?.message ||
+          error.message ||
+          "Invalid coupon code."
+      );
+    }
+  }
+);
+
+export const reapplyCouponSilently = createAsyncThunk(
+  "cart/reapplyCouponSilently",
+  async (_, { getState, rejectWithValue }) => {
+    try {
+      const state = getState();
+      const couponCode = state.cart.coupon?.code;
+      const cartItems = state.cart.items;
+
+      if (!couponCode || !cartItems.length) {
+        return rejectWithValue("No coupon or cart empty.");
+      }
+
+      const response = await applyCouponApi({ cartItems, couponCode });
+      return response?.data || null;
+    } catch (error) {
+      console.warn("[Cart] reapplyCouponSilently failed:", error?.message);
+      return rejectWithValue(
+        error.response?.data?.message || "Failed to re-apply coupon."
+      );
+    }
+  }
+);
+
 /* ─── initial state ───────────────────────────────────────────────────────── */
+
+const persistedCoupon = readPersistedCoupon();
 
 const initialState = {
   items: [],
@@ -142,6 +220,13 @@ const initialState = {
   actionLoading: false,
   error: null,
   initialized: false,
+
+  /* ── coupon state ── */
+  coupon: persistedCoupon || null, // { id, name, code, discountValue, ... }
+  couponDiscount: 0,
+  couponLoading: false,
+  couponError: null,
+  total: 0,
 };
 
 /* ─── slice ───────────────────────────────────────────────────────────────── */
@@ -161,6 +246,16 @@ const cartSlice = createSlice({
     },
     clearError(state) {
       state.error = null;
+    },
+    clearCouponError(state) {
+      state.couponError = null;
+    },
+    removeCoupon(state) {
+      state.coupon = null;
+      state.couponDiscount = 0;
+      state.couponError = null;
+      persistCoupon(null);
+      recalculate(state);
     },
   },
   extraReducers: (builder) => {
@@ -228,16 +323,72 @@ const cartSlice = createSlice({
         state.error = null;
       })
       .addCase(clearEntireCart.fulfilled, (state, action) => {
+        // clear coupon when cart is fully cleared
+        state.coupon = null;
+        state.couponDiscount = 0;
+        persistCoupon(null);
         applyCartData(state, action.payload);
       })
       .addCase(clearEntireCart.rejected, (state, action) => {
         state.actionLoading = false;
         state.error = action.payload || "Failed to clear cart";
       });
+
+    /* ── applyCoupon ── */
+    builder
+      .addCase(applyCoupon.pending, (state) => {
+        state.couponLoading = true;
+        state.couponError = null;
+      })
+      .addCase(applyCoupon.fulfilled, (state, action) => {
+        state.couponLoading = false;
+        const payload = action.payload || {};
+        state.coupon = payload.coupon || null;
+        state.couponDiscount = Number(payload.discountAmount || 0);
+        if (typeof payload.subtotal === "number") {
+          state.apiSubtotal = payload.subtotal;
+        }
+        persistCoupon(state.coupon);
+        recalculate(state);
+      })
+      .addCase(applyCoupon.rejected, (state, action) => {
+        state.couponLoading = false;
+        state.couponError = action.payload || "Invalid coupon code.";
+        state.coupon = null;
+        state.couponDiscount = 0;
+        persistCoupon(null);
+        recalculate(state);
+      });
+
+    /* ── reapplyCouponSilently ── */
+    builder
+      .addCase(reapplyCouponSilently.fulfilled, (state, action) => {
+        const payload = action.payload || {};
+        state.coupon = payload.coupon || state.coupon;
+        state.couponDiscount = Number(payload.discountAmount || 0);
+        if (typeof payload.subtotal === "number") {
+          state.apiSubtotal = payload.subtotal;
+        }
+        persistCoupon(state.coupon);
+        recalculate(state);
+      })
+      .addCase(reapplyCouponSilently.rejected, (state) => {
+        // coupon no longer valid for current cart → silently remove
+        state.coupon = null;
+        state.couponDiscount = 0;
+        persistCoupon(null);
+        recalculate(state);
+      });
   },
 });
 
-export const { openCart, closeCart, toggleCart, clearError } =
-  cartSlice.actions;
+export const {
+  openCart,
+  closeCart,
+  toggleCart,
+  clearError,
+  clearCouponError,
+  removeCoupon,
+} = cartSlice.actions;
 
 export default cartSlice.reducer;

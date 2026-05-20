@@ -135,7 +135,7 @@ export default function SearchPageClient({
         router.push(buildSearchPageHref(nextQuery), { scroll: false });
       });
     },
-    [query, activeQuery, router]
+    [query, activeQuery, router],
   );
 
   const handleClear = useCallback(() => {
@@ -294,6 +294,7 @@ export default function SearchPageClient({
                 isOnSale={product.isOnSale}
                 priority={index < 4}
                 canHover={canHover}
+                discountPercentage={product.discountPercentage} /* ← أضف ده */
                 inCart={product.inCart}
               />
             ))}

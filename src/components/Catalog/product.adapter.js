@@ -100,7 +100,7 @@ export function adaptApiProduct(product, lang = "en") {
   const frontImage = resolveProductImage(product.frontImage);
   const backImage = resolveProductImage(product.backImage);
 
-  return {
+ return {
     id: product.id,
     slug,
     href,
@@ -120,6 +120,10 @@ export function adaptApiProduct(product, lang = "en") {
     newPrice,
     currency: clean(product.currency) || "AED",
     isOnSale: Boolean(product.isOnSale),
+
+    /* ── NEW ── */
+    discountPercentage: Number(product.discountPercentage) || 0,
+    discountValue: Number(product.discountValue) || 0,
 
     brand: clean(product.brand) || "",
     badge: clean(product.badge) || "",

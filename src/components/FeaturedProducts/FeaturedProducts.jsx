@@ -109,6 +109,7 @@ function ProductsSlider({ products, canHover }) {
               isOnSale={product.isOnSale}
               priority={index < 2}
               canHover={canHover}
+              discountPercentage={product.discountPercentage} /* ← أضف ده */
               // product={product}
               inCart={product.inCart}
             />
@@ -141,6 +142,7 @@ function DesktopGrid({ products, canHover }) {
             currency={product.currency}
             isOnSale={product.isOnSale}
             priority={index < 4}
+            discountPercentage={product.discountPercentage} /* ← أضف ده */
             canHover={canHover}
             inCart={product.inCart}
           />

@@ -1,6 +1,13 @@
 // components/FeaturedProducts/SaleRibbon.jsx
 
-export default function SaleRibbon({ text = "SALE" }) {
+export default function SaleRibbon({ text = "SALE", discountPercentage = 0 }) {
+  const hasDiscount =
+    typeof discountPercentage === "number" && discountPercentage > 0;
+
+  const displayText = hasDiscount
+    ? `-${Math.round(discountPercentage)}%`
+    : text;
+
   return (
     <>
       <style>{`
@@ -16,8 +23,6 @@ export default function SaleRibbon({ text = "SALE" }) {
           pointer-events: none;
         }
 
- 
-
         /* ── الشريط نفسه ── */
         .sale-ribbon-strip {
           position: absolute;
@@ -26,7 +31,6 @@ export default function SaleRibbon({ text = "SALE" }) {
           padding: 7px 0;
           text-align: center;
 
-          /* اللون الأحمر + gradient للـ depth */
           background: linear-gradient(
             180deg,
             #f87171 0%,
@@ -35,13 +39,11 @@ export default function SaleRibbon({ text = "SALE" }) {
             #b91c1c 100%
           );
 
-          /* الظل */
           box-shadow:
             0 4px 12px rgba(185, 28, 28, 0.4),
             inset 0 1px 0 rgba(255, 255, 255, 0.25),
             inset 0 -1px 0 rgba(0, 0, 0, 0.1);
 
-          /* النص */
           color: #fff;
           font-size: 11px;
           font-weight: 800;
@@ -50,7 +52,6 @@ export default function SaleRibbon({ text = "SALE" }) {
           text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
           line-height: 1.2;
 
-          /* الموقع والدوران — شمال فوق */
           left: -40px;
           top: 22px;
           transform: rotate(-45deg);
@@ -149,10 +150,10 @@ export default function SaleRibbon({ text = "SALE" }) {
         }
       `}</style>
 
-      <div className="sale-ribbon-wrap" aria-label={text}>
+      <div className="sale-ribbon-wrap" aria-label={displayText}>
         <span className="sale-ribbon-strip">
           <span className="sale-ribbon-shine" aria-hidden="true" />
-          {text}
+          {displayText}
         </span>
       </div>
     </>

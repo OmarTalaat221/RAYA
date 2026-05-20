@@ -24,7 +24,7 @@ const CartToggleButton = memo(function CartToggleButton({
       if (isLoading || isInCart) return;
       onAdd();
     },
-    [isInCart, isLoading, onAdd]
+    [isInCart, isLoading, onAdd],
   );
 
   return (
@@ -96,6 +96,7 @@ export default function ProductCard({
   newPrice,
   currency = "AED",
   isOnSale = false,
+  discountPercentage = 0,
   priority = false,
   canHover = false,
   inCart = false,
@@ -153,7 +154,7 @@ export default function ProductCard({
           className="relative block w-full overflow-hidden bg-white"
           style={{ aspectRatio: "2.5 / 2" }}
         >
-          {isOnSale && <SaleRibbon />}
+          {isOnSale && <SaleRibbon discountPercentage={discountPercentage} />}
 
           {/* Front */}
           <div

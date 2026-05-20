@@ -6,6 +6,7 @@ export default function ProductPrice({
   newPrice,
   badge,
   isOnSale,
+  discountPercentage = 0,
 }) {
   const currentPrice = getCurrentPrice(oldPrice, newPrice);
   if (currentPrice === null) return null;
@@ -18,6 +19,13 @@ export default function ProductPrice({
 
   const formattedCurrent = formatMoney(currentPrice, currency);
   const formattedOld = showSale ? formatMoney(oldPrice, currency) : null;
+
+  const hasDiscount =
+    showSale &&
+    typeof discountPercentage === "number" &&
+    discountPercentage > 0;
+
+  console.log(discountPercentage, "discountPercentage");
 
   return (
     <div className="rounded-3xl border border-black/5 bg-[#f7f7f4] p-5 sm:p-6">
@@ -32,7 +40,13 @@ export default function ProductPrice({
           </span>
         ) : null}
 
-        {showSale && badge ? (
+        {hasDiscount ? (
+          <span className="inline-flex items-center rounded-full bg-[#ef4444] px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-white shadow-[0_4px_12px_rgba(239,68,68,0.25)]">
+            Save {Math.round(discountPercentage)}%
+          </span>
+        ) : null}
+
+        {showSale && badge && !hasDiscount ? (
           <span className="inline-flex items-center rounded-full bg-[#ef4444]/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-[#ef4444]">
             {badge}
           </span>

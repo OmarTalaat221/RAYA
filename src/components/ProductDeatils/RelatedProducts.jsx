@@ -47,7 +47,7 @@ export default function RelatedProducts({ currentProductId }) {
       {
         threshold: 0.08,
         rootMargin: "300px 0px",
-      }
+      },
     );
 
     observer.observe(el);
@@ -71,7 +71,7 @@ export default function RelatedProducts({ currentProductId }) {
 
         const adapted = adaptRelatedProducts(data, currentProductId).slice(
           0,
-          MAX_RELATED_PRODUCTS
+          MAX_RELATED_PRODUCTS,
         );
 
         setProducts(adapted);
@@ -119,7 +119,7 @@ export default function RelatedProducts({ currentProductId }) {
         spaceBetween: 24,
       },
     }),
-    [products.length]
+    [products.length],
   );
 
   const updateSwiperState = useCallback((swiper) => {
@@ -140,7 +140,7 @@ export default function RelatedProducts({ currentProductId }) {
       swiperRef.current = swiper;
       updateSwiperState(swiper);
     },
-    [updateSwiperState]
+    [updateSwiperState],
   );
 
   const handlePrev = useCallback(() => {
@@ -258,6 +258,7 @@ export default function RelatedProducts({ currentProductId }) {
                 newPrice={product.newPrice}
                 currency={product.currency}
                 isOnSale={product.isOnSale}
+                discountPercentage={product.discountPercentage} /* ← أضف ده */
                 inCart={product.inCart}
                 priority={idx === 0}
                 canHover

@@ -13,9 +13,33 @@ function normalizeCartItems(cartItems = []) {
   }, []);
 }
 
+/* ─── Coupon ──────────────────────────────────────────────────────────────── */
+
+export async function applyCouponApi({ cartItems = [], couponCode = "" }) {
+  const items = normalizeCartItems(cartItems);
+
+  if (!items.length) {
+    throw new Error("Your cart is empty.");
+  }
+
+  if (!couponCode) {
+    throw new Error("Coupon code is required.");
+  }
+
+  const response = await axiosInstance.post("/checkout/apply-coupon", {
+    items,
+    couponCode: String(couponCode).trim(),
+  });
+
+  return response.data;
+}
+
+/* ─── Stripe session ──────────────────────────────────────────────────────── */
+
 export async function createCheckoutSession({
   cartItems = [],
   shippingInfo = {},
+  couponCode = "",
 }) {
   const deviceId = getOrCreateDeviceId();
   const items = normalizeCartItems(cartItems);
@@ -39,15 +63,18 @@ export async function createCheckoutSession({
     streetAddress: String(shippingInfo?.address ?? "").trim(),
     apartment: String(shippingInfo?.apartment ?? "").trim(),
     deliveryNotes: String(shippingInfo?.notes ?? "").trim(),
-    couponCode: "",
+    couponCode: String(couponCode || "").trim(),
   });
 
   return response.data;
 }
 
+/* ─── COD ─────────────────────────────────────────────────────────────────── */
+
 export async function createCODOrder({
   cartItems = [],
   shippingInfo = {},
+  couponCode = "",
 }) {
   const deviceId = getOrCreateDeviceId();
   const items = normalizeCartItems(cartItems);
@@ -71,7 +98,7 @@ export async function createCODOrder({
     streetAddress: String(shippingInfo?.address ?? "").trim(),
     apartment: String(shippingInfo?.apartment ?? "").trim(),
     deliveryNotes: String(shippingInfo?.notes ?? "").trim(),
-    couponCode: "",
+    couponCode: String(couponCode || "").trim(),
   });
 
   return response.data;

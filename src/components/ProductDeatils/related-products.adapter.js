@@ -30,6 +30,7 @@ export function adaptRelatedProduct(raw) {
     newPrice: toNumber(raw.newPrice),
     currency: raw.currency || "AED",
     isOnSale: Boolean(raw.isOnSale),
+    discountPercentage: toNumber(raw.discountPercentage),
     inCart: Boolean(raw.inCart),
   };
 }
