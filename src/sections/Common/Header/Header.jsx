@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import dynamic from "next/dynamic";
-import { Search, ShoppingBag, Menu, X } from "lucide-react";
+import { Search, ShoppingBag, Menu, X, Globe } from "lucide-react";
 import {
   useState,
   useEffect,
@@ -17,12 +17,12 @@ import { toggleCart, fetchCart } from "../../../store/cartSlice";
 
 const SearchOverlay = dynamic(
   () => import("../../../components/Search/SearchOverlay"),
-  { ssr: false }
+  { ssr: false },
 );
 
 const CartDrawer = dynamic(
   () => import("../../../components/Cart/CartDrawer"),
-  { ssr: false }
+  { ssr: false },
 );
 
 const useIsoLayoutEffect =
@@ -122,7 +122,7 @@ const NavMenu = memo(function NavMenu({ pathname, ariaLabel }) {
       if (el) linkRefs.current[href] = el;
       else delete linkRefs.current[href];
     },
-    []
+    [],
   );
 
   return (
@@ -238,6 +238,8 @@ const HeaderIcons = memo(function HeaderIcons({
           </span>
         )}
       </button>
+
+      <LanguageDropdown />
     </div>
   );
 });
@@ -292,6 +294,107 @@ const MobileMenu = memo(function MobileMenu({ visible, pathname, closeMenu }) {
           ))}
         </ul>
       </nav>
+    </div>
+  );
+});
+
+const LanguageDropdown = memo(function LanguageDropdown() {
+  const [open, setOpen] = useState(false);
+  const [current, setCurrent] = useState("en");
+  const ref = useRef(null);
+
+  const close = useCallback(() => setOpen(false), []);
+  const toggle = useCallback(() => setOpen((p) => !p), []);
+
+  useEffect(() => {
+    if (!open) return;
+
+    const handleClickOutside = (e) => {
+      if (ref.current && !ref.current.contains(e.target)) close();
+    };
+    const handleEscape = (e) => {
+      if (e.key === "Escape") close();
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    document.addEventListener("keydown", handleEscape);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener("keydown", handleEscape);
+    };
+  }, [open, close]);
+
+  const handleSelect = useCallback((code) => {
+    setCurrent(code);
+    setOpen(false);
+    // TODO: integrate with next-intl locale switching
+  }, []);
+
+  const LANGUAGES = [
+    { code: "en", label: "English", short: "EN" },
+    { code: "ar", label: "العربية", short: "عربي" },
+  ];
+
+  const currentLang = LANGUAGES.find((l) => l.code === current);
+
+  return (
+    <div ref={ref} className="relative">
+      <button
+        type="button"
+        onClick={toggle}
+        aria-label="Change language"
+        aria-expanded={open}
+        aria-haspopup="listbox"
+        className="flex items-center gap-1.5 text-soft-black hover:text-main transition-colors duration-200"
+      >
+        <Globe size={20} strokeWidth={1.5} />
+        <span className="text-[11px] font-semibold tracking-wider hidden sm:inline">
+          {currentLang.short}
+        </span>
+      </button>
+
+      <div
+        role="listbox"
+        className={`
+          absolute right-0 top-full mt-3 min-w-[150px]
+          bg-white rounded-xl border border-gray-100
+          shadow-[0_12px_32px_rgba(0,0,0,0.08)]
+          overflow-hidden origin-top-right z-50
+          transition-all duration-200 ease-out
+          ${
+            open
+              ? "opacity-100 scale-100 translate-y-0 pointer-events-auto"
+              : "opacity-0 scale-95 -translate-y-1 pointer-events-none"
+          }
+        `}
+      >
+        {LANGUAGES.map((lang) => {
+          const isActive = lang.code === current;
+          return (
+            <button
+              key={lang.code}
+              type="button"
+              role="option"
+              aria-selected={isActive}
+              onClick={() => handleSelect(lang.code)}
+              className={`
+                w-full flex items-center justify-between gap-3
+                px-4 py-2.5 text-sm transition-colors duration-150
+                ${
+                  isActive
+                    ? "text-main bg-main/5 font-semibold"
+                    : "text-soft-black hover:bg-[#f7f7f7]"
+                }
+              `}
+            >
+              <span>{lang.label}</span>
+              {isActive && (
+                <span className="w-1.5 h-1.5 rounded-full bg-main" />
+              )}
+            </button>
+          );
+        })}
+      </div>
     </div>
   );
 });
