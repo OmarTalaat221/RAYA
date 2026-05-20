@@ -1,10 +1,14 @@
 const FALLBACK_TITLE = "Untitled";
+const IMAGE_BASE_URL = "https://rdspharma.cloud";
 
 function resolveCollectionImage(src) {
   if (!src) return "";
   if (src.startsWith("http://") || src.startsWith("https://")) return src;
   if (src.startsWith("/cdn/shop/")) return `https://www.rdspharma.online${src}`;
-  return src;
+  if (src.startsWith("uploads/") || src.startsWith("/uploads/")) {
+    const cleanPath = src.startsWith("/") ? src : `/${src}`;
+    return `${IMAGE_BASE_URL}${cleanPath}`;
+  }  return src;
 }
 
 function resolveSrcSet(srcSetArray) {

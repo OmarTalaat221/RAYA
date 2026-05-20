@@ -1,11 +1,10 @@
 "use client";
 
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState } from "react";
 import { motion, useReducedMotion } from "framer-motion";
 import Image from "next/image";
 import Link from "next/link";
 import React from "react";
-import { RefreshCw } from "lucide-react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Pagination, FreeMode, Autoplay } from "swiper/modules";
 import "swiper/css";
@@ -271,7 +270,48 @@ function MobileSwiper({ items }) {
 }
 
 // ─── Main Section ────────────────────────────────────────────────────────────
-export default function Collections({ categories = [] }) {
+export default function Collections() {
+  const [categories, setCategories] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    let active = true;
+
+    async function loadCategories() {
+      setLoading(true);
+      setError("");
+
+      try {
+        const response = await getAllCategories({ page: 1, limit: 100 });
+
+        if (!active) return;
+
+        const raw =
+          response?.data?.items ||
+          response?.items ||
+          (Array.isArray(response?.data) ? response.data : []) ||
+          [];
+
+        const adapted = adaptCategoriesToCollections(raw, "en");
+
+        setCategories(adapted);
+      } catch (err) {
+        if (!active) return;
+        console.error("[Collections] Failed to load categories:", err);
+        setError(err?.message || "Failed to load collections.");
+      } finally {
+        if (active) setLoading(false);
+      }
+    }
+
+    loadCategories();
+
+    return () => {
+      active = false;
+    };
+  }, []);
+
   const items = [ALL_COLLECTION_CARD, ...categories];
   const displayItems = items.slice(0, 5);
 
@@ -307,14 +347,27 @@ export default function Collections({ categories = [] }) {
           </motion.div>
 
           {/* ── Content ── */}
-          <>
-            <div className="hidden md:block">
-              <DesktopGrid items={displayItems} />
-            </div>
-            <div className="-mx-4 block md:hidden">
-              <MobileSwiper items={displayItems} />
-            </div>
-          </>
+          {loading ? (
+            <>
+              <div className="hidden md:block">
+                <DesktopSkeletonInline />
+              </div>
+              <div className="-mx-4 block md:hidden">
+                <MobileSkeletonInline />
+              </div>
+            </>
+          ) : error ? (
+            <p className="text-center text-sm text-red-500">{error}</p>
+          ) : (
+            <>
+              <div className="hidden md:block">
+                <DesktopGrid items={displayItems} />
+              </div>
+              <div className="-mx-4 block md:hidden">
+                <MobileSwiper items={displayItems} />
+              </div>
+            </>
+          )}
 
           {/* ── CTA ── */}
           <motion.div
