@@ -30,7 +30,7 @@ export default function ProductRating({ rating, reviewCount }) {
             className="absolute inset-0 overflow-hidden"
             style={{ width: widthPercent }}
           >
-            <div className="flex w-[92px] items-center gap-1 text-main">
+            <div className="flex w-[92px] items-center gap-1 text-amber-400">
               {[...Array(5)].map((_, i) => (
                 <StarIcon key={`fg-${i}`} className="h-4 w-4" />
               ))}

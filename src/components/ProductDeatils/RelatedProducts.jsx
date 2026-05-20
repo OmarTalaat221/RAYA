@@ -11,17 +11,7 @@ import { adaptRelatedProducts } from "./related-products.adapter";
 
 import "swiper/css";
 
-const dividerVariant = {
-  hidden: { scaleX: 0, opacity: 0 },
-  visible: {
-    scaleX: 1,
-    opacity: 1,
-    transition: {
-      duration: 0.7,
-      ease: [0.22, 1, 0.36, 1],
-    },
-  },
-};
+const MAX_RELATED_PRODUCTS = 8;
 
 function clampSlides(itemsLength, desired) {
   if (!itemsLength || itemsLength < 1) return desired;
@@ -42,7 +32,6 @@ export default function RelatedProducts({ currentProductId }) {
 
   const hasMultipleItems = products.length > 1;
 
-  /* ── Lazy load on scroll ── */
   useEffect(() => {
     const el = sectionRef.current;
     if (!el || hasLoadedOnce) return;
@@ -55,34 +44,48 @@ export default function RelatedProducts({ currentProductId }) {
           observer.disconnect();
         }
       },
-      { threshold: 0.1, rootMargin: "200px 0px" }
+      {
+        threshold: 0.08,
+        rootMargin: "300px 0px",
+      }
     );
 
     observer.observe(el);
+
     return () => observer.disconnect();
   }, [hasLoadedOnce]);
 
-  /* ── Fetch when section enters viewport ── */
   useEffect(() => {
     if (!hasLoadedOnce) return;
 
     let active = true;
-    setLoading(true);
-    setError("");
 
-    getRandomProducts()
-      .then((data) => {
+    async function loadProducts() {
+      setLoading(true);
+      setError("");
+
+      try {
+        const data = await getRandomProducts();
+
         if (!active) return;
-        const adapted = adaptRelatedProducts(data, currentProductId);
+
+        const adapted = adaptRelatedProducts(data, currentProductId).slice(
+          0,
+          MAX_RELATED_PRODUCTS
+        );
+
         setProducts(adapted);
-      })
-      .catch((err) => {
+      } catch (err) {
         if (!active) return;
         setError(err?.message || "Failed to load related products.");
-      })
-      .finally(() => {
-        if (active) setLoading(false);
-      });
+      } finally {
+        if (active) {
+          setLoading(false);
+        }
+      }
+    }
+
+    loadProducts();
 
     return () => {
       active = false;
@@ -92,23 +95,23 @@ export default function RelatedProducts({ currentProductId }) {
   const breakpoints = useMemo(
     () => ({
       0: {
-        slidesPerView: clampSlides(products.length, 1.4),
+        slidesPerView: clampSlides(products.length, 1.25),
         spaceBetween: 14,
       },
       480: {
-        slidesPerView: clampSlides(products.length, 2),
+        slidesPerView: clampSlides(products.length, 1.6),
         spaceBetween: 16,
       },
       640: {
-        slidesPerView: clampSlides(products.length, 2.4),
+        slidesPerView: clampSlides(products.length, 2.1),
         spaceBetween: 18,
       },
       768: {
-        slidesPerView: clampSlides(products.length, 3),
+        slidesPerView: clampSlides(products.length, 2.6),
         spaceBetween: 20,
       },
       1024: {
-        slidesPerView: clampSlides(products.length, 3.5),
+        slidesPerView: clampSlides(products.length, 3.2),
         spaceBetween: 22,
       },
       1280: {
@@ -121,13 +124,15 @@ export default function RelatedProducts({ currentProductId }) {
 
   const updateSwiperState = useCallback((swiper) => {
     if (!swiper) return;
+
     if (swiper.isLocked) {
       setCanPrev(false);
       setCanNext(false);
-    } else {
-      setCanPrev(!swiper.isBeginning);
-      setCanNext(!swiper.isEnd);
+      return;
     }
+
+    setCanPrev(!swiper.isBeginning);
+    setCanNext(!swiper.isEnd);
   }, []);
 
   const handleSwiperInit = useCallback(
@@ -154,7 +159,6 @@ export default function RelatedProducts({ currentProductId }) {
       className="container mx-auto mt-16 w-full px-4 sm:mt-12 sm:px-6 lg:px-8"
       aria-labelledby="related-products-heading"
     >
-      {/* ── Header ── */}
       <div className="mb-8 flex flex-col gap-6 sm:mb-10 sm:flex-row sm:items-end sm:justify-between">
         <div>
           <h2
@@ -193,7 +197,6 @@ export default function RelatedProducts({ currentProductId }) {
         )}
       </div>
 
-      {/* ── Divider (self-animating) ── */}
       <motion.div
         initial={{ scaleX: 0, opacity: 0 }}
         whileInView={{ scaleX: 1, opacity: 1 }}
@@ -203,7 +206,6 @@ export default function RelatedProducts({ currentProductId }) {
         className="mb-8 h-[1.5px] w-full rounded-full bg-black/8 sm:mb-10"
       />
 
-      {/* ── Loading skeleton ── */}
       {loading && (
         <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4">
           {[1, 2, 3, 4].map((i) => (
@@ -215,17 +217,14 @@ export default function RelatedProducts({ currentProductId }) {
         </div>
       )}
 
-      {/* ── Error ── */}
       {error && !loading && <p className="text-sm text-red-500">{error}</p>}
 
-      {/* ── Empty ── */}
       {!loading && !error && products.length === 0 && hasLoadedOnce && (
         <p className="text-sm text-secondary">
           No related products available right now.
         </p>
       )}
 
-      {/* ── Slider (no motion wrapper) ── */}
       {!loading && products.length > 0 && (
         <Swiper
           key={`related-${products.length}`}
@@ -234,7 +233,13 @@ export default function RelatedProducts({ currentProductId }) {
           watchOverflow
           grabCursor={products.length > 1}
           allowTouchMove={products.length > 1}
-          speed={650}
+          speed={550}
+          resistanceRatio={0.85}
+          preloadImages={false}
+          lazyPreloadPrevNext={1}
+          observer={false}
+          observeParents={false}
+          updateOnWindowResize
           onSwiper={handleSwiperInit}
           onSlideChange={updateSwiperState}
           onResize={updateSwiperState}
@@ -254,7 +259,7 @@ export default function RelatedProducts({ currentProductId }) {
                 currency={product.currency}
                 isOnSale={product.isOnSale}
                 inCart={product.inCart}
-                priority={idx < 2}
+                priority={idx === 0}
                 canHover
               />
             </SwiperSlide>

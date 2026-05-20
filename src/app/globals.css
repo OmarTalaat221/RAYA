@@ -1,11 +1,3 @@
-/* globals.css */
-
-@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap");
-@import url("https://fonts.googleapis.com/css2?family=EB+Garamond:wght@400;500;600;700&display=swap");
-@import url("https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&display=swap");
-@import url("https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700&display=swap");
-@import url("https://fonts.googleapis.com/css2?family=Almarai:wght@300;400;700;800&display=swap");
-
 @import "tailwindcss";
 
 :root {
@@ -17,12 +9,13 @@
 }
 
 * {
-  font-family: "Poppins", sans-serif;
+  font-family: var(--font-poppins), sans-serif;
 }
 
-html, body {
-  font-family: "Poppins", sans-serif;
-  scroll-behavior: smooth !important;
+html,
+body {
+  font-family: var(--font-poppins), sans-serif;
+  scroll-behavior: smooth;
 }
 
 li {
@@ -38,19 +31,16 @@ p {
 }
 
 @theme {
-  /* Colors */
   --color-main: #68bc52;
   --color-secondary: #93979a;
   --color-soft-black: #2d2d2d;
 
-  /* Fonts */
-  --font-poppins: "Poppins", sans-serif;
-  --font-garamond: "EB Garamond", serif;
-  --font-oswald: "Oswald", sans-serif;
-  --font-cairo: "Cairo", sans-serif;
-  --font-almarai: "Almarai", sans-serif;
+  --font-poppins: var(--font-poppins), sans-serif;
+  --font-garamond: var(--font-garamond), serif;
+  --font-oswald: var(--font-oswald), sans-serif;
+  --font-cairo: var(--font-cairo), sans-serif;
+  --font-almarai: var(--font-almarai), sans-serif;
 
-  /* Container */
   --container-center: true;
   --container-padding: 1rem;
 

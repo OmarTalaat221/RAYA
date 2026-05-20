@@ -1,20 +1,51 @@
-// import "~/public/main-assets/css/bootstrap.min.css";
-// import "~/public/main-assets/css/bootstrap.rtl.min.css";
 import "~/public/main-assets/css/fontawesome.min.css";
 import "~/public/main-assets/css/nice-select.min.css";
 import "~/public/main-assets/css/remixicon.css";
 import "~/public/main-assets/css/slick.min.css";
 import "~/public/main-assets/css/style.css";
 import "~/public/main-assets/css/react-adjustment.css";
-import "~/public/main-assets/css/fonts.css";
 import "./globals.css";
 
 import { NextIntlClientProvider } from "next-intl";
 import { getLocale, getMessages } from "next-intl/server";
-import AOSProvider from "../components/AOSProvider";
+import { Poppins, EB_Garamond, Oswald, Cairo, Almarai } from "next/font/google";
 
 import ReduxProvider from "../store/ReduxProvider";
-import AppPreloader from "../sections/Common/AppPreloader/AppPreloader";
+
+const poppins = Poppins({
+  subsets: ["latin"],
+  weight: ["300", "400", "500", "600", "700"],
+  display: "swap",
+  variable: "--font-poppins",
+});
+
+const ebGaramond = EB_Garamond({
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
+  display: "swap",
+  variable: "--font-garamond",
+});
+
+const oswald = Oswald({
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
+  display: "swap",
+  variable: "--font-oswald",
+});
+
+const cairo = Cairo({
+  subsets: ["arabic", "latin"],
+  weight: ["400", "500", "600", "700"],
+  display: "swap",
+  variable: "--font-cairo",
+});
+
+const almarai = Almarai({
+  subsets: ["arabic", "latin"],
+  weight: ["300", "400", "700", "800"],
+  display: "swap",
+  variable: "--font-almarai",
+});
 
 export const metadata = {
   title: "Raya Pharmacy",
@@ -33,35 +64,15 @@ export default async function RootLayout({ children }) {
   const messages = await getMessages();
 
   return (
-    <html lang={locale} dir={locale === "ar" ? "rtl" : "ltr"}>
+    <html
+      lang={locale}
+      dir={locale === "ar" ? "rtl" : "ltr"}
+      className={`${poppins.variable} ${ebGaramond.variable} ${oswald.variable} ${cairo.variable} ${almarai.variable}`}
+    >
       <body>
         <ReduxProvider>
           <NextIntlClientProvider locale={locale} messages={messages}>
-            {/* <StoreProvider> */}
-            <AOSProvider>
-              <AppPreloader />
-
-              {/* </AppPreloader> */}
-              {/* <Header /> */}
-
-              {children}
-
-              {/* <Footer
-                logoSrc="https://res.cloudinary.com/dbvh5i83q/image/upload/v1776082859/rds_logo_xpmbfn.webp"
-                store={{
-                  name: "RDS Pharma",
-                  address: {
-                    en: "Nasr City, Cairo, Egypt",
-                    ar: "مدينة نصر، القاهرة، مصر",
-                  },
-                  phone: "+20 101 234 5678",
-                  email: "care@rdspharma.com",
-                }}
-              /> */}
-
-              {/* <FloatingSocialButton /> */}
-            </AOSProvider>
-            {/* </StoreProvider> */}
+            {children}
           </NextIntlClientProvider>
         </ReduxProvider>
       </body>

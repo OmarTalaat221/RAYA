@@ -1,18 +1,12 @@
 "use client";
 
-import { useMemo, useState, useCallback } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Image from "next/image";
-import { Swiper, SwiperSlide } from "swiper/react";
-import { FreeMode, Thumbs, Keyboard } from "swiper/modules";
-import { getMediaRoleLabel } from "./utils";
 
-import "swiper/css";
-import "swiper/css/free-mode";
-import "swiper/css/thumbs";
-
-/* ─── resolve image paths ─────────────────────────────────────────────────── */
-
-const IMAGE_BASE_URL = process.env.NEXT_PUBLIC_IMAGE_URL || process.env.NEXT_PUBLIC_API_BASE_URL || "https://rdspharma.cloud";
+const IMAGE_BASE_URL =
+  process.env.NEXT_PUBLIC_IMAGE_URL ||
+  process.env.NEXT_PUBLIC_API_BASE_URL ||
+  "https://rdspharma.cloud";
 
 function resolveMediaSrc(src) {
   if (!src) return "";
@@ -33,8 +27,6 @@ function resolveMediaSrc(src) {
   return src;
 }
 
-/* ─── sub-components ──────────────────────────────────────────────────────── */
-
 function PlayIcon({ className = "h-6 w-6 text-white" }) {
   return (
     <svg
@@ -44,6 +36,36 @@ function PlayIcon({ className = "h-6 w-6 text-white" }) {
       aria-hidden="true"
     >
       <path d="M8.5 6.75c0-1.07 1.154-1.744 2.088-1.219l7.1 4c.95.535.95 1.903 0 2.438l-7.1 4A1.4 1.4 0 0 1 8.5 14.75v-8Z" />
+    </svg>
+  );
+}
+
+function ChevronLeftIcon() {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      className="h-5 w-5"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.8"
+      aria-hidden="true"
+    >
+      <path d="m15 18-6-6 6-6" />
+    </svg>
+  );
+}
+
+function ChevronRightIcon() {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      className="h-5 w-5"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.8"
+      aria-hidden="true"
+    >
+      <path d="m9 18 6-6-6-6" />
     </svg>
   );
 }
@@ -89,6 +111,7 @@ function MainSlide({ item, index, isPrimary, productTitle }) {
             alt={item.alt || productTitle || "Product image"}
             fill
             priority={isPrimary}
+            fetchPriority={isPrimary ? "high" : "auto"}
             loading={isPrimary ? "eager" : "lazy"}
             sizes="(min-width: 1280px) 680px, (min-width: 1024px) 52vw, 100vw"
             className="object-contain"
@@ -119,7 +142,7 @@ function ThumbSlide({ item, active, productTitle }) {
               alt={item.alt || productTitle || "Video thumbnail"}
               fill
               loading="lazy"
-              sizes="(min-width: 640px) 80px, 72px"
+              sizes="80px"
               className="object-cover"
             />
           ) : (
@@ -138,7 +161,7 @@ function ThumbSlide({ item, active, productTitle }) {
           alt={item.alt || productTitle || "Thumbnail"}
           fill
           loading="lazy"
-          sizes="(min-width: 640px) 80px, 72px"
+          sizes="80px"
           className="object-cover"
         />
       )}
@@ -146,11 +169,9 @@ function ThumbSlide({ item, active, productTitle }) {
   );
 }
 
-/* ─── main gallery ────────────────────────────────────────────────────────── */
-
 export default function ProductGallery({ media, productTitle }) {
   const items = Array.isArray(media) && media.length > 0 ? media : [];
-  const [thumbsSwiper, setThumbsSwiper] = useState(null);
+  const thumbsRef = useRef(null);
   const [activeIndex, setActiveIndex] = useState(0);
 
   const primaryIndex = useMemo(() => {
@@ -158,15 +179,61 @@ export default function ProductGallery({ media, productTitle }) {
     return idx >= 0 ? idx : 0;
   }, [items]);
 
-  const handleSlideChange = useCallback((swiper) => {
-    setActiveIndex(swiper.activeIndex);
-    swiper.slides.forEach((slide, i) => {
-      const video = slide.querySelector("video");
-      if (video && i !== swiper.activeIndex) {
-        video.pause();
+  useEffect(() => {
+    setActiveIndex(primaryIndex);
+  }, [primaryIndex]);
+
+  const goTo = useCallback(
+    (index) => {
+      if (!items.length) return;
+      const next = Math.max(0, Math.min(items.length - 1, index));
+      setActiveIndex(next);
+    },
+    [items.length]
+  );
+
+  const goPrev = useCallback(() => {
+    setActiveIndex((prev) => Math.max(0, prev - 1));
+  }, []);
+
+  const goNext = useCallback(() => {
+    setActiveIndex((prev) => Math.min(items.length - 1, prev + 1));
+  }, [items.length]);
+
+  useEffect(() => {
+    const activeThumb = thumbsRef.current?.querySelector(
+      `[data-thumb-index="${activeIndex}"]`
+    );
+
+    if (activeThumb) {
+      activeThumb.scrollIntoView({
+        behavior: "smooth",
+        inline: "center",
+        block: "nearest",
+      });
+    }
+  }, [activeIndex]);
+
+  useEffect(() => {
+    if (items.length <= 1) return;
+
+    const handleKeyDown = (event) => {
+      if (event.key === "ArrowLeft") goPrev();
+      if (event.key === "ArrowRight") goNext();
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [items.length, goPrev, goNext]);
+
+  useEffect(() => {
+    const videos = document.querySelectorAll("[data-product-gallery] video");
+    videos.forEach((video, idx) => {
+      if (idx !== activeIndex) {
+        video.pause?.();
       }
     });
-  }, []);
+  }, [activeIndex]);
 
   if (items.length === 0) {
     return (
@@ -178,59 +245,65 @@ export default function ProductGallery({ media, productTitle }) {
 
   return (
     <section
+      data-product-gallery
       className="overflow-hidden rounded-[32px] border border-black/5 bg-white p-4 shadow-[0_20px_60px_rgba(17,24,39,0.05)] sm:p-5"
       aria-label="Product media gallery"
     >
-      <Swiper
-        modules={[Keyboard, Thumbs]}
-        initialSlide={primaryIndex}
-        keyboard={{ enabled: true }}
-        spaceBetween={16}
-        thumbs={{
-          swiper: thumbsSwiper && !thumbsSwiper.destroyed ? thumbsSwiper : null,
-        }}
-        onInit={(swiper) => {
-          setActiveIndex(swiper.activeIndex);
-        }}
-        onSlideChange={handleSlideChange}
-        className="overflow-hidden rounded-3xl"
-      >
-        {items.map((item, index) => (
-          <SwiperSlide key={`main-${item.role || item.type}-${index}`}>
-            <MainSlide
-              item={item}
-              index={index}
-              isPrimary={index === primaryIndex}
-              productTitle={productTitle}
-            />
-          </SwiperSlide>
-        ))}
-      </Swiper>
+      <div className="relative overflow-hidden rounded-3xl">
+        <MainSlide
+          item={items[activeIndex]}
+          index={activeIndex}
+          isPrimary={activeIndex === primaryIndex}
+          productTitle={productTitle}
+        />
+
+        {items.length > 1 && (
+          <>
+            <button
+              type="button"
+              onClick={goPrev}
+              disabled={activeIndex === 0}
+              className="absolute left-3 top-1/2 z-20 inline-flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full border border-black/8 bg-white/90 text-soft-black shadow-sm backdrop-blur-sm transition hover:border-main hover:text-main disabled:cursor-not-allowed disabled:opacity-35"
+              aria-label="Previous media"
+            >
+              <ChevronLeftIcon />
+            </button>
+
+            <button
+              type="button"
+              onClick={goNext}
+              disabled={activeIndex === items.length - 1}
+              className="absolute right-3 top-1/2 z-20 inline-flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full border border-black/8 bg-white/90 text-soft-black shadow-sm backdrop-blur-sm transition hover:border-main hover:text-main disabled:cursor-not-allowed disabled:opacity-35"
+              aria-label="Next media"
+            >
+              <ChevronRightIcon />
+            </button>
+          </>
+        )}
+      </div>
 
       {items.length > 1 && (
-        <div className="mt-4">
-          <Swiper
-            modules={[FreeMode, Thumbs]}
-            onSwiper={setThumbsSwiper}
-            watchSlidesProgress
-            freeMode
-            spaceBetween={10}
-            slidesPerView="auto"
-            className="!overflow-visible"
-          >
-            {items.map((item, index) => (
-              <SwiperSlide
-                key={`thumb-${item.role || item.type}-${index}`}
-                className="!w-[72px] sm:!w-20"
-              >
-                <ThumbSlide
-                  item={item}
-                  active={index === activeIndex}
-                  productTitle={productTitle}
-                />
-              </SwiperSlide>
-            ))}
-          </Swiper>
+        <div
+          ref={thumbsRef}
+          className="mt-4 flex gap-2 overflow-x-auto pb-1 sm:gap-3"
+        >
+          {items.map((item, index) => (
+            <button
+              key={`thumb-${item.role || item.type}-${index}`}
+              type="button"
+              data-thumb-index={index}
+              onClick={() => goTo(index)}
+              className="w-[72px] shrink-0 sm:w-20"
+              aria-label={`Show media ${index + 1}`}
+              aria-current={index === activeIndex}
+            >
+              <ThumbSlide
+                item={item}
+                active={index === activeIndex}
+                productTitle={productTitle}
+              />
+            </button>
+          ))}
         </div>
       )}
     </section>
