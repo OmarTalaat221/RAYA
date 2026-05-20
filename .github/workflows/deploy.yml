@@ -1,0 +1,48 @@
+name: Deploy to Server
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      - name: Install dependencies
+        run: npm install --legacy-peer-deps
+
+      - name: Build application
+        run: npm run build
+
+      - name: Setup SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan -H 31.97.44.238 >> ~/.ssh/known_hosts
+
+      - name: Deploy to server
+        run: |
+          ssh root@31.97.44.238 << 'EOF'
+          cd ~/ecommerce
+          git pull origin main
+          npm install --legacy-peer-deps
+          npm run build
+          pm2 delete server-version || true
+          pm2 start npm --name "server-version" -- start
+          pm2 save
+          EOF
+
+      - name: Verify deployment
+        run: |
+          ssh root@31.97.44.238 "pm2 status"
