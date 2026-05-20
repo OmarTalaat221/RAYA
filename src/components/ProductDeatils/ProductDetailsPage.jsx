@@ -2,6 +2,8 @@ import ProductGallery from "./ProductGallery";
 import ProductSummary from "./ProductSummary";
 import ProductContentSections from "./ProductContentSections";
 import ProductStickyBar from "./ProductStickyBar";
+import RelatedProducts from "./RelatedProducts";
+import ProductReviews from "./ProductReviews";
 
 export default function ProductDetailsPage({ product }) {
   return (
@@ -22,6 +24,12 @@ export default function ProductDetailsPage({ product }) {
         shortDescription={product.shortDescription}
         contentSections={product.contentSections}
       />
+
+      {/* ── related products slider ── */}
+      <RelatedProducts currentProductId={product.id} />
+
+      {/* ── customer reviews ── */}
+      <ProductReviews productId={product.id} />
 
       {/* ── sticky bottom bar (mobile + desktop) ── */}
       <ProductStickyBar product={product} />

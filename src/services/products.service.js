@@ -32,12 +32,33 @@ export async function getProductBySlug(slug) {
   return response.data?.data;
 }
 
+/* ─── Reviews ────────────────────────────────────────────────────────────── */
+
+export async function getProductReviews(productId, { page = 1, limit = 5 } = {}) {
+  const response = await axiosInstance.get(`/products/${productId}/reviews`, {
+    params: { page, limit },
+  });
+  return response.data?.data;
+}
+
+export async function submitProductReview({ productId, rating, comment }) {
+  const response = await axiosInstance.post("/products/review", {
+    productId,
+    rating: String(rating),
+    comment,
+  });
+  return response.data?.data;
+}
+
+/* ─── Random / Related Products ──────────────────────────────────────────── */
+
+export async function getRandomProducts() {
+  const response = await axiosInstance.get("/products/random");
+  return response.data?.data;
+}
+
 /* ─── Sitemap helper ─────────────────────────────────────────────────────── */
 
-/**
- * Fetches ALL products (paginated) for sitemap generation.
- * Returns only the minimum fields needed: slug + updatedAt.
- */
 export async function getAllProductsForSitemap({ pageSize = 100 } = {}) {
   const allItems = [];
   let page = 1;
@@ -62,7 +83,6 @@ export async function getAllProductsForSitemap({ pageSize = 100 } = {}) {
       hasNextPage = Boolean(pagination.hasNextPage);
       page += 1;
 
-      // Safety limit: max 500 pages (50k items)
       if (page > 500) break;
     } catch (error) {
       console.error(

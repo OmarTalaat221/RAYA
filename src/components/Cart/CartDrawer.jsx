@@ -221,7 +221,7 @@ const CartDrawer = memo(function CartDrawer() {
                     <CartItemList items={items} />
                   </div>
 
-                  <CartRecommendations products={[]} />
+                  <CartRecommendations />
 
                   <div className="h-2" />
                 </div>
