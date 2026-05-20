@@ -37,12 +37,11 @@ jobs:
       - name: Deploy to server
         run: |
           ssh root@31.97.44.238 << 'EOF'
-          cd ~/ecommerce
+          cd ~/ecommerce/RAYA
           git pull origin main
           npm install --legacy-peer-deps
           npm run build
-          pm2 delete server-version || true
-          pm2 start npm --name "server-version" -- start
+          pm2 restart server-version || pm2 start npm --name "server-version" -- start
           pm2 save
           EOF
 
