@@ -14,6 +14,7 @@ import {
 import { usePathname } from "next/navigation";
 import { useSelector, useDispatch } from "react-redux";
 import { toggleCart, fetchCart } from "../../../store/cartSlice";
+import { useLocale, useTranslations } from "next-intl";
 
 const SearchOverlay = dynamic(
   () => import("../../../components/Search/SearchOverlay"),
@@ -29,11 +30,11 @@ const useIsoLayoutEffect =
   typeof window !== "undefined" ? useLayoutEffect : useEffect;
 
 const NAV_ITEMS = [
-  { label: "Home", href: "/" },
-  { label: "Products", href: "/collections/all" },
-  { label: "Brands", href: "/collections" },
-  { label: "Blog", href: "/blog/news" },
-  { label: "Contact", href: "/contact" },
+  { key: "home", href: "/" },
+  { key: "products", href: "/collections/all" },
+  { key: "brand", href: "/collections" },
+  { key: "blog", href: "/blog/news" },
+  { key: "contact", href: "/contact" },
 ];
 
 const INDICATOR_TRANSITION =
@@ -62,6 +63,7 @@ const Logo = memo(function Logo({ size = "default" }) {
 
 /* ─── Desktop Nav ─── */
 const NavMenu = memo(function NavMenu({ pathname, ariaLabel }) {
+  const t = useTranslations("header");
   const navRef = useRef(null);
   const linkRefs = useRef({});
   const [hoveredHref, setHoveredHref] = useState(null);
@@ -148,7 +150,7 @@ const NavMenu = memo(function NavMenu({ pathname, ariaLabel }) {
           const isActive = pathname === item.href;
           const isHovered = hoveredHref === item.href;
           return (
-            <li key={item.label}>
+            <li key={item.key}>
               <Link
                 ref={setLinkRef(item.href)}
                 href={item.href}
@@ -165,7 +167,7 @@ const NavMenu = memo(function NavMenu({ pathname, ariaLabel }) {
                   }
                 `}
               >
-                {item.label}
+                {t(`nav.${item.key}`)}
               </Link>
             </li>
           );
@@ -177,6 +179,7 @@ const NavMenu = memo(function NavMenu({ pathname, ariaLabel }) {
 
 /* ─── Mobile Nav Link ─── */
 const MobileNavLink = memo(function MobileNavLink({ item, pathname, onClick }) {
+  const t = useTranslations("header");
   const isActive = pathname === item.href;
 
   return (
@@ -196,7 +199,7 @@ const MobileNavLink = memo(function MobileNavLink({ item, pathname, onClick }) {
         }
       `}
     >
-      {item.label}
+      {t(`nav.${item.key}`)}
       {isActive && <span className="w-1.5 h-1.5 rounded-full bg-main" />}
     </Link>
   );
@@ -246,6 +249,8 @@ const HeaderIcons = memo(function HeaderIcons({
 
 /* ─── Top Bar ─── */
 const TopBar = memo(function TopBar({ compact = false }) {
+  const t = useTranslations("header");
+
   return (
     <div className={`w-full bg-main ${compact ? "py-1.5" : "py-2"} px-4`}>
       <p
@@ -253,11 +258,10 @@ const TopBar = memo(function TopBar({ compact = false }) {
                     ${compact ? "text-[10px] sm:text-[11px]" : "text-[11px] sm:text-xs md:text-sm"}`}
       >
         <span className="hidden sm:inline">
-          UAE Delivery Free Over 150AED Within 2Days &nbsp;|&nbsp; GCC Free over
-          600AED Within 4Days
+          {t("topBar")}
         </span>
         <span className="sm:hidden">
-          🚚 UAE Free &gt;150AED &nbsp;|&nbsp; GCC Free &gt;600AED
+          {t("topBarMobile")}
         </span>
       </p>
     </div>
@@ -284,7 +288,7 @@ const MobileMenu = memo(function MobileMenu({ visible, pathname, closeMenu }) {
       <nav className="border-t border-gray-100 bg-[#f7f7f7]">
         <ul className="flex flex-col py-2">
           {NAV_ITEMS.map((item) => (
-            <li key={item.label}>
+            <li key={item.key}>
               <MobileNavLink
                 item={item}
                 pathname={pathname}
@@ -300,7 +304,7 @@ const MobileMenu = memo(function MobileMenu({ visible, pathname, closeMenu }) {
 
 const LanguageDropdown = memo(function LanguageDropdown() {
   const [open, setOpen] = useState(false);
-  const [current, setCurrent] = useState("en");
+  const locale = useLocale();
   const ref = useRef(null);
 
   const close = useCallback(() => setOpen(false), []);
@@ -324,18 +328,35 @@ const LanguageDropdown = memo(function LanguageDropdown() {
     };
   }, [open, close]);
 
-  const handleSelect = useCallback((code) => {
-    setCurrent(code);
-    setOpen(false);
-    // TODO: integrate with next-intl locale switching
-  }, []);
+  const handleSelect = useCallback(
+    async (code) => {
+      setOpen(false);
+      if (code === locale) return;
+
+      try {
+        await fetch("/api/locale", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ locale: code }),
+        });
+        try {
+          localStorage.setItem("rds_locale", code);
+        } catch (_) {}
+        window.location.reload();
+      } catch (error) {
+        console.error("Failed to change locale:", error);
+      }
+    },
+    [locale],
+  );
 
   const LANGUAGES = [
     { code: "en", label: "English", short: "EN" },
     { code: "ar", label: "العربية", short: "عربي" },
   ];
 
-  const currentLang = LANGUAGES.find((l) => l.code === current);
+  const currentLang =
+    LANGUAGES.find((language) => language.code === locale) || LANGUAGES[0];
 
   return (
     <div ref={ref} className="relative">
@@ -369,7 +390,7 @@ const LanguageDropdown = memo(function LanguageDropdown() {
         `}
       >
         {LANGUAGES.map((lang) => {
-          const isActive = lang.code === current;
+          const isActive = lang.code === locale;
           return (
             <button
               key={lang.code}

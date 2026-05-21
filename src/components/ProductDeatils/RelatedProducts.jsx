@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { motion } from "framer-motion";
 import { ArrowLeft, ArrowRight } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { A11y } from "swiper/modules";
 import { Swiper, SwiperSlide } from "swiper/react";
 import ProductCard from "../FeaturedProducts/ProductCard";
@@ -19,6 +20,7 @@ function clampSlides(itemsLength, desired) {
 }
 
 export default function RelatedProducts({ currentProductId }) {
+  const t = useTranslations("productDetails.related");
   const sectionRef = useRef(null);
   const swiperRef = useRef(null);
 
@@ -77,7 +79,7 @@ export default function RelatedProducts({ currentProductId }) {
         setProducts(adapted);
       } catch (err) {
         if (!active) return;
-        setError(err?.message || "Failed to load related products.");
+        setError(err?.message || t("failedToLoad"));
       } finally {
         if (active) {
           setLoading(false);
@@ -90,7 +92,7 @@ export default function RelatedProducts({ currentProductId }) {
     return () => {
       active = false;
     };
-  }, [hasLoadedOnce, currentProductId]);
+  }, [hasLoadedOnce, currentProductId, t]);
 
   const breakpoints = useMemo(
     () => ({
@@ -165,10 +167,10 @@ export default function RelatedProducts({ currentProductId }) {
             id="related-products-heading"
             className="text-2xl font-bold uppercase tracking-wide text-soft-black font-oswald! sm:text-3xl"
           >
-            You May Also Like
+            {t("title")}
           </h2>
           <p className="mt-1 text-sm text-secondary">
-            Hand-picked picks based on this product
+            {t("subtitle")}
           </p>
         </div>
 
@@ -179,7 +181,7 @@ export default function RelatedProducts({ currentProductId }) {
               onClick={handlePrev}
               disabled={!canPrev}
               className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-black/10 bg-white text-soft-black transition-colors duration-200 hover:border-main/30 hover:text-main disabled:cursor-not-allowed disabled:opacity-40"
-              aria-label="Previous related product"
+              aria-label={t("previous")}
             >
               <ArrowLeft size={16} />
             </button>
@@ -189,7 +191,7 @@ export default function RelatedProducts({ currentProductId }) {
               onClick={handleNext}
               disabled={!canNext}
               className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-black/10 bg-white text-soft-black transition-colors duration-200 hover:border-main/30 hover:text-main disabled:cursor-not-allowed disabled:opacity-40"
-              aria-label="Next related product"
+              aria-label={t("next")}
             >
               <ArrowRight size={16} />
             </button>

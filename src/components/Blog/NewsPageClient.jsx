@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useCallback } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { getAllBlogs } from "../../services/blogs.service";
 import { adaptBlogListResponse } from "./blog.adapter";
 import NewsListingPage from "./NewsListingPage";
@@ -10,6 +11,7 @@ import NewsPageFallback from "./NewsPageFallback";
 const PAGE_SIZE = 6;
 
 export default function NewsPageClient() {
+  const t = useTranslations("blog");
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -137,9 +139,9 @@ export default function NewsPageClient() {
       totalPages={metadata.totalPages}
       total={metadata.total}
       pageSize={PAGE_SIZE}
-      title="Latest News"
-      eyebrow="From the Journal"
-      subtitle="Explore updates, skincare advice, and wellness insights from the RDS Pharma world."
+      title={t("latestNews")}
+      eyebrow={t("eyebrow")}
+      subtitle={t("subtitle")}
     />
   );
 }

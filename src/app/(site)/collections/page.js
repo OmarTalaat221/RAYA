@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useCallback } from "react";
 import { RefreshCw } from "lucide-react";
+import { useLocale, useTranslations } from "next-intl";
 import CollectionCard from "../../../components/Collections/CollectionCard";
 import CollectionsPageHeading from "../../../components/Collections/CollectionsPageHeading";
 import { getAllCategories } from "../../../services/categories.service";
@@ -31,6 +32,8 @@ const ALL_COLLECTION_CARD = {
 };
 
 export default function CollectionsPage() {
+  const locale = useLocale();
+  const t = useTranslations("common");
   const [apiItems, setApiItems] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -40,19 +43,19 @@ export default function CollectionsPage() {
     setError(null);
     try {
       const data = await getAllCategories({ page: 1, limit: 100 });
-      const adapted = adaptCategoriesToCollections(data?.items ?? [], "en");
+      const adapted = adaptCategoriesToCollections(data?.items ?? [], locale);
       setApiItems(adapted);
     } catch (err) {
       console.error("[CollectionsPage] Failed to fetch categories:", err);
       setError(
         err.response?.data?.message ||
-          "Failed to load collections. Please try again."
+          t("failedToLoadCollections")
       );
       setApiItems([]);
     } finally {
       setIsLoading(false);
     }
-  }, []);
+  }, [locale, t]);
 
   useEffect(() => {
     fetchCollections();
@@ -87,7 +90,7 @@ export default function CollectionsPage() {
               <span className="text-2xl">⚠️</span>
             </div>
             <p className="font-poppins! mb-2 text-base font-medium text-soft-black">
-              Something went wrong
+              {t("error")}
             </p>
             <p className="font-poppins! mb-6 max-w-sm text-center text-sm text-secondary">
               {error}
@@ -101,13 +104,13 @@ export default function CollectionsPage() {
                          focus-visible:ring-2 focus-visible:ring-main/40"
             >
               <RefreshCw size={14} strokeWidth={2} />
-              Try Again
+              {t("tryAgain")}
             </button>
           </div>
         ) : items.length <= 1 && apiItems.length === 0 ? (
           <div className="py-20 text-center">
             <p className="font-poppins! text-base text-secondary">
-              No collections available right now.
+              {t("noCollections")}
             </p>
           </div>
         ) : (

@@ -6,12 +6,14 @@ import { useDispatch } from "react-redux";
 import Image from "next/image";
 import Link from "next/link";
 import { Trash2, Minus, Plus, Loader2 } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { updateQuantity, removeFromCart } from "../../store/cartSlice";
 import { formatMoney, getCartItemHref } from "./cart.utils";
 
 const DEBOUNCE_DELAY = 400;
 
 const CartItem = memo(function CartItem({ item }) {
+  const t = useTranslations("cart.itemControls");
   const dispatch = useDispatch();
 
   /* ── local quantity for instant UI feedback ── */
@@ -68,15 +70,6 @@ const CartItem = memo(function CartItem({ item }) {
     scheduleUpdate(1);
   }, [localQty, item.maxQuantity, scheduleUpdate]);
 
-  const handleDecrement = useCallback(() => {
-    if (localQty <= 1) {
-      handleRemove();
-      return;
-    }
-    setLocalQty((prev) => prev - 1);
-    scheduleUpdate(-1);
-  }, [localQty, scheduleUpdate]);
-
   const handleRemove = useCallback(() => {
     if (pendingRef.current) {
       clearTimeout(pendingRef.current);
@@ -88,6 +81,15 @@ const CartItem = memo(function CartItem({ item }) {
       setIsRemoving(false);
     });
   }, [dispatch, item.id]);
+
+  const handleDecrement = useCallback(() => {
+    if (localQty <= 1) {
+      handleRemove();
+      return;
+    }
+    setLocalQty((prev) => prev - 1);
+    scheduleUpdate(-1);
+  }, [handleRemove, localQty, scheduleUpdate]);
 
   const lineTotal = item.price * localQty;
   const imageSrc = item.image || "";
@@ -118,7 +120,7 @@ const CartItem = memo(function CartItem({ item }) {
           />
         ) : (
           <div className="flex h-full w-full items-center justify-center">
-            <span className="text-xs text-gray-300">No image</span>
+            <span className="text-xs text-gray-300">{t("noImage")}</span>
           </div>
         )}
       </Link>
@@ -144,7 +146,7 @@ const CartItem = memo(function CartItem({ item }) {
                        disabled:cursor-not-allowed disabled:opacity-40
                        focus-visible:outline-none focus-visible:ring-2
                        focus-visible:ring-red-200"
-            aria-label={`Remove ${item.title}`}
+            aria-label={t("remove", { title: item.title })}
           >
             {isRemoving ? (
               <Loader2 size={14} strokeWidth={1.8} className="animate-spin" />
@@ -166,7 +168,7 @@ const CartItem = memo(function CartItem({ item }) {
               className="flex h-8 w-8 items-center justify-center text-gray-500
                          transition-colors duration-150 hover:bg-gray-100
                          hover:text-soft-black"
-              aria-label="Decrease quantity"
+              aria-label={t("decreaseQuantity")}
             >
               <Minus size={13} strokeWidth={2} />
             </button>
@@ -183,7 +185,7 @@ const CartItem = memo(function CartItem({ item }) {
                          transition-colors duration-150 hover:bg-gray-100
                          hover:text-soft-black disabled:cursor-not-allowed
                          disabled:opacity-30"
-              aria-label="Increase quantity"
+              aria-label={t("increaseQuantity")}
             >
               <Plus size={13} strokeWidth={2} />
             </button>

@@ -2,6 +2,7 @@
 
 import { motion } from "framer-motion";
 import { MapPin, Navigation } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 const mapVariant = {
   hidden: { opacity: 0, y: 24 },
@@ -18,6 +19,8 @@ const GOOGLE_MAPS_LINK = `https://www.google.com/maps/search/?api=1&query=${GOOG
 const EMBED_URL = `https://www.google.com/maps?q=${GOOGLE_MAPS_QUERY}&output=embed`;
 
 export default function ContactMap() {
+  const t = useTranslations("contact");
+
   return (
     <section className="w-full bg-[#f4f3f0] py-10 sm:py-12 md:py-14 lg:py-16">
       <div className="container mx-auto px-4 sm:px-6">
@@ -77,7 +80,7 @@ export default function ContactMap() {
                 className="relative z-10 transition-transform duration-300 group-hover:translate-x-0.5"
               />
 
-              <span className="relative z-10">Get Directions</span>
+              <span className="relative z-10">{t("getDirections")}</span>
             </a>
           </div>
         </motion.div>

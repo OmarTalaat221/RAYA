@@ -3,7 +3,6 @@ import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import MultiPageMobileMenu from "../MultiPageMobileMenu/MultiPageMobileMenu";
 import { useLocale, useTranslations } from "next-intl";
-import { usePathname, useRouter } from "next/navigation";
 
 const HeaderTwo = () => {
   const [isSticky, setIsSticky] = useState(false);
@@ -15,8 +14,6 @@ const HeaderTwo = () => {
   const t = useTranslations("header");
   const locale = useLocale();
   const isRTL = locale === "ar";
-  const router = useRouter();
-  const pathname = usePathname();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -50,9 +47,24 @@ const HeaderTwo = () => {
   };
 
   // Language Switcher
-  const switchLanguage = (newLocale) => {
-    const currentPath = pathname.replace(`/${locale}`, "");
-    router.push(`/${newLocale}${currentPath}`);
+  const switchLanguage = async (newLocale) => {
+    if (newLocale === locale) return;
+
+    try {
+      await fetch("/api/locale", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ locale: newLocale }),
+      });
+
+      try {
+        localStorage.setItem("rds_locale", newLocale);
+      } catch (_) {}
+
+      window.location.reload();
+    } catch (error) {
+      console.error("Failed to change locale:", error);
+    }
   };
 
   useEffect(() => {

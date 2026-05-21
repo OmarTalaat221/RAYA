@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { useDispatch, useSelector } from "react-redux";
 import { addToCart, fetchCart, removeFromCart } from "../../store/cartSlice";
 import { setBuyNowItem } from "../../utils/buyNow";
@@ -131,6 +132,7 @@ export default function ProductPurchaseActions({
   productTitle,
   shortDescription,
 }) {
+  const t = useTranslations("productDetails");
   const dispatch = useDispatch();
   const router = useRouter();
 
@@ -195,11 +197,11 @@ export default function ProductPurchaseActions({
   }
 
   function getButtonText() {
-    if (isCartSyncing) return "Loading...";
-    if (isSubmitting && submitMode === "add") return "Adding...";
-    if (isSubmitting && submitMode === "remove") return "Removing...";
-    if (isInCart) return "Remove from Cart";
-    return "Add to Cart";
+    if (isCartSyncing) return t("actions.loading");
+    if (isSubmitting && submitMode === "add") return t("actions.adding");
+    if (isSubmitting && submitMode === "remove") return t("actions.removing");
+    if (isInCart) return t("actions.removeFromCart");
+    return t("actions.addToCart");
   }
 
   async function handleCartToggle() {
@@ -315,7 +317,7 @@ export default function ProductPurchaseActions({
             htmlFor="product-quantity"
             className="mb-2 block text-xs font-semibold uppercase tracking-[0.18em] text-secondary"
           >
-            Quantity
+            {t("actions.quantity")}
           </label>
           <div className="flex h-12 items-center rounded-2xl border border-black/8 bg-white">
             <button
@@ -325,7 +327,7 @@ export default function ProductPurchaseActions({
                 isOutOfStock || isSubmitting || actionLoading || isCartSyncing
               }
               className="inline-flex h-full w-12 items-center justify-center text-soft-black transition hover:text-main disabled:cursor-not-allowed disabled:opacity-50"
-              aria-label="Decrease quantity"
+              aria-label={t("actions.decreaseQuantity")}
             >
               <MinusIcon />
             </button>
@@ -348,7 +350,7 @@ export default function ProductPurchaseActions({
                 isOutOfStock || isSubmitting || actionLoading || isCartSyncing
               }
               className="inline-flex h-full w-12 items-center justify-center text-soft-black transition hover:text-main disabled:cursor-not-allowed disabled:opacity-50"
-              aria-label="Increase quantity"
+              aria-label={t("actions.increaseQuantity")}
             >
               <PlusIcon />
             </button>
@@ -393,7 +395,7 @@ export default function ProductPurchaseActions({
         className="group relative mt-3 inline-flex h-14 w-full items-center justify-center gap-2 overflow-hidden rounded-2xl bg-soft-black px-6 text-sm font-semibold uppercase tracking-[0.14em] text-white shadow-[0_12px_28px_rgba(45,45,45,0.25)] transition hover:bg-[#1a1a1a] hover:shadow-[0_16px_36px_rgba(45,45,45,0.32)] disabled:cursor-not-allowed disabled:opacity-50"
       >
         {/* <BoltIcon /> */}
-        <span>Buy Now</span>
+        <span>{t("actions.buyNow")}</span>
       </button>
 
       {/* ── cash on delivery (UAE only) ── */}
@@ -405,7 +407,7 @@ export default function ProductPurchaseActions({
           className="mt-2.5 inline-flex h-12 w-full items-center justify-center gap-2 rounded-2xl border border-black/10 bg-white px-6 text-sm font-semibold text-soft-black transition hover:border-main hover:text-main disabled:cursor-not-allowed disabled:opacity-50"
         >
           <TruckIcon />
-          <span>Cash on Delivery</span>
+          <span>{t("actions.cashOnDelivery")}</span>
         </button>
       )}
 
@@ -416,32 +418,31 @@ export default function ProductPurchaseActions({
         </div>
         <div>
           <p className="text-sm font-medium text-soft-black">
-            Secure payment at checkout
+            {t("secure.title")}
           </p>
           <p className="mt-1 text-sm leading-6 text-secondary">
-            All major payment methods available. Final order details confirmed
-            before payment.
+            {t("secure.description")}
           </p>
         </div>
       </div>
 
       {/* ── share row ── */}
       <div className="mt-6 flex flex-wrap items-center justify-between gap-3 border-t border-black/5 pt-5">
-        <p className="text-sm text-secondary">Share this product</p>
+        <p className="text-sm text-secondary">{t("share.title")}</p>
         <div className="flex items-center gap-2">
           <button
             type="button"
             onClick={handleShare}
             className="inline-flex h-10 items-center gap-2 rounded-full border border-black/8 bg-white px-4 text-sm font-medium text-soft-black transition hover:border-main hover:text-main"
           >
-            <ShareIcon /> Share
+            <ShareIcon /> {t("share.share")}
           </button>
           <button
             type="button"
             onClick={handleCopyLink}
             className="inline-flex h-10 items-center gap-2 rounded-full border border-black/8 bg-white px-4 text-sm font-medium text-soft-black transition hover:border-main hover:text-main"
           >
-            <LinkIcon /> {copied ? "Copied" : "Copy link"}
+            <LinkIcon /> {copied ? t("share.copied") : t("share.copyLink")}
           </button>
         </div>
       </div>

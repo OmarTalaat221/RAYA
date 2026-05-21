@@ -4,6 +4,7 @@ import { useState, useCallback, memo } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import Link from "next/link";
 import Image from "next/image";
+import { useTranslations } from "next-intl";
 import SaleRibbon from "./SaleRibbon";
 import { addToCart, removeFromCart } from "../../store/cartSlice";
 
@@ -16,6 +17,8 @@ const CartToggleButton = memo(function CartToggleButton({
   isLoading,
   onAdd,
 }) {
+  const t = useTranslations("catalog");
+
   const handleClick = useCallback(
     (e) => {
       e.preventDefault();
@@ -56,7 +59,7 @@ const CartToggleButton = memo(function CartToggleButton({
               d="M5 13l4 4L19 7"
             />
           </svg>
-          Added
+          {t("added")}
         </>
       ) : (
         <>
@@ -73,7 +76,7 @@ const CartToggleButton = memo(function CartToggleButton({
               d="M12 4.5v15m7.5-7.5h-15"
             />
           </svg>
-          Add to Cart
+          {t("addToCart")}
         </>
       )}
     </button>

@@ -1,6 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
+import { useTranslations } from "next-intl";
 
 const headingVariant = {
   hidden: { opacity: 0, y: 22 },
@@ -15,6 +16,8 @@ const headingVariant = {
 };
 
 export default function CollectionsPageHeading() {
+  const t = useTranslations("collectionsPage");
+
   return (
     <motion.div
       className="mx-auto mb-10 max-w-2xl text-center md:mb-14"
@@ -25,7 +28,7 @@ export default function CollectionsPageHeading() {
     >
       <div className="flex items-center justify-center gap-3">
         <span className="mb-2 block text-xs font-semibold uppercase tracking-[0.2em] text-main sm:text-sm font-poppins!">
-          Browse by
+          {t("eyebrow")}
         </span>
       </div>
 
@@ -33,12 +36,11 @@ export default function CollectionsPageHeading() {
         id="collections-heading"
         className="text-[clamp(2rem,5vw,3.5rem)] font-bold leading-tight text-soft-black font-oswald!"
       >
-        Collections
+        {t("title")}
       </h1>
 
       <p className="mx-auto mt-4 max-w-xl text-sm leading-7 text-secondary sm:text-base font-poppins!">
-        Explore featured brands, seasonal offers, and curated ranges from the
-        RDS Pharma world.
+        {t("subtitle")}
       </p>
     </motion.div>
   );

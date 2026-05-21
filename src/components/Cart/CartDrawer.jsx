@@ -5,6 +5,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { useRouter } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
 import { X, AlertCircle } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { closeCart, fetchCart, clearError } from "../../store/cartSlice";
 import FreeShippingBar from "./FreeShippingBar";
 import CartItemList from "./CartItemList";
@@ -32,6 +33,7 @@ const DRAWER_TRANSITION = {
 };
 
 const CartDrawer = memo(function CartDrawer() {
+  const t = useTranslations("cart");
   const dispatch = useDispatch();
   const router = useRouter();
   const isOpen = useSelector((s) => s.cart.isOpen);
@@ -124,7 +126,7 @@ const CartDrawer = memo(function CartDrawer() {
             transition={DRAWER_TRANSITION}
             role="dialog"
             aria-modal="true"
-            aria-label="Shopping cart"
+            aria-label={t("aria.shoppingCart")}
           >
             {/* Header */}
             <div
@@ -136,14 +138,14 @@ const CartDrawer = memo(function CartDrawer() {
                   className="font-oswald! text-lg font-semibold uppercase
                              tracking-wide text-soft-black sm:text-2xl"
                 >
-                  Your Cart
+                  {t("drawer.title")}
                 </h2>
                 {itemCount > 0 && (
                   <span
                     className="rounded-full bg-main/10 px-2 py-0.5 text-[10px]
                                font-semibold text-main sm:px-2.5 sm:text-xs"
                   >
-                    {itemCount} {itemCount === 1 ? "item" : "items"}
+                    {itemCount} {itemCount === 1 ? t("item") : t("items")}
                   </span>
                 )}
               </div>
@@ -153,7 +155,7 @@ const CartDrawer = memo(function CartDrawer() {
                            transition-colors duration-200 hover:bg-gray-100
                            focus-visible:outline-none focus-visible:ring-2
                            focus-visible:ring-main/40 sm:h-9 sm:w-9"
-                aria-label="Close cart"
+                aria-label={t("aria.closeCart")}
               >
                 <X
                   size={18}
@@ -184,7 +186,7 @@ const CartDrawer = memo(function CartDrawer() {
                              text-red-500 underline underline-offset-2
                              transition-colors duration-200 hover:text-red-700 sm:text-[12px]"
                 >
-                  Retry
+                  {t("retry")}
                 </button>
               </div>
             )}
@@ -198,7 +200,7 @@ const CartDrawer = memo(function CartDrawer() {
                                border-gray-200 border-t-main sm:h-8 sm:w-8"
                   />
                   <span className="font-poppins! text-xs text-gray-400 sm:text-sm">
-                    Loading your cart…
+                    {t("loadingCart")}
                   </span>
                 </div>
               </div>
@@ -214,6 +216,7 @@ const CartDrawer = memo(function CartDrawer() {
                       remaining={freeShippingRemaining}
                       threshold={freeShippingThreshold}
                       subtotal={subtotal}
+                      currency={currency}
                     />
                   </div>
 

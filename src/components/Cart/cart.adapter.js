@@ -30,6 +30,11 @@ function getTranslation(translations, lang = "en") {
   return translations.find((t) => t.lang === lang) || translations[0] || {};
 }
 
+function stripLocalePrefix(path) {
+  if (typeof path !== "string") return path;
+  return path.replace(/^\/(?:ar|en)(?=\/|$)/, "") || "/";
+}
+
 export function adaptCartItem(cartItem, lang = "en") {
   const product = cartItem.product || {};
   const translation = getTranslation(product.translations, lang);
@@ -39,9 +44,10 @@ export function adaptCartItem(cartItem, lang = "en") {
     cartItemId: cartItem.id,
     title: translation.title || "Untitled",
     slug: translation.slug || "",
-    href:
+    href: stripLocalePrefix(
       translation.href ||
-      (translation.slug ? `/products/${translation.slug}` : "#"),
+        (translation.slug ? `/products/${translation.slug}` : "#")
+    ),
     price: cartItem.price ?? product.newPrice ?? product.oldPrice ?? 0,
     image: getBestImage(product),
     quantity: cartItem.quantity || 1,

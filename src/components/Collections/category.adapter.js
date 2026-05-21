@@ -25,6 +25,11 @@ function pickTranslation(translations = [], lang = "en") {
   return translations.find((t) => t?.lang === lang) ?? translations[0] ?? null;
 }
 
+function stripLocalePrefix(path) {
+  if (typeof path !== "string") return path;
+  return path.replace(/^\/(?:ar|en)(?=\/|$)/, "") || "/";
+}
+
 export function adaptCategoryToCollection(category, lang = "en") {
   if (!category) return null;
 
@@ -36,7 +41,7 @@ export function adaptCategoryToCollection(category, lang = "en") {
     id: category.id,
     title,
     slug,
-    href: translation?.href || `/collections/${slug}`,
+    href: stripLocalePrefix(translation?.href || `/collections/${slug}`),
     image: resolveCollectionImage(category.image),
     srcSet: resolveSrcSet(category.srcSet),
     meta: {

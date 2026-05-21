@@ -2,6 +2,7 @@
 
 import { useCallback, useMemo } from "react";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { loadStripe } from "@stripe/stripe-js";
 import {
   EmbeddedCheckout,
@@ -12,17 +13,16 @@ const publishableKey = process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY || "";
 const stripePromise = publishableKey ? loadStripe(publishableKey) : null;
 
 function PaymentUnavailable({ onBack }) {
+  const t = useTranslations("checkout.payment");
+
   return (
     <div>
       <h2 className="mb-6 text-xl font-oswald! text-soft-black sm:text-2xl">
-        Payment Details
+        {t("title")}
       </h2>
 
       <div className="rounded-2xl border border-red-200 bg-red-50 px-4 py-4">
-        <p className="text-sm leading-6 text-red-600">
-          The payment session is unavailable right now. Please go back and try
-          again.
-        </p>
+        <p className="text-sm leading-6 text-red-600">{t("unavailable")}</p>
       </div>
 
       <div className="mt-6">
@@ -44,7 +44,7 @@ function PaymentUnavailable({ onBack }) {
               d="M15 19l-7-7 7-7"
             />
           </svg>
-          Back to Shipping
+          {t("backToShipping")}
         </button>
       </div>
     </div>
@@ -53,6 +53,7 @@ function PaymentUnavailable({ onBack }) {
 
 export default function CheckoutPaymentStep({ orderId, clientSecret, onBack }) {
   const router = useRouter();
+  const t = useTranslations("checkout.payment");
 
   const handleComplete = useCallback(() => {
     router.replace(
@@ -84,10 +85,10 @@ export default function CheckoutPaymentStep({ orderId, clientSecret, onBack }) {
       <div className="mb-5 flex flex-col gap-3 sm:mb-6 sm:flex-row sm:items-start sm:justify-between">
         <div>
           <h2 className="text-xl font-oswald! text-soft-black sm:text-2xl">
-            Payment Details
+            {t("title")}
           </h2>
           <p className="mt-2 text-sm leading-6 text-secondary">
-            Complete your payment securely without leaving the website.
+            {t("description")}
           </p>
         </div>
 
@@ -109,7 +110,7 @@ export default function CheckoutPaymentStep({ orderId, clientSecret, onBack }) {
               d="M15 19l-7-7 7-7"
             />
           </svg>
-          Back
+          {t("back")}
         </button>
       </div>
 
@@ -123,7 +124,7 @@ export default function CheckoutPaymentStep({ orderId, clientSecret, onBack }) {
       </div>
 
       <p className="mt-4 text-center text-xs text-secondary">
-        Your card information is encrypted and processed securely by Stripe.
+        {t("cardSecure")}
       </p>
     </div>
   );

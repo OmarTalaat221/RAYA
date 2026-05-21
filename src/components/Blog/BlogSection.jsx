@@ -5,6 +5,7 @@ import { motion } from "framer-motion";
 import Link from "next/link";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Pagination, FreeMode, Autoplay } from "swiper/modules";
+import { useTranslations } from "next-intl";
 import "swiper/css";
 import "swiper/css/pagination";
 import "swiper/css/free-mode";
@@ -128,6 +129,7 @@ function MobileSwiper({ items }) {
 }
 
 export default function BlogSection({ blogs = [] }) {
+  const t = useTranslations("home.blog");
   const items = useMemo(() => {
     const list = Array.isArray(blogs) ? blogs : [];
     return list.slice(0, 3);
@@ -149,12 +151,12 @@ export default function BlogSection({ blogs = [] }) {
         >
           <div className="flex items-center justify-start gap-3">
             <span className="mb-2 block text-xs font-semibold uppercase tracking-[0.2em] text-main sm:text-sm font-garamond!">
-              From the Journal
+              {t("eyebrow")}
             </span>
           </div>
 
           <h2 className="text-[clamp(2rem,5vw,3.5rem)] text-start font-bold leading-tight text-soft-black font-oswald!">
-            Latest Articles
+            {t("title")}
           </h2>
         </motion.div>
 
@@ -182,7 +184,7 @@ export default function BlogSection({ blogs = [] }) {
               aria-hidden="true"
             />
 
-            <span className="relative z-10">View All Articles</span>
+            <span className="relative z-10">{t("viewAll")}</span>
 
             <svg
               xmlns="http://www.w3.org/2000/svg"

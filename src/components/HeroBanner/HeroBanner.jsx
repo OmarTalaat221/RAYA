@@ -4,10 +4,12 @@ import { useState, useEffect, useCallback, useRef } from "react";
 import { ChevronLeft, ChevronRight, ArrowRight } from "lucide-react";
 import Link from "next/link";
 import BottomBg from "../../sections/Common/BottomBg/BottomBg";
+import { useTranslations } from "next-intl";
 
 const AUTOPLAY_DELAY = 5000;
 
 export default function HeroSlider({ banners = [] }) {
+  const t = useTranslations("home.hero");
   const [current, setCurrent] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
   const [headerHeight, setHeaderHeight] = useState(0);
@@ -211,7 +213,7 @@ export default function HeroSlider({ banners = [] }) {
                            transition-transform duration-700"
                 aria-hidden="true"
               />
-              <span className="relative z-10">Shop Now</span>
+              <span className="relative z-10">{t("shopNow")}</span>
               <ArrowRight
                 size={14}
                 strokeWidth={2.5}

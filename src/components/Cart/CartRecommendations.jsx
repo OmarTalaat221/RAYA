@@ -5,6 +5,7 @@ import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import Image from "next/image";
 import { Plus, Loader2 } from "lucide-react";
+import { useLocale, useTranslations } from "next-intl";
 import { addToCart } from "../../store/cartSlice";
 import { getRandomProducts } from "../../services/products.service";
 import { formatMoney } from "./cart.utils";
@@ -27,9 +28,14 @@ function toNumber(v) {
   return Number.isFinite(n) ? n : 0;
 }
 
-function adaptRandomProduct(raw) {
+function adaptRandomProduct(raw, locale) {
   if (!raw) return null;
-  const translation = raw?.translations?.[0] || {};
+  const translations = Array.isArray(raw?.translations) ? raw.translations : [];
+  const translation =
+    translations.find((entry) => entry.lang === locale) ||
+    translations.find((entry) => entry.lang === "en") ||
+    translations[0] ||
+    {};
   return {
     id: raw.id,
     title: translation.title || "Product",
@@ -46,6 +52,7 @@ const RecommendationItem = memo(function RecommendationItem({
   product,
   onAdded,
 }) {
+  const t = useTranslations("cart.recommendations");
   const dispatch = useDispatch();
   const [isAdding, setIsAdding] = useState(false);
 
@@ -88,7 +95,7 @@ const RecommendationItem = memo(function RecommendationItem({
           />
         ) : (
           <div className="flex h-full w-full items-center justify-center">
-            <span className="text-[10px] text-gray-300">No img</span>
+            <span className="text-[10px] text-gray-300">{t("noImage")}</span>
           </div>
         )}
       </div>
@@ -116,7 +123,7 @@ const RecommendationItem = memo(function RecommendationItem({
                    disabled:cursor-not-allowed disabled:opacity-60
                    focus-visible:outline-none focus-visible:ring-2
                    focus-visible:ring-main/40"
-        aria-label={`Add ${product.title} to cart`}
+        aria-label={t("addToCart", { title: product.title })}
       >
         {isAdding ? (
           <Loader2 size={14} strokeWidth={2.2} className="animate-spin" />
@@ -154,6 +161,8 @@ const RecommendationsSkeleton = memo(function RecommendationsSkeleton() {
 /* ─── Main ────────────────────────────────────────────────────────── */
 
 const CartRecommendations = memo(function CartRecommendations() {
+  const locale = useLocale();
+  const t = useTranslations("cart.recommendations");
   const cartItems = useSelector((state) => state.cart.items);
   const cartInitialized = useSelector((state) => state.cart.initialized);
 
@@ -195,7 +204,7 @@ const CartRecommendations = memo(function CartRecommendations() {
       try {
         const data = await getRandomProducts();
         const adapted = (Array.isArray(data) ? data : [])
-          .map(adaptRandomProduct)
+          .map((product) => adaptRandomProduct(product, locale))
           .filter(Boolean);
 
         // Merge with existing pool, deduplicate by id
@@ -216,7 +225,7 @@ const CartRecommendations = memo(function CartRecommendations() {
         setLoading(false);
       }
     },
-    []
+    [locale]
   );
 
   /* ── Initial fetch (once cart is initialized) ── */
@@ -255,7 +264,7 @@ const CartRecommendations = memo(function CartRecommendations() {
           className="font-oswald! mb-3 text-[13px] font-semibold uppercase
                      tracking-wider text-gray-400 sm:text-sm"
         >
-          You might also like
+          {t("title")}
         </h3>
         <RecommendationsSkeleton />
       </div>
@@ -271,7 +280,7 @@ const CartRecommendations = memo(function CartRecommendations() {
         className="font-oswald! mb-3 text-[13px] font-semibold uppercase
                    tracking-wider text-gray-400 sm:text-sm"
       >
-        You might also like
+        {t("title")}
       </h3>
       <div className="flex flex-col gap-2">
         {visible.map((product) => (

@@ -4,9 +4,11 @@
 import { memo, useCallback } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { ShoppingBag } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { toggleCart } from "../../store/cartSlice";
 
 const CartIcon = memo(function CartIcon() {
+  const t = useTranslations("cart");
   const dispatch = useDispatch();
   const itemCount = useSelector((s) => s.cart.itemCount);
 
@@ -20,7 +22,11 @@ const CartIcon = memo(function CartIcon() {
       className="group relative flex h-10 w-10 items-center justify-center rounded-full
                  transition-colors duration-200 hover:bg-gray-100
                  focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-main/40"
-      aria-label={`Shopping cart${itemCount > 0 ? `, ${itemCount} items` : ""}`}
+      aria-label={
+        itemCount > 0
+          ? t("aria.shoppingCartWithCount", { count: itemCount })
+          : t("aria.shoppingCart")
+      }
     >
       <ShoppingBag
         size={20}

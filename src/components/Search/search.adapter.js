@@ -35,6 +35,11 @@ function truncateText(value = "", maxLength = 160) {
   return `${text.slice(0, maxLength).trim()}…`;
 }
 
+function stripLocalePrefix(path) {
+  if (typeof path !== "string") return path;
+  return path.replace(/^\/(?:ar|en)(?=\/|$)/, "") || "/";
+}
+
 function resolveTranslation(translations = [], lang = "en") {
   if (!Array.isArray(translations) || translations.length === 0) return null;
 
@@ -67,7 +72,9 @@ function adaptCategoryItem(item, lang = "en") {
     id: item?.id || slug || title,
     title,
     slug,
-    href: translation?.href || (slug ? `/collections/${slug}` : "/collections"),
+    href: stripLocalePrefix(
+      translation?.href || (slug ? `/collections/${slug}` : "/collections")
+    ),
     image: resolveMediaSrc(item?.image || ""),
     srcSet: Array.isArray(item?.srcSet) ? item.srcSet : [],
   };
@@ -95,7 +102,9 @@ function adaptProductItem(item, lang = "en") {
       translation?.title?.trim() ||
       titleFromSlug(slug || item?.sku || item?.id),
     slug,
-    href: translation?.href || (slug ? `/products/${slug}` : "/products"),
+    href: stripLocalePrefix(
+      translation?.href || (slug ? `/products/${slug}` : "/products")
+    ),
     frontImage,
     backImage,
     oldPrice: oldPrice ?? effectivePrice,
@@ -117,7 +126,10 @@ function adaptBlogItem(item, lang = "en") {
     id: item?.id || slug || "",
     title: translation?.title?.trim() || titleFromSlug(slug || item?.id),
     slug,
-    href: slug ? `/blog/news/${slug}?id=${item?.id}` : "/blog/news",
+    href: stripLocalePrefix(
+      translation?.href ||
+        (slug ? `/blog/news/${slug}?id=${item?.id}` : "/blog/news")
+    ),
     image: resolveMediaSrc(item?.image || ""),
     srcSet: Array.isArray(item?.srcSet) ? item.srcSet : [],
     date: item?.date || "",

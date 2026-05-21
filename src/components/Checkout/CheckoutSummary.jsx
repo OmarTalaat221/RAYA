@@ -3,6 +3,7 @@
 import { memo, useMemo } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { useLocale, useTranslations } from "next-intl";
 
 const IMAGE_BASE_URL =
   process.env.NEXT_PUBLIC_API_BASE_URL || "https://rdspharma.cloud";
@@ -41,6 +42,9 @@ const CheckoutSummary = memo(function CheckoutSummary({
   subtotal: cartSubtotal,
   serverSummary,
 }) {
+  const locale = useLocale();
+  const t = useTranslations("checkout.summary");
+
   const summaryItems = useMemo(() => {
     if (
       Array.isArray(serverSummary?.orderItems) &&
@@ -48,9 +52,20 @@ const CheckoutSummary = memo(function CheckoutSummary({
     ) {
       return serverSummary.orderItems.map((item) => {
         const product = item?.product || {};
-        const translations = Array.isArray(product?.translations) ? product.translations : [];
-        const translation = translations.find(t => t.lang === "en") || translations[0] || {};
-        const accurateTitle = item?.productName || product?.title || translation?.title || item?.title || "Product";
+        const translations = Array.isArray(product?.translations)
+          ? product.translations
+          : [];
+        const translation =
+          translations.find((entry) => entry.lang === locale) ||
+          translations.find((entry) => entry.lang === "en") ||
+          translations[0] ||
+          {};
+        const accurateTitle =
+          translation?.title ||
+          item?.productName ||
+          product?.title ||
+          item?.title ||
+          t("productFallback");
 
         return {
           id: item?.id || item?.productId,
@@ -65,9 +80,19 @@ const CheckoutSummary = memo(function CheckoutSummary({
 
     return (items || []).map((item) => {
       const product = item?.product || {};
-      const translations = Array.isArray(product?.translations) ? product.translations : [];
-      const translation = translations.find(t => t.lang === "en") || translations[0] || {};
-      const accurateTitle = item?.title || product?.title || translation?.title || "Product";
+      const translations = Array.isArray(product?.translations)
+        ? product.translations
+        : [];
+      const translation =
+        translations.find((entry) => entry.lang === locale) ||
+        translations.find((entry) => entry.lang === "en") ||
+        translations[0] ||
+        {};
+      const accurateTitle =
+        translation?.title ||
+        item?.title ||
+        product?.title ||
+        t("productFallback");
 
       return {
         id: item?.id,
@@ -78,7 +103,7 @@ const CheckoutSummary = memo(function CheckoutSummary({
         currency: toCurrency(item?.currency),
       };
     });
-  }, [items, serverSummary]);
+  }, [items, locale, serverSummary, t]);
 
   const currencyCode = toCurrency(
     serverSummary?.currency || summaryItems[0]?.currency
@@ -99,10 +124,11 @@ const CheckoutSummary = memo(function CheckoutSummary({
       <div className="rounded-[20px] border border-black/5 bg-[#fafaf9] p-5 sm:p-6">
         <div className="mb-5 flex items-center justify-between">
           <h2 className="text-lg font-oswald! text-soft-black">
-            Order Summary
+            {t("title")}
           </h2>
           <span className="rounded-full bg-black/5 px-2.5 py-0.5 text-xs font-medium text-secondary">
-            {summaryItems.length} {summaryItems.length === 1 ? "item" : "items"}
+            {summaryItems.length}{" "}
+            {summaryItems.length === 1 ? t("item") : t("items")}
           </span>
         </div>
 
@@ -123,7 +149,9 @@ const CheckoutSummary = memo(function CheckoutSummary({
                     />
                   ) : (
                     <div className="flex h-full w-full items-center justify-center">
-                      <span className="text-[10px] text-secondary">No img</span>
+                      <span className="text-[10px] text-secondary">
+                        {t("noImage")}
+                      </span>
                     </div>
                   )}
 
@@ -158,14 +186,14 @@ const CheckoutSummary = memo(function CheckoutSummary({
 
         <div className="space-y-2.5">
           <div className="flex justify-between text-sm">
-            <span className="text-secondary">Subtotal</span>
+            <span className="text-secondary">{t("subtotal")}</span>
             <span className="font-medium text-soft-black">
               {subtotal.toFixed(2)} {currencyCode}
             </span>
           </div>
 
           <div className="flex justify-between text-sm">
-            <span className="text-secondary">Shipping</span>
+            <span className="text-secondary">{t("shipping")}</span>
             <span
               className={
                 shipping === 0
@@ -174,14 +202,14 @@ const CheckoutSummary = memo(function CheckoutSummary({
               }
             >
               {shipping === 0
-                ? "Free"
+                ? t("free")
                 : `${shipping.toFixed(2)} ${currencyCode}`}
             </span>
           </div>
 
           {discount > 0 && (
             <div className="flex justify-between text-sm">
-              <span className="text-main">Discount</span>
+              <span className="text-main">{t("discount")}</span>
               <span className="font-medium text-main">
                 -{discount.toFixed(2)} {currencyCode}
               </span>
@@ -190,7 +218,7 @@ const CheckoutSummary = memo(function CheckoutSummary({
 
           {tax > 0 && (
             <div className="flex justify-between text-sm">
-              <span className="text-secondary">Tax</span>
+              <span className="text-secondary">{t("tax")}</span>
               <span className="font-medium text-soft-black">
                 {tax.toFixed(2)} {currencyCode}
               </span>
@@ -201,7 +229,7 @@ const CheckoutSummary = memo(function CheckoutSummary({
         <div className="mt-4 border-t border-black/5 pt-4">
           <div className="flex items-center justify-between">
             <span className="text-base font-oswald! font-bold text-soft-black">
-              Total
+              {t("total")}
             </span>
             <span className="text-xl font-oswald! font-bold text-soft-black">
               {total.toFixed(2)}{" "}
@@ -230,7 +258,7 @@ const CheckoutSummary = memo(function CheckoutSummary({
                 d="M15 19l-7-7 7-7"
               />
             </svg>
-            Continue Shopping
+            {t("continueShopping")}
           </Link>
         </div>
       </div>

@@ -1,6 +1,7 @@
 import RichTextSection from "./RichTextSection";
 import BulletListSection from "./BulletListSection";
 import TableSection from "./TableSection";
+import { useTranslations } from "next-intl";
 
 function renderSection(section, index) {
   if (!section?.type) {
@@ -41,6 +42,7 @@ export default function ProductContentSections({
   shortDescription,
   contentSections,
 }) {
+  const t = useTranslations("productDetails.content");
   const hasSections =
     Array.isArray(contentSections) && contentSections.length > 0;
   const hasDesc = Boolean(shortDescription);
@@ -54,11 +56,11 @@ export default function ProductContentSections({
       <div className="container mx-auto px-4 sm:px-6">
         <div className="mb-8 max-w-3xl sm:mb-10 lg:mb-12">
           <span className="mb-3 block text-xs font-semibold uppercase tracking-[0.2em] text-main sm:text-sm font-poppins!">
-            Product details
+            {t("eyebrow")}
           </span>
 
           <h2 className="text-[clamp(1.9rem,7vw,3.5rem)] font-bold leading-tight text-soft-black font-oswald!">
-            Everything you need to know
+            {t("title")}
           </h2>
 
           {hasDesc ? (

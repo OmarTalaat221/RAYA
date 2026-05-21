@@ -1,10 +1,18 @@
 "use client";
 
-import { useState, useEffect, useCallback, memo, Suspense } from "react";
+import {
+  useState,
+  useEffect,
+  useCallback,
+  useMemo,
+  memo,
+  Suspense,
+} from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
+import { useTranslations } from "next-intl";
 import CheckoutShippingForm from "./CheckoutShippingForm";
 import CheckoutSummary from "./CheckoutSummary";
 import CheckoutPaymentStep from "./CheckoutPaymentStep";
@@ -95,11 +103,12 @@ BackgroundBlobs.displayName = "BackgroundBlobs";
    ═══════════════════════════════════════════════ */
 
 const STEPS = [
-  { key: "shipping", label: "Shipping" },
-  { key: "payment", label: "Payment" },
+  { key: "shipping" },
+  { key: "payment" },
 ];
 
 const StepIndicator = memo(function StepIndicator({ currentStep }) {
+  const t = useTranslations("checkout.steps");
   const currentIndex = STEPS.findIndex((s) => s.key === currentStep);
 
   return (
@@ -144,7 +153,7 @@ const StepIndicator = memo(function StepIndicator({ currentStep }) {
                   isActive || isCompleted ? "text-soft-black" : "text-secondary"
                 }`}
               >
-                {step.label}
+                {t(step.key)}
               </span>
             </div>
 
@@ -237,6 +246,7 @@ function SubmitErrorBanner({ error }) {
    ═══════════════════════════════════════════════ */
 
 function CheckoutInner() {
+  const t = useTranslations("checkout");
   const dispatch = useDispatch();
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -275,18 +285,22 @@ function CheckoutInner() {
 
   const isBuyNowMode = Boolean(buyNowItem?.productId);
 
-  const effectiveItems = isBuyNowMode
-    ? [
-        {
-          id: buyNowItem.productId,
-          quantity: buyNowItem.quantity || 1,
-          title: buyNowItem.title || "",
-          image: buyNowItem.image || "",
-          price: buyNowItem.price || 0,
-          currency: buyNowItem.currency || "AED",
-        },
-      ]
-    : items;
+  const effectiveItems = useMemo(
+    () =>
+      isBuyNowMode
+        ? [
+            {
+              id: buyNowItem.productId,
+              quantity: buyNowItem.quantity || 1,
+              title: buyNowItem.title || "",
+              image: buyNowItem.image || "",
+              price: buyNowItem.price || 0,
+              currency: buyNowItem.currency || "AED",
+            },
+          ]
+        : items,
+    [buyNowItem, isBuyNowMode, items],
+  );
 
   useEffect(() => {
     if (isBuyNowMode) return;
@@ -316,14 +330,12 @@ function CheckoutInner() {
       setClientSecret("");
       setOrderId("");
       setServerSummary(null);
-      setSubmitError(
-        "Your payment session could not be restored. Please review your shipping details and continue again.",
-      );
+      setSubmitError(t("errors.sessionRestore"));
       router.replace("/checkout", { scroll: false });
     }
 
     setRestoreChecked(true);
-  }, [expectsRestore, orderIdParam, router]);
+  }, [expectsRestore, orderIdParam, router, t]);
 
   const handleShippingSubmit = useCallback(
     async (formData) => {
@@ -370,14 +382,14 @@ function CheckoutInner() {
           error?.response?.data?.errors?.join("\n") ||
           error?.response?.data?.message ||
           error?.message ||
-          "Something went wrong. Please try again.";
+          t("errors.generic");
 
         setSubmitError(message);
       } finally {
         setIsCreatingSession(false);
       }
     },
-    [effectiveItems, router, isBuyNowMode, coupon?.code],
+    [effectiveItems, router, isBuyNowMode, coupon?.code, t],
   );
 
   const handleBackToShipping = useCallback(() => {
@@ -489,6 +501,8 @@ function CheckoutInner() {
    ═══════════════════════════════════════════════ */
 
 export default function CheckoutPage() {
+  const t = useTranslations("checkout");
+
   return (
     <main className="relative flex min-h-screen items-start justify-center overflow-hidden bg-[#f4f3f0] px-4 py-10 font-poppins! sm:px-6 lg:px-8">
       <BackgroundBlobs />
@@ -527,9 +541,7 @@ export default function CheckoutPage() {
               d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
             />
           </svg>
-          <p className="text-xs text-secondary">
-            Your data is encrypted and secured by Stripe
-          </p>
+          <p className="text-xs text-secondary">{t("stripeSecure")}</p>
         </div>
       </div>
     </main>

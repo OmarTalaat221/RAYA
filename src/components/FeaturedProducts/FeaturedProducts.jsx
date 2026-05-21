@@ -5,6 +5,7 @@ import { motion } from "framer-motion";
 import Link from "next/link";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Pagination, A11y, Autoplay } from "swiper/modules";
+import { useTranslations } from "next-intl";
 import "swiper/css";
 import "swiper/css/pagination";
 
@@ -153,6 +154,7 @@ function DesktopGrid({ products, canHover }) {
 }
 
 export default function FeaturedProducts({ products = [] }) {
+  const t = useTranslations("home.featured");
   const [mounted, setMounted] = useState(false);
   const canHover = useCanHover();
 
@@ -176,19 +178,19 @@ export default function FeaturedProducts({ products = [] }) {
   return (
     <section
       className="w-full overflow-hidden bg-[#f4f3f0] py-8 sm:py-12 md:py-16"
-      aria-label="Featured Products"
+      aria-label={t("title")}
     >
       <div className="mx-auto w-full container">
         <div className="mb-10 px-4 sm:px-6 md:mb-14">
           <span className="mb-2 block text-xs font-semibold uppercase tracking-[0.2em] text-main sm:text-sm font-garamond!">
-            Our Selection
+            {t("eyebrow")}
           </span>
 
           <h2
             className="text-[clamp(2rem,5vw,3.5rem)] font-bold leading-tight text-soft-black"
             style={{ fontFamily: "'Oswald', sans-serif" }}
           >
-            Featured Products
+            {t("title")}
           </h2>
         </div>
 
@@ -212,7 +214,7 @@ export default function FeaturedProducts({ products = [] }) {
               className="absolute inset-0 origin-left scale-x-0 rounded-full bg-main/5 transition-transform duration-500 group-hover:scale-x-100"
               aria-hidden="true"
             />
-            <span className="relative z-10">View All Products</span>
+            <span className="relative z-10">{t("viewAllProducts")}</span>
             <svg
               xmlns="http://www.w3.org/2000/svg"
               width="14"

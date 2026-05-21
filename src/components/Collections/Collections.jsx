@@ -8,6 +8,7 @@ import React from "react";
 import { RefreshCw } from "lucide-react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Pagination, FreeMode, Autoplay } from "swiper/modules";
+import { useTranslations } from "next-intl";
 import "swiper/css";
 import "swiper/css/pagination";
 import "swiper/css/free-mode";
@@ -272,6 +273,7 @@ function MobileSwiper({ items }) {
 
 // ─── Main Section ────────────────────────────────────────────────────────────
 export default function Collections({ categories = [] }) {
+  const t = useTranslations("home.collections");
   const items = [ALL_COLLECTION_CARD, ...categories];
   const displayItems = items.slice(0, 5);
 
@@ -298,11 +300,11 @@ export default function Collections({ categories = [] }) {
           >
             <div className="flex items-center justify-start gap-3">
               <span className="font-garamond! mb-2 block text-xs font-semibold uppercase tracking-[0.2em] text-main sm:text-sm">
-                Browse by
+                {t("eyebrow")}
               </span>
             </div>
             <h2 className="font-oswald! text-start text-[clamp(2rem,5vw,3.5rem)] font-bold leading-tight text-soft-black">
-              Collections
+              {t("title")}
             </h2>
           </motion.div>
 
@@ -339,7 +341,7 @@ export default function Collections({ categories = [] }) {
                            group-hover:scale-x-100"
                 aria-hidden="true"
               />
-              <span className="relative z-10">View All Collections</span>
+              <span className="relative z-10">{t("viewAll")}</span>
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 width="14"

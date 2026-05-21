@@ -7,6 +7,11 @@ function clean(value) {
   return typeof value === "string" ? value.trim() : value;
 }
 
+function stripLocalePrefix(path) {
+  if (typeof path !== "string") return path;
+  return path.replace(/^\/(?:ar|en)(?=\/|$)/, "") || "/";
+}
+
 function pickTranslation(translations = [], lang = "en") {
   if (!Array.isArray(translations) || translations.length === 0) return null;
 
@@ -89,10 +94,11 @@ export function adaptApiProduct(product, lang = "en") {
   const slug =
     clean(translation?.slug) || clean(product.slug) || clean(product.id);
 
-  const href =
+  const href = stripLocalePrefix(
     clean(translation?.href) ||
-    clean(product.href) ||
-    (slug ? `/products/${slug}` : "#");
+      clean(product.href) ||
+      (slug ? `/products/${slug}` : "#")
+  );
 
   const oldPrice = Number(product.oldPrice) || 0;
   const newPrice = Number(product.newPrice) || 0;

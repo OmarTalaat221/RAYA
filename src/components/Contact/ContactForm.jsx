@@ -4,6 +4,7 @@ import React, { memo, useCallback, useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
 import { Send, CheckCircle, ChevronDown } from "lucide-react";
 import { ConfigProvider, Select } from "antd";
+import { useTranslations } from "next-intl";
 
 const formVariant = {
   hidden: { opacity: 0, y: 24 },
@@ -18,13 +19,6 @@ const formVariant = {
   },
 };
 
-const inquiryTypes = [
-  { value: "general", label: "General Inquiry" },
-  { value: "product", label: "Product Question" },
-  { value: "order", label: "Order Support" },
-  { value: "partnership", label: "Partnership" },
-  { value: "feedback", label: "Complaint / Feedback" },
-];
 
 const selectTheme = {
   token: {
@@ -206,6 +200,7 @@ const SelectField = memo(function SelectField({
   value,
   onChange,
   options,
+  placeholder,
 }) {
   return (
     <div>
@@ -221,7 +216,7 @@ const SelectField = memo(function SelectField({
         value={value}
         onChange={onChange}
         options={options}
-        placeholder="Select inquiry type"
+        placeholder={placeholder}
         showSearch={false}
         suffixIcon={<ChevronDown size={16} />}
         className="contact-inquiry-select"
@@ -233,11 +228,20 @@ const SelectField = memo(function SelectField({
 });
 
 export default function ContactForm() {
+  const t = useTranslations("contact");
   const formRef = useRef(null);
   const timeoutRef = useRef(null);
 
   const [status, setStatus] = useState("idle");
   const [inquiryType, setInquiryType] = useState(undefined);
+
+  const inquiryTypes = [
+    { value: "general", label: t("inquiryTypes.general") },
+    { value: "product", label: t("inquiryTypes.product") },
+    { value: "order", label: t("inquiryTypes.order") },
+    { value: "partnership", label: t("inquiryTypes.partnership") },
+    { value: "feedback", label: t("inquiryTypes.feedback") },
+  ];
 
   useEffect(() => {
     return () => {
@@ -309,11 +313,11 @@ export default function ContactForm() {
         viewport={{ once: true, margin: "-60px" }}
       >
         <h2 className="mb-1 font-oswald! text-xl font-bold uppercase tracking-wide text-soft-black">
-          Send Us a Message
+          {t("formTitle")}
         </h2>
 
         <p className="mb-8 font-poppins! text-sm text-secondary">
-          Fill in the form below and we&apos;ll get back to you within 24 hours.
+          {t("formDescription")}
         </p>
 
         {status === "sent" ? (
@@ -323,19 +327,18 @@ export default function ContactForm() {
             </span>
 
             <h3 className="font-oswald! text-lg font-bold uppercase text-soft-black">
-              Message Sent!
+              {t("sentTitle")}
             </h3>
 
             <p className="max-w-sm font-poppins! text-sm text-secondary">
-              Thank you for reaching out. Our team will review your message and
-              respond as soon as possible.
+              {t("sentDescription")}
             </p>
           </div>
         ) : (
           <form ref={formRef} onSubmit={handleSubmit} className="space-y-5">
             <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
               <InputField
-                label="Full Name"
+                label={t("name")}
                 id="name"
                 required
                 placeholder="John Doe"
@@ -343,7 +346,7 @@ export default function ContactForm() {
               />
 
               <InputField
-                label="Email Address"
+                label={t("email")}
                 id="email"
                 type="email"
                 required
@@ -354,7 +357,7 @@ export default function ContactForm() {
 
             <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
               <InputField
-                label="Phone Number"
+                label={t("phone")}
                 id="phone"
                 type="tel"
                 placeholder="+971 50 000 0000"
@@ -363,26 +366,27 @@ export default function ContactForm() {
               />
 
               <SelectField
-                label="Inquiry Type"
+                label={t("inquiryType")}
                 options={inquiryTypes}
+                placeholder={t("inquiryTypePlaceholder")}
                 value={inquiryType}
                 onChange={handleInquiryChange}
               />
             </div>
 
             <InputField
-              label="Subject"
+              label={t("subject")}
               id="subject"
               required
-              placeholder="How can we help?"
+              placeholder={t("subjectPlaceholder")}
               autoComplete="off"
             />
 
             <TextareaField
-              label="Message"
+              label={t("message")}
               id="message"
               required
-              placeholder="Tell us more about your inquiry..."
+              placeholder={t("messagePlaceholder")}
               rows={5}
             />
 
@@ -398,7 +402,7 @@ export default function ContactForm() {
                 />
 
                 <span className="relative z-10">
-                  {status === "sending" ? "Sending..." : "Send Message"}
+                  {status === "sending" ? t("sending") : t("send")}
                 </span>
 
                 <Send
@@ -411,7 +415,7 @@ export default function ContactForm() {
 
             {status === "error" && (
               <p className="font-poppins! text-sm text-red-500">
-                Something went wrong. Please try again.
+                {t("formError")}
               </p>
             )}
           </form>

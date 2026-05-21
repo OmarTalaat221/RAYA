@@ -2,6 +2,7 @@
 
 import { useCallback, useReducer, useRef, memo } from "react";
 import dynamic from "next/dynamic";
+import { useTranslations } from "next-intl";
 import "react-phone-input-2/lib/style.css";
 import "./checkout-style.css";
 
@@ -9,13 +10,19 @@ import "./checkout-style.css";
    Dynamic imports
    ═══════════════════════════════════════════════ */
 
+function PhoneInputLoading() {
+  const t = useTranslations("checkout");
+
+  return (
+    <div className="flex h-[48px] w-full items-center rounded-2xl border border-black/10 bg-white px-4">
+      <span className="text-sm text-secondary">{t("loading")}</span>
+    </div>
+  );
+}
+
 const PhoneInput = dynamic(() => import("react-phone-input-2"), {
   ssr: false,
-  loading: () => (
-    <div className="flex h-[48px] w-full items-center rounded-2xl border border-black/10 bg-white px-4">
-      <span className="text-sm text-secondary">Loading...</span>
-    </div>
-  ),
+  loading: () => <PhoneInputLoading />,
 });
 
 /* ═══════════════════════════════════════════════
@@ -87,25 +94,25 @@ function isValidEmail(email) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 }
 
-function validateShipping(values) {
+function validateShipping(values, t) {
   const errors = {};
 
-  if (!values.firstName.trim()) errors.firstName = "First name is required.";
-  if (!values.lastName.trim()) errors.lastName = "Last name is required.";
+  if (!values.firstName.trim()) errors.firstName = t("errors.firstName");
+  if (!values.lastName.trim()) errors.lastName = t("errors.lastName");
 
   if (!values.email.trim()) {
-    errors.email = "Email is required.";
+    errors.email = t("errors.email");
   } else if (!isValidEmail(values.email.trim())) {
-    errors.email = "Please enter a valid email address.";
+    errors.email = t("errors.emailInvalid");
   }
 
   if (!values.codeCountry.trim() || !values.phone.trim()) {
-    errors.phone = "Phone number is required.";
+    errors.phone = t("errors.phone");
   }
 
-  if (!values.country.trim()) errors.country = "Country is required.";
-  if (!values.city.trim()) errors.city = "City is required.";
-  if (!values.address.trim()) errors.address = "Address is required.";
+  if (!values.country.trim()) errors.country = t("errors.country");
+  if (!values.city.trim()) errors.city = t("errors.city");
+  if (!values.address.trim()) errors.address = t("errors.address");
 
   return errors;
 }
@@ -194,6 +201,7 @@ export default function CheckoutShippingForm({
   loading,
   initialData,
 }) {
+  const t = useTranslations("checkout");
   const [state, dispatch] = useReducer(formReducer, {
     formData: initialData || INITIAL_FORM_DATA,
     fieldErrors: {},
@@ -240,7 +248,7 @@ export default function CheckoutShippingForm({
       dispatch({ type: ACTIONS.RESET_ERRORS });
 
       const current = formDataRef.current;
-      const errors = validateShipping(current);
+      const errors = validateShipping(current, t);
 
       if (Object.keys(errors).length > 0) {
         dispatch({ type: ACTIONS.SET_ERRORS, payload: errors });
@@ -266,7 +274,7 @@ export default function CheckoutShippingForm({
         notes: current.notes.trim(),
       });
     },
-    [onSubmit]
+    [onSubmit, t]
   );
 
   /* ── Render helper ── */
@@ -290,7 +298,7 @@ export default function CheckoutShippingForm({
           {label}
           {!required && (
             <span className="ml-1.5 normal-case tracking-normal font-normal text-secondary">
-              (optional)
+              ({t("optional")})
             </span>
           )}
         </label>
@@ -319,23 +327,23 @@ export default function CheckoutShippingForm({
   return (
     <div>
       <h2 className="mb-6 text-xl font-oswald! text-soft-black sm:text-2xl">
-        Shipping Information
+        {t("shippingInformation")}
       </h2>
 
       <form onSubmit={handleSubmit} noValidate className="space-y-5">
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           {/* First Name */}
-          {renderField("firstName", "First Name", "Ahmed", {
+          {renderField("firstName", t("fields.firstName"), t("placeholders.firstName"), {
             autoComplete: "given-name",
           })}
 
           {/* Last Name */}
-          {renderField("lastName", "Last Name", "Ali", {
+          {renderField("lastName", t("fields.lastName"), t("placeholders.lastName"), {
             autoComplete: "family-name",
           })}
 
           {/* Email */}
-          {renderField("email", "Email Address", "ahmed@email.com", {
+          {renderField("email", t("fields.email"), t("placeholders.email"), {
             type: "email",
             inputMode: "email",
             autoComplete: "email",
@@ -348,7 +356,7 @@ export default function CheckoutShippingForm({
               htmlFor="checkout-phone"
               className="block text-[13px] font-medium uppercase tracking-[0.12em] text-soft-black"
             >
-              Phone Number
+              {t("fields.phone")}
             </label>
 
             <div
@@ -383,29 +391,29 @@ export default function CheckoutShippingForm({
           </div>
 
           {/* Country */}
-          {renderField("country", "Country", "United Arab Emirates", {
+          {renderField("country", t("fields.country"), t("placeholders.country"), {
             autoComplete: "country-name",
           })}
 
           {/* State / Province / Region */}
-          {renderField("state", "State / Province", "Dubai", {
+          {renderField("state", t("fields.state"), t("placeholders.state"), {
             autoComplete: "address-level1",
             required: false,
           })}
 
           {/* City */}
-          {renderField("city", "City", "Dubai Marina", {
+          {renderField("city", t("fields.city"), t("placeholders.city"), {
             autoComplete: "address-level2",
           })}
 
           {/* Postal Code */}
-          {renderField("postalCode", "Postal / ZIP Code", "00000", {
+          {renderField("postalCode", t("fields.postalCode"), t("placeholders.postalCode"), {
             autoComplete: "postal-code",
             required: false,
           })}
 
           {/* Street Address */}
-          {renderField("address", "Street Address", "Building 5, Street Name", {
+          {renderField("address", t("fields.address"), t("placeholders.address"), {
             autoComplete: "address-line1",
             colSpan: "sm:col-span-2",
           })}
@@ -413,8 +421,8 @@ export default function CheckoutShippingForm({
           {/* Apartment */}
           {renderField(
             "apartment",
-            "Apartment / Suite / Floor",
-            "Apt 302, Floor 3",
+            t("fields.apartment"),
+            t("placeholders.apartment"),
             {
               autoComplete: "address-line2",
               colSpan: "sm:col-span-2",
@@ -428,9 +436,9 @@ export default function CheckoutShippingForm({
               htmlFor="notes"
               className="block text-[13px] font-medium uppercase tracking-[0.12em] text-soft-black"
             >
-              Delivery Notes
+              {t("fields.notes")}
               <span className="ml-1.5 normal-case tracking-normal font-normal text-secondary">
-                (optional)
+                ({t("optional")})
               </span>
             </label>
 
@@ -441,7 +449,7 @@ export default function CheckoutShippingForm({
                 rows={3}
                 value={formData.notes}
                 onChange={handleField("notes")}
-                placeholder="Any special delivery instructions..."
+                placeholder={t("placeholders.notes")}
                 className="w-full resize-none bg-transparent text-sm text-soft-black outline-none placeholder:text-secondary"
               />
             </TextareaShell>
@@ -457,10 +465,10 @@ export default function CheckoutShippingForm({
           {loading ? (
             <>
               <span className="h-4 w-4 animate-spin rounded-full border-2 border-white/30 border-t-white" />
-              Processing...
+              {t("processing")}
             </>
           ) : (
-            "Continue to Payment"
+            t("continueToPayment")
           )}
         </button>
       </form>

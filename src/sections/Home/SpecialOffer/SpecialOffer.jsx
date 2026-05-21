@@ -3,6 +3,7 @@ import { useReducedMotion, motion } from "framer-motion";
 import Image from "next/image";
 import Link from "next/link";
 import React from "react";
+import { useTranslations } from "next-intl";
 
 const AboutBackgroundPattern = React.memo(function AboutBackgroundPattern() {
   const prefersReducedMotion = useReducedMotion();
@@ -57,6 +58,8 @@ const AboutBackgroundPattern = React.memo(function AboutBackgroundPattern() {
 });
 
 export default function SpecialOffer() {
+  const t = useTranslations("home.specialOffer");
+
   return (
     <section className="relative w-full overflow-hidden bg-[#f4f3f0] md:block py-8 sm:py-10 md:py-12 lg:py-16">
       <AboutBackgroundPattern />
@@ -66,13 +69,13 @@ export default function SpecialOffer() {
         <div className="flex-1 w-full max-w-[40rem] flex flex-col items-center text-center lg:max-w-none lg:items-start lg:text-left">
           {/* Badge */}
           <span className="inline-block text-main text-sm sm:text-base font-semibold tracking-[0.2em] uppercase mb-4 sm:mb-6 font-poppins!">
-            Limited Time
+            {t("limitedTime")}
           </span>
 
           {/* Heading */}
           <div className="mb-6 sm:mb-8 w-full flex flex-col items-center lg:items-start">
             <h2 className="font-oswald! text-soft-black font-bold leading-[0.95] tracking-tight text-[2.85rem] sm:text-[3.6rem] md:text-[4.4rem] lg:text-[4.8rem] xl:text-[5.8rem]">
-              Special Offer
+              {t("title")}
             </h2>
 
             <span
@@ -81,7 +84,7 @@ export default function SpecialOffer() {
                 textShadow: "2px 2px 0 rgba(255,255,255,0.96)",
               }}
             >
-              EXCLUSIVE
+              {t("exclusive")}
             </span>
           </div>
 
@@ -90,12 +93,12 @@ export default function SpecialOffer() {
 
           {/* Description */}
           <p className="text-secondary text-sm sm:text-base md:text-lg leading-relaxed w-full max-w-[34rem] font-poppins!">
-            Boost Your Beauty Routine with
+            {t("descriptionPrefix")}
             <span className="text-soft-black font-medium">
               {" "}
-              Skinage Collagen Prestige{" "}
+              {t("productName")}{" "}
             </span>
-            Ampoules
+            {t("descriptionSuffix")}
           </p>
 
           {/* CTA */}
@@ -107,7 +110,7 @@ export default function SpecialOffer() {
               className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700"
               aria-hidden="true"
             />
-            <span className="relative z-10">Shop Now</span>
+            <span className="relative z-10">{t("shopNow")}</span>
             <svg
               xmlns="http://www.w3.org/2000/svg"
               width="15"

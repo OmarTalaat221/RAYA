@@ -27,6 +27,11 @@ function titleFromSlug(value = "") {
     .replace(/\b\w/g, (char) => char.toUpperCase());
 }
 
+function stripLocalePrefix(path) {
+  if (typeof path !== "string") return path;
+  return path.replace(/^\/(?:ar|en)(?=\/|$)/, "") || "/";
+}
+
 function toNumber(value) {
   const n = Number(value);
   return Number.isFinite(n) ? n : 0;
@@ -100,7 +105,7 @@ function adaptBanner(banner, lang = "en") {
     id: banner?.id,
     image: resolveMediaSrc(banner?.image || ""),
     alt,
-    href,
+    href: stripLocalePrefix(href),
     targetType,
     targetId: banner?.targetId || null,
   };
@@ -132,7 +137,9 @@ function adaptProduct(product, lang = "en") {
       translation?.title?.trim() ||
       titleFromSlug(slug || product?.sku || product?.id),
     slug,
-    href: translation?.href || (slug ? `/products/${slug}` : "/products"),
+    href: stripLocalePrefix(
+      translation?.href || (slug ? `/products/${slug}` : "/products")
+    ),
     frontImage,
     backImage,
     oldPrice,

@@ -1,4 +1,27 @@
 {
+  "header": {
+    "topBar": "UAE Delivery Free Over 150AED Within 2Days | GCC Free over 600AED Within 4Days",
+    "topBarMobile": "🚚 UAE Free >150AED | GCC Free >600AED",
+    "search": {
+      "placeholder": "Search products..."
+    },
+    "sidebar": {
+      "about": "Your trusted pharmacy partner for quality products and professional services.",
+      "address": "Shop 2, Salim Al Owis Building, Sharjah, UAE",
+      "email": "info@rdspharma.com"
+    },
+    "contact": {
+      "phone": "+971 6 535 3772"
+    },
+    "nav": {
+      "home": "Home",
+      "products": "Products",
+      "brand": "Brands",
+      "blog": "Blog",
+      "contact": "Contact",
+      "offers": "Offers"
+    }
+  },
   "Footer": {
     "storeHeading": "Our Store",
     "promiseHeading": "Our Promise",
@@ -36,5 +59,355 @@
       "returns": "Return Policy",
       "shipping": "Shipping Policy"
     }
+  },
+  "home": {
+    "title": "Welcome to RDS Pharma",
+    "description": "Your trusted pharmacy store",
+    "hero": {
+      "title": "Quality Pharmacy Products",
+      "subtitle": "Fast delivery and best prices",
+      "shopNow": "Shop Now"
+    },
+    "collections": {
+      "eyebrow": "Browse by",
+      "title": "Collections",
+      "viewAll": "View All Collections"
+    },
+    "featured": {
+      "eyebrow": "Our Selection",
+      "title": "Featured Products",
+      "viewAll": "View All",
+      "viewAllProducts": "View All Products"
+    },
+    "specialOffer": {
+      "limitedTime": "Limited Time",
+      "title": "Special Offer",
+      "exclusive": "EXCLUSIVE",
+      "descriptionPrefix": "Boost Your Beauty Routine with",
+      "productName": "Skinage Collagen Prestige",
+      "descriptionSuffix": "Ampoules",
+      "shopNow": "Shop Now"
+    },
+    "blog": {
+      "eyebrow": "From the Journal",
+      "title": "Latest Articles",
+      "viewAll": "View All Articles"
+    }
+  },
+  "collectionsPage": {
+    "eyebrow": "Browse by",
+    "title": "Collections",
+    "subtitle": "Explore featured brands, seasonal offers, and curated ranges from the RDS Pharma world."
+  },
+  "catalog": {
+    "title": "Our Products",
+    "filter": "Filter",
+    "sort": "Sort By",
+    "price": "Price",
+    "availability": "Availability",
+    "inStock": "In Stock",
+    "outOfStock": "Out of Stock",
+    "addToCart": "Add to Cart",
+    "added": "Added",
+    "viewDetails": "View Details",
+    "noResults": "No products found",
+    "loadMore": "Load More"
+  },
+  "cart": {
+    "title": "Shopping Cart",
+    "empty": "Your cart is empty",
+    "continueShopping": "Continue Shopping",
+    "checkout": "Proceed to Checkout",
+    "subtotal": "Subtotal",
+    "shipping": "Shipping",
+    "total": "Total",
+    "removeItem": "Remove",
+    "quantity": "Quantity",
+    "item": "item",
+    "items": "items",
+    "drawer": {
+      "title": "Your Cart"
+    },
+    "aria": {
+      "shoppingCart": "Shopping cart",
+      "shoppingCartWithCount": "Shopping cart, {count} items",
+      "closeCart": "Close cart"
+    },
+    "retry": "Retry",
+    "loadingCart": "Loading your cart...",
+    "freeShipping": {
+      "qualifiedPrefix": "Congratulations! You qualify for",
+      "freeShipping": "Free Shipping",
+      "add": "Add",
+      "toGet": "to get"
+    },
+    "coupon": {
+      "placeholder": "Coupon code",
+      "apply": "Apply",
+      "applied": "{value}% off applied",
+      "remove": "Remove coupon"
+    },
+    "discount": "Discount ({value}%)",
+    "freeShippingIncluded": "Free shipping included • Taxes calculated at checkout",
+    "shippingTaxesCheckout": "Shipping & taxes calculated at checkout",
+    "cashOnDelivery": "Order Now — Cash on Delivery",
+    "recommendations": {
+      "title": "You might also like",
+      "noImage": "No img",
+      "addToCart": "Add {title} to cart"
+    },
+    "emptyState": {
+      "title": "Your cart is empty",
+      "descriptionLine1": "Looks like you haven't added anything yet.",
+      "descriptionLine2": "Start exploring our products!",
+      "continueShopping": "Continue Shopping"
+    },
+    "itemControls": {
+      "noImage": "No image",
+      "remove": "Remove {title}",
+      "decreaseQuantity": "Decrease quantity",
+      "increaseQuantity": "Increase quantity"
+    }
+  },
+  "checkout": {
+    "title": "Checkout",
+    "shippingInfo": "Shipping Information",
+    "paymentMethod": "Payment Method",
+    "orderSummary": "Order Summary",
+    "placeOrder": "Place Order",
+    "firstName": "First Name",
+    "lastName": "Last Name",
+    "email": "Email",
+    "phone": "Phone",
+    "address": "Address",
+    "city": "City",
+    "country": "Country",
+    "zipCode": "Zip Code",
+    "steps": {
+      "shipping": "Shipping",
+      "payment": "Payment"
+    },
+    "shippingInformation": "Shipping Information",
+    "optional": "optional",
+    "loading": "Loading...",
+    "processing": "Processing...",
+    "continueToPayment": "Continue to Payment",
+    "stripeSecure": "Your data is encrypted and secured by Stripe",
+    "fields": {
+      "firstName": "First Name",
+      "lastName": "Last Name",
+      "email": "Email Address",
+      "phone": "Phone Number",
+      "country": "Country",
+      "state": "State / Province",
+      "city": "City",
+      "postalCode": "Postal / ZIP Code",
+      "address": "Street Address",
+      "apartment": "Apartment / Suite / Floor",
+      "notes": "Delivery Notes"
+    },
+    "placeholders": {
+      "firstName": "Ahmed",
+      "lastName": "Ali",
+      "email": "ahmed@email.com",
+      "country": "United Arab Emirates",
+      "state": "Dubai",
+      "city": "Dubai Marina",
+      "postalCode": "00000",
+      "address": "Building 5, Street Name",
+      "apartment": "Apt 302, Floor 3",
+      "notes": "Any special delivery instructions..."
+    },
+    "errors": {
+      "firstName": "First name is required.",
+      "lastName": "Last name is required.",
+      "email": "Email is required.",
+      "emailInvalid": "Please enter a valid email address.",
+      "phone": "Phone number is required.",
+      "country": "Country is required.",
+      "city": "City is required.",
+      "address": "Address is required.",
+      "sessionRestore": "Your payment session could not be restored. Please review your shipping details and continue again.",
+      "generic": "Something went wrong. Please try again."
+    },
+    "summary": {
+      "title": "Order Summary",
+      "item": "item",
+      "items": "items",
+      "productFallback": "Product",
+      "noImage": "No img",
+      "subtotal": "Subtotal",
+      "shipping": "Shipping",
+      "free": "Free",
+      "discount": "Discount",
+      "tax": "Tax",
+      "total": "Total",
+      "continueShopping": "Continue Shopping"
+    },
+    "payment": {
+      "title": "Payment Details",
+      "description": "Complete your payment securely without leaving the website.",
+      "unavailable": "The payment session is unavailable right now. Please go back and try again.",
+      "back": "Back",
+      "backToShipping": "Back to Shipping",
+      "cardSecure": "Your card information is encrypted and processed securely by Stripe."
+    }
+  },
+  "productDetails": {
+    "actions": {
+      "quantity": "Quantity",
+      "decreaseQuantity": "Decrease quantity",
+      "increaseQuantity": "Increase quantity",
+      "loading": "Loading...",
+      "adding": "Adding...",
+      "removing": "Removing...",
+      "addToCart": "Add to Cart",
+      "removeFromCart": "Remove from Cart",
+      "buyNow": "Buy Now",
+      "cashOnDelivery": "Cash on Delivery"
+    },
+    "secure": {
+      "title": "Secure payment at checkout",
+      "description": "All major payment methods available. Final order details confirmed before payment."
+    },
+    "share": {
+      "title": "Share this product",
+      "share": "Share",
+      "copyLink": "Copy link",
+      "copied": "Copied"
+    },
+    "content": {
+      "eyebrow": "Product details",
+      "title": "Everything you need to know"
+    },
+    "reviews": {
+      "title": "Customer Reviews",
+      "singular": "review",
+      "plural": "reviews",
+      "write": "Write a Review",
+      "emptyTitle": "No reviews yet",
+      "emptyDescription": "Be the first to review this product and help others make a choice.",
+      "writeFirst": "Write the First Review",
+      "failedToLoad": "Failed to load reviews.",
+      "loading": "Loading...",
+      "viewMore": "View More Reviews"
+    },
+    "reviewForm": {
+      "title": "Write a Review",
+      "rating": "Your Rating",
+      "review": "Your Review",
+      "placeholder": "Share your experience with this product...",
+      "selectRatingError": "Please select a rating.",
+      "writeCommentError": "Please write a comment.",
+      "submitError": "Failed to submit review. Please try again.",
+      "submitting": "Submitting...",
+      "submit": "Submit Review",
+      "cancel": "Cancel"
+    },
+    "related": {
+      "title": "You May Also Like",
+      "subtitle": "Hand-picked picks based on this product",
+      "previous": "Previous related product",
+      "next": "Next related product",
+      "failedToLoad": "Failed to load related products."
+    },
+    "stock": {
+      "inStock": "In stock",
+      "lowStock": "Low stock",
+      "outOfStock": "Out of stock",
+      "checkAvailability": "Check availability"
+    }
+  },
+  "contact": {
+    "title": "Contact Us",
+    "heading": "Get in Touch",
+    "description": "We’d love to hear from you. Send us a message.",
+    "heroDescription": "Have a question about our products, need help with an order, or want to explore a partnership? We'd love to hear from you. Reach out and our team will get back to you as soon as possible.",
+    "formTitle": "Send Us a Message",
+    "formDescription": "Fill in the form below and we’ll get back to you within 24 hours.",
+    "name": "Full Name",
+    "email": "Email Address",
+    "subject": "Subject",
+    "message": "Message",
+    "send": "Send Message",
+    "sending": "Sending...",
+    "sentTitle": "Message Sent!",
+    "sentDescription": "Thank you for reaching out. Our team will review your message and respond as soon as possible.",
+    "phone": "Phone Number",
+    "inquiryType": "Inquiry Type",
+    "inquiryTypePlaceholder": "Select inquiry type",
+    "inquiryTypes": {
+      "general": "General Inquiry",
+      "product": "Product Question",
+      "order": "Order Support",
+      "partnership": "Partnership",
+      "feedback": "Complaint / Feedback"
+    },
+    "subjectPlaceholder": "How can we help?",
+    "messagePlaceholder": "Tell us more about your inquiry...",
+    "formError": "Something went wrong. Please try again.",
+    "getDirections": "Get Directions",
+    "address": "Address",
+    "hours": "Business Hours"
+  },
+  "newsletter": {
+    "heading": "Stay Updated",
+    "title": "Subscribe to Our Newsletter",
+    "description": "Get the latest product launches, skincare tips, and exclusive offers delivered straight to your inbox.",
+    "placeholder": "Enter your email",
+    "subscribe": "Subscribe",
+    "sending": "Subscribing...",
+    "subscribed": "You're subscribed!",
+    "error": "Something went wrong. Please try again."
+  },
+  "blog": {
+    "title": "Blog",
+    "eyebrow": "From the Journal",
+    "subtitle": "Explore updates, skincare advice, and wellness insights from the RDS Pharma world.",
+    "latestNews": "Latest News",
+    "latestArticles": "Latest Articles",
+    "readMore": "Read More",
+    "publishedOn": "Published on",
+    "by": "By",
+    "category": "Category",
+    "noArticles": "No articles found",
+    "empty": {
+      "eyebrow": "No articles yet",
+      "title": "Nothing to show right now",
+      "description": "We’re preparing fresh updates, skincare insights, and wellness news. Please check back soon."
+    }
+  },
+  "auth": {
+    "login": "Login",
+    "register": "Register",
+    "logout": "Logout",
+    "email": "Email",
+    "password": "Password",
+    "confirmPassword": "Confirm Password",
+    "forgotPassword": "Forgot Password?",
+    "dontHaveAccount": "Don’t have an account?",
+    "alreadyHaveAccount": "Already have an account?",
+    "createAccount": "Create Account",
+    "resetPassword": "Reset Password"
+  },
+  "common": {
+    "loading": "Loading...",
+    "error": "Something went wrong",
+    "success": "Success",
+    "cancel": "Cancel",
+    "save": "Save",
+    "delete": "Delete",
+    "edit": "Edit",
+    "back": "Back",
+    "next": "Next",
+    "previous": "Previous",
+    "search": "Search",
+    "filter": "Filter",
+    "sort": "Sort",
+    "apply": "Apply",
+    "reset": "Reset",
+    "tryAgain": "Try Again",
+    "failedToLoadCollections": "Failed to load collections. Please try again.",
+    "noCollections": "No collections available right now."
   }
 }

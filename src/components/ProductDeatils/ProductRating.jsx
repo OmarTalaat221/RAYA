@@ -1,3 +1,5 @@
+import { useTranslations } from "next-intl";
+
 function StarIcon({ className = "" }) {
   return (
     <svg
@@ -12,6 +14,8 @@ function StarIcon({ className = "" }) {
 }
 
 export default function ProductRating({ rating, reviewCount }) {
+  const t = useTranslations("productDetails.reviews");
+
   if (typeof rating !== "number") return null;
 
   const widthPercent = `${Math.max(0, Math.min(100, (rating / 5) * 100))}%`;
@@ -43,7 +47,7 @@ export default function ProductRating({ rating, reviewCount }) {
 
       {typeof reviewCount === "number" ? (
         <span>
-          {reviewCount} review{reviewCount === 1 ? "" : "s"}
+          {reviewCount} {reviewCount === 1 ? t("singular") : t("plural")}
         </span>
       ) : null}
     </div>

@@ -1,4 +1,5 @@
 import { notFound } from "next/navigation";
+import { getLocale } from "next-intl/server";
 import ProductDetailsPage from "../../../../components/ProductDeatils/ProductDetailsPage";
 import { getProductBySlug } from "../../../../services/products.service";
 
@@ -7,6 +8,11 @@ import { getProductBySlug } from "../../../../services/products.service";
 function pickTranslation(translations = [], lang = "en") {
   if (!Array.isArray(translations) || translations.length === 0) return null;
   return translations.find((t) => t?.lang === lang) || translations[0] || null;
+}
+
+function stripLocalePrefix(path) {
+  if (typeof path !== "string") return path;
+  return path.replace(/^\/(?:ar|en)(?=\/|$)/, "") || "/";
 }
 
 function toNumber(value) {
@@ -69,7 +75,7 @@ function adaptProductForDetails(product, lang = "en") {
     categoryId: product.categoryId || "",
     title,
     slug,
-    href: translation?.href || `/products/${slug}`,
+    href: stripLocalePrefix(translation?.href || `/products/${slug}`),
     shortDescription: translation?.shortDescription || "",
     contentSections: Array.isArray(translation?.contentSections)
       ? translation.contentSections
@@ -99,11 +105,11 @@ function adaptProductForDetails(product, lang = "en") {
   };
 }
 
-async function fetchProduct(slug) {
+async function fetchProduct(slug, lang = "en") {
   try {
     const data = await getProductBySlug(slug);
     if (!data) return null;
-    return adaptProductForDetails(data, "en");
+    return adaptProductForDetails(data, lang);
   } catch (error) {
     if (error?.response?.status === 404) return null;
     console.error("[ProductPage] Failed to fetch product:", error);
@@ -114,10 +120,11 @@ async function fetchProduct(slug) {
 /* ─── metadata ────────────────────────────────────────────────────────────── */
 
 export async function generateMetadata({ params }) {
+  const locale = await getLocale();
   const { slug } = await params;
 
   try {
-    const product = await fetchProduct(slug);
+    const product = await fetchProduct(slug, locale);
 
     if (!product) {
       return {
@@ -141,9 +148,10 @@ export async function generateMetadata({ params }) {
 /* ─── page ────────────────────────────────────────────────────────────────── */
 
 export default async function ProductPage({ params }) {
+  const locale = await getLocale();
   const { slug } = await params;
 
-  const product = await fetchProduct(slug);
+  const product = await fetchProduct(slug, locale);
 
   if (!product) {
     notFound();

@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
 import { ArrowRight, CheckCircle } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 const sectionVariant = {
   hidden: { opacity: 0, y: 20, scale: 0.985 },
@@ -18,6 +19,7 @@ const sectionVariant = {
 };
 
 export default function NewsletterSection() {
+  const t = useTranslations("newsletter");
   const formRef = useRef(null);
   const timeoutRef = useRef(null);
 
@@ -90,23 +92,22 @@ export default function NewsletterSection() {
 
           <div className="relative z-10">
             <span className="mb-2 block text-xs font-semibold uppercase tracking-[0.2em] text-white/85 sm:text-sm font-poppins!">
-              Stay Updated
+              {t("heading")}
             </span>
 
             <h2 className="font-oswald! text-[1.65rem] font-bold uppercase leading-tight text-white sm:text-3xl">
-              Subscribe to Our Newsletter
+              {t("title")}
             </h2>
 
             <p className="mx-auto mt-3 max-w-md font-poppins! text-sm leading-relaxed text-white/80 sm:text-[15px]">
-              Get the latest product launches, skincare tips, and exclusive
-              offers delivered straight to your inbox.
+              {t("description")}
             </p>
 
             {status === "sent" ? (
               <div className="mt-8 flex items-center justify-center gap-2 text-white">
                 <CheckCircle size={20} />
                 <span className="font-poppins! text-sm font-semibold">
-                  You're subscribed!
+                  {t("subscribed")}
                 </span>
               </div>
             ) : (
@@ -121,7 +122,7 @@ export default function NewsletterSection() {
                   required
                   autoComplete="email"
                   inputMode="email"
-                  placeholder="Enter your email"
+                  placeholder={t("placeholder")}
                   className="h-12 w-full min-w-0 rounded-full border border-white/35 bg-white/10 px-5 font-poppins! text-sm text-white outline-none transition-all duration-300 placeholder:text-white/90 focus:border-white focus:bg-white focus:text-soft-black focus:placeholder:text-soft-black/55 focus:shadow-[0_0_0_3px_rgba(255,255,255,0.16)]"
                   style={{
                     WebkitBackdropFilter: "blur(8px)",
@@ -135,7 +136,7 @@ export default function NewsletterSection() {
                   className="group relative inline-flex h-12 w-full items-center justify-center gap-2 overflow-hidden rounded-full border border-white/45 bg-white px-6 font-poppins! text-sm font-semibold tracking-wide text-main transition-all duration-300 hover:-translate-y-0.5 hover:bg-white hover:shadow-[0_10px_24px_rgba(255,255,255,0.18)] disabled:pointer-events-none disabled:opacity-60 sm:w-auto sm:min-w-[154px]"
                 >
                   <span className="relative z-10">
-                    {status === "sending" ? "Subscribing..." : "Subscribe"}
+                    {status === "sending" ? t("sending") : t("subscribe")}
                   </span>
 
                   <ArrowRight
@@ -148,7 +149,7 @@ export default function NewsletterSection() {
 
             {status === "error" && (
               <p className="mt-3 font-poppins! text-sm text-white/95">
-                Something went wrong. Please try again.
+                {t("error")}
               </p>
             )}
           </div>

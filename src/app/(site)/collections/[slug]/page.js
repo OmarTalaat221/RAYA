@@ -1,4 +1,5 @@
 import { notFound } from "next/navigation";
+import { getLocale } from "next-intl/server";
 import CatalogPage from "../../../../components/Catalog/CatalogPage";
 import { getAllCategories } from "../../../../services/categories.service";
 import { adaptCategoriesToCollections } from "../../../../components/Collections/category.adapter";
@@ -7,10 +8,10 @@ import { adaptApiProducts } from "../../../../components/Catalog/product.adapter
 import { sortToApiParams } from "../../../../components/Catalog/sort.utils";
 import { availabilityToApiParam, priceRangeToApiParam } from "../../../../components/Catalog/filters.utils";
 
-async function fetchCategorySlugs() {
+async function fetchCategorySlugs(lang = "en") {
   try {
     const data = await getAllCategories({ page: 1, limit: 100 });
-    return adaptCategoriesToCollections(data?.items ?? [], "en");
+    return adaptCategoriesToCollections(data?.items ?? [], lang);
   } catch (error) {
     console.error("[CollectionSlug] Failed to fetch categories:", error);
     return [];
@@ -62,7 +63,7 @@ export async function generateMetadata(props) {
   return { title: "Collection Not Found | RDS Pharma" };
 }
 
-async function fetchServerProducts(slug, searchParams) {
+async function fetchServerProducts(slug, searchParams, lang = "en") {
   const page = parseInt(searchParams.page) || 1;
   const sort = searchParams.sort || "default";
   
@@ -120,7 +121,7 @@ async function fetchServerProducts(slug, searchParams) {
     rawItems = rawItems.flatMap((item) => item.products || []);
   }
 
-  const adapted = adaptApiProducts(rawItems, "en");
+  const adapted = adaptApiProducts(rawItems, lang);
   
   const pagination = productsBlock.pagination ?? payload?.pagination ?? {};
   
@@ -148,30 +149,35 @@ async function fetchServerProducts(slug, searchParams) {
 }
 
 export default async function CollectionPage(props) {
+  const locale = await getLocale();
   const params = await props.params;
   const searchParams = await props.searchParams;
   const { slug } = params;
 
   if (slug === "all") {
-    const data = await fetchServerProducts("all", searchParams);
+    const data = await fetchServerProducts("all", searchParams, locale);
     return (
       <CatalogPage
         products={data.products}
         pagination={data.pagination}
         highestPrice={data.highestPrice}
-        title="All Products"
-        subtitle="Browse our complete catalogue of premium products."
+        title={locale === "ar" ? "كل المنتجات" : "All Products"}
+        subtitle={
+          locale === "ar"
+            ? "تصفح الكتالوج الكامل لمنتجاتنا المميزة."
+            : "Browse our complete catalogue of premium products."
+        }
         currency={data.currency}
         source="all"
       />
     );
   }
 
-  const categories = await fetchCategorySlugs();
+  const categories = await fetchCategorySlugs(locale);
   const category = findCategoryBySlug(categories, slug);
 
   if (category) {
-    const data = await fetchServerProducts(slug, searchParams);
+    const data = await fetchServerProducts(slug, searchParams, locale);
     return (
       <CatalogPage
         products={data.products}

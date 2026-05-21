@@ -1,6 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
+import { useTranslations } from "next-intl";
 // import BlogCard from "@/components/Blog/BlogCard";
 import NewsPagination from "./NewsPagination";
 import BlogCard from "./BlogCard";
@@ -28,19 +29,20 @@ const containerVariant = {
 };
 
 function EmptyState() {
+  const t = useTranslations("blog.empty");
+
   return (
     <div className="mx-auto max-w-2xl rounded-[28px] border border-dashed border-soft-black/10 bg-white px-6 py-14 text-center shadow-[0_1px_4px_rgba(0,0,0,0.04)]">
       <p className="mb-2 text-xs font-semibold uppercase tracking-[0.2em] text-main font-poppins!">
-        No articles yet
+        {t("eyebrow")}
       </p>
 
       <h3 className="font-oswald! text-2xl font-bold uppercase text-soft-black">
-        Nothing to show right now
+        {t("title")}
       </h3>
 
       <p className="mx-auto mt-3 max-w-md font-poppins! text-sm leading-relaxed text-secondary">
-        We’re preparing fresh updates, skincare insights, and wellness news.
-        Please check back soon.
+        {t("description")}
       </p>
     </div>
   );
@@ -52,9 +54,9 @@ export default function NewsListingPage({
   totalPages = 1,
   total = 0,
   pageSize = 6,
-  title = "Latest News",
-  eyebrow = "From the Journal",
-  subtitle = "Skincare insights, wellness stories, and product news curated for your everyday routine.",
+  title = "",
+  eyebrow = "",
+  subtitle = "",
 }) {
   return (
     <section className="w-full bg-[#f4f3f0] py-10 sm:py-12 md:py-14 lg:py-20">

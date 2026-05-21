@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
+import { useTranslations } from "next-intl";
 import { getProductReviews } from "../../services/products.service";
 import { adaptReviewsResponse } from "./reviews.adapter";
 import ReviewItem from "./ReviewItem";
@@ -9,6 +10,7 @@ import ReviewForm from "./ReviewForm";
 const PAGE_SIZE = 5;
 
 export default function ProductReviews({ productId }) {
+  const t = useTranslations("productDetails.reviews");
   const sectionRef = useRef(null);
   const [hasLoadedOnce, setHasLoadedOnce] = useState(false);
 
@@ -69,13 +71,13 @@ export default function ProductReviews({ productId }) {
         setError(
           err?.response?.data?.message ||
             err?.message ||
-            "Failed to load reviews."
+            t("failedToLoad")
         );
       } finally {
         setLoading(false);
       }
     },
-    [productId, loading]
+    [productId, loading, t]
   );
 
   /* ── Initial fetch when section enters viewport ── */
@@ -112,12 +114,12 @@ export default function ProductReviews({ productId }) {
         <div className="mb-6 flex flex-wrap items-end justify-between gap-4 sm:mb-8">
           <div>
             <h2 className="text-2xl font-bold uppercase tracking-wide text-soft-black font-oswald! sm:text-3xl">
-              Customer Reviews
+              {t("title")}
             </h2>
             {pagination.totalItems > 0 && (
               <p className="mt-1 text-sm text-secondary">
                 {pagination.totalItems}{" "}
-                {pagination.totalItems === 1 ? "review" : "reviews"}
+                {pagination.totalItems === 1 ? t("singular") : t("plural")}
               </p>
             )}
           </div>
@@ -128,7 +130,7 @@ export default function ProductReviews({ productId }) {
               onClick={() => setShowForm(true)}
               className="inline-flex h-11 items-center justify-center rounded-xl bg-soft-black px-6 text-sm font-semibold text-white transition hover:bg-[#1a1a1a]"
             >
-              Write a Review
+              {t("write")}
             </button>
           )}
         </div>
@@ -167,17 +169,17 @@ export default function ProductReviews({ productId }) {
         {isEmpty && !showForm && (
           <div className="flex flex-col items-center justify-center rounded-2xl border border-black/5 bg-white py-12 text-center">
             <p className="text-base font-medium text-soft-black">
-              No reviews yet
+              {t("emptyTitle")}
             </p>
             <p className="mt-2 max-w-[36ch] text-sm text-secondary">
-              Be the first to review this product and help others make a choice.
+              {t("emptyDescription")}
             </p>
             <button
               type="button"
               onClick={() => setShowForm(true)}
               className="mt-5 inline-flex h-11 items-center justify-center rounded-xl bg-main px-6 text-sm font-semibold text-white transition hover:brightness-95"
             >
-              Write the First Review
+              {t("writeFirst")}
             </button>
           </div>
         )}
@@ -203,10 +205,10 @@ export default function ProductReviews({ productId }) {
               {loading ? (
                 <>
                   <span className="h-4 w-4 animate-spin rounded-full border-2 border-current/30 border-t-current" />
-                  Loading...
+                  {t("loading")}
                 </>
               ) : (
-                "View More Reviews"
+                t("viewMore")
               )}
             </button>
           </div>

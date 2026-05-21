@@ -3,9 +3,12 @@
 
 import { memo } from "react";
 import { ShoppingBag } from "lucide-react";
+import { useTranslations } from "next-intl";
 import CartRecommendations from "./CartRecommendations";
 
 const CartEmpty = memo(function CartEmpty({ onClose, recommendations }) {
+  const t = useTranslations("cart.emptyState");
+
   return (
     <div className="flex flex-1 flex-col overflow-y-auto overscroll-contain">
       {/* ── empty message ── */}
@@ -20,15 +23,15 @@ const CartEmpty = memo(function CartEmpty({ onClose, recommendations }) {
           className="font-oswald! mb-2 text-lg font-semibold uppercase
                       tracking-wide text-soft-black"
         >
-          Your cart is empty
+          {t("title")}
         </h3>
         <p
           className="font-poppins! mb-6 text-center text-sm leading-relaxed
                      text-gray-400"
         >
-          Looks like you haven't added anything yet.
+          {t("descriptionLine1")}
           <br />
-          Start exploring our products!
+          {t("descriptionLine2")}
         </p>
         <button
           onClick={onClose}
@@ -38,7 +41,7 @@ const CartEmpty = memo(function CartEmpty({ onClose, recommendations }) {
                      focus-visible:outline-none focus-visible:ring-2
                      focus-visible:ring-main/40"
         >
-          Continue Shopping
+          {t("continueShopping")}
         </button>
       </div>
 

@@ -4,6 +4,7 @@ import { useCallback, useState, memo } from "react";
 import { useRouter } from "next/navigation";
 import { useDispatch, useSelector } from "react-redux";
 import { Loader2, Tag, X, Check } from "lucide-react";
+import { useTranslations } from "next-intl";
 import {
   closeCart,
   applyCoupon,
@@ -21,6 +22,7 @@ const CartFooter = memo(function CartFooter({
   loading = false,
   onCashOnDelivery,
 }) {
+  const t = useTranslations("cart");
   const router = useRouter();
   const dispatch = useDispatch();
 
@@ -89,7 +91,7 @@ const CartFooter = memo(function CartFooter({
                 type="text"
                 value={couponInput}
                 onChange={handleInputChange}
-                placeholder="Coupon code"
+                placeholder={t("coupon.placeholder")}
                 disabled={couponLoading}
                 className="font-poppins! h-[42px]! w-full rounded-lg border
                            border-gray-200 bg-white pl-3 pr-3 text-[12.5px]
@@ -117,7 +119,7 @@ const CartFooter = memo(function CartFooter({
               {couponLoading ? (
                 <Loader2 size={14} strokeWidth={2} className="animate-spin" />
               ) : (
-                "Apply"
+                t("coupon.apply")
               )}
             </button>
           </form>
@@ -144,14 +146,14 @@ const CartFooter = memo(function CartFooter({
                   className="font-poppins! text-[10.5px] font-medium text-main
                              sm:text-[11px]"
                 >
-                  {coupon.discountValue}% off applied
+                  {t("coupon.applied", { value: coupon.discountValue })}
                 </p>
               </div>
             </div>
             <button
               type="button"
               onClick={handleRemoveCoupon}
-              aria-label="Remove coupon"
+              aria-label={t("coupon.remove")}
               className="flex h-7 w-7 shrink-0 items-center justify-center
                          rounded-full text-gray-500 transition-colors
                          duration-200 hover:bg-white hover:text-soft-black"
@@ -171,7 +173,7 @@ const CartFooter = memo(function CartFooter({
       {/* ── Summary ── */}
       <div className="mb-1 flex items-center justify-between">
         <span className="font-poppins! text-[13px] font-medium text-gray-500">
-          Subtotal
+          {t("subtotal")}
         </span>
         <span
           className={`font-poppins! text-[14px] font-semibold sm:text-[15px] ${
@@ -186,7 +188,7 @@ const CartFooter = memo(function CartFooter({
         <>
           <div className="mb-1 flex items-center justify-between">
             <span className="font-poppins! text-[13px] font-medium text-main">
-              Discount ({coupon?.discountValue}%)
+              {t("discount", { value: coupon?.discountValue })}
             </span>
             <span className="font-poppins! text-[14px] font-semibold text-main sm:text-[15px]">
               −{formatMoney(couponDiscount, currency)}
@@ -197,7 +199,7 @@ const CartFooter = memo(function CartFooter({
 
           <div className="mb-1 flex items-center justify-between">
             <span className="font-poppins! text-[14px] font-bold text-soft-black">
-              Total
+              {t("total")}
             </span>
             <span className="font-poppins! text-lg font-bold text-soft-black sm:text-xl">
               {formatMoney(total, currency)}
@@ -211,8 +213,8 @@ const CartFooter = memo(function CartFooter({
                    text-gray-400 sm:text-xs"
       >
         {qualifiesForFreeShipping
-          ? "Free shipping included • Taxes calculated at checkout"
-          : "Shipping & taxes calculated at checkout"}
+          ? t("freeShippingIncluded")
+          : t("shippingTaxesCheckout")}
       </div>
 
       {/* ── Buttons ── */}
@@ -235,7 +237,7 @@ const CartFooter = memo(function CartFooter({
               {loading && (
                 <Loader2 size={16} strokeWidth={2} className="animate-spin" />
               )}
-              Order Now — Cash on Delivery
+              {t("cashOnDelivery")}
             </span>
           </button>
         )}
@@ -257,7 +259,7 @@ const CartFooter = memo(function CartFooter({
             {loading && (
               <Loader2 size={16} strokeWidth={2} className="animate-spin" />
             )}
-            Check Out
+            {t("checkout")}
           </span>
         </button>
       </div>

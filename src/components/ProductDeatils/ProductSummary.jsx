@@ -3,8 +3,10 @@ import ProductRating from "./ProductRating";
 import ProductCountdown from "./ProductCountdown";
 import ProductPurchaseActions from "./ProductPurchaseActions";
 import { getStockUi } from "./utils";
+import { useTranslations } from "next-intl";
 
 export default function ProductSummary({ product }) {
+  const t = useTranslations("productDetails.stock");
   const stockUi = getStockUi(product.stockStatus);
 
   return (
@@ -39,7 +41,7 @@ export default function ProductSummary({ product }) {
             className={`inline-flex items-center gap-2 rounded-full border px-3 py-1.5 text-xs font-medium ${stockUi.pillClassName}`}
           >
             <span className={`h-2 w-2 rounded-full ${stockUi.dotClassName}`} />
-            {stockUi.label}
+            {t(stockUi.labelKey)}
           </span>
         ) : null}
       </div>

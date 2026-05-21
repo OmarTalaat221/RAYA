@@ -1,28 +1,413 @@
 {
+  "header": {
+    "topBar": "توصيل الإمارات مجاني فوق 150 درهم خلال يومين | توصيل دول الخليج مجاني فوق 600 درهم خلال 4 أيام",
+    "topBarMobile": "🚚 الإمارات مجاني >150 درهم | الخليج مجاني >600 درهم",
+    "search": {
+      "placeholder": "ابحث عن المنتجات..."
+    },
+    "sidebar": {
+      "about": "شريكك الموثوق في الصيدلية للمنتجات عالية الجودة والخدمات المهنية.",
+      "address": "المحل 2، بناية سالم العويس، الشارقة، الإمارات",
+      "email": "info@rdspharma.com"
+    },
+    "contact": {
+      "phone": "+971 6 535 3772"
+    },
+    "nav": {
+      "home": "الرئيسية",
+      "products": "المنتجات",
+      "brand": "العلامات التجارية",
+      "blog": "المدونة",
+      "contact": "اتصل بنا",
+      "offers": "العروض"
+    }
+  },
   "Footer": {
     "storeHeading": "متجرنا",
     "promiseHeading": "وعدنا",
     "settingsHeading": "المنطقة واللغة",
-    "linksHeading": "روابط سريعة",
+    "quickLinks": "روابط سريعة",
+    "followUs": "تابعنا",
     "regionLabel": "المنطقة",
     "languageLabel": "اللغة",
+    "address": "العنوان",
+    "phone": "الهاتف",
+    "email": "البريد الإلكتروني",
     "promiseText": "نقدّم تشكيلة مختارة بعناية من منتجات الصيدلية والعناية بالبشرة والرفاهية اليومية، مع تجربة تسوّق موثوقة وأسهل.",
+    "selectorNote": "قد تختلف الأسعار والتوفر حسب المنطقة.",
+    "legalNavLabel": "القوانين",
     "regions": {
       "eg": "مصر",
       "sa": "السعودية",
       "ae": "الإمارات"
     },
-    "quickLinks": {
-      "shop": "تسوّق الآن",
-      "offers": "العروض الخاصة",
-      "collections": "المجموعات",
-      "journal": "المجلة"
+    "nav": {
+      "home": "الرئيسية",
+      "catalog": "الكتالوج",
+      "skinage": "Skinage",
+      "denefis": "Denefis",
+      "offers": "العروض",
+      "blog": "المدونة",
+      "contact": "اتصل بنا",
+      "products": "المنتجات",
+      "brand": "العلامات التجارية"
     },
-    "legalLinks": {
+    "legal": {
       "privacy": "سياسة الخصوصية",
       "terms": "الشروط والأحكام",
-      "shipping": "الشحن والاسترجاع"
+      "returns": "سياسة الاسترجاع",
+      "shipping": "سياسة الشحن"
     },
     "copyright": "© {year} RDS Pharma. جميع الحقوق محفوظة."
+  },
+  "home": {
+    "title": "مرحبا بك في صيدلية RDS",
+    "description": "متجرك الموثوق للأدوية والمنتجات الصحية",
+    "hero": {
+      "title": "منتجات صيدلية عالية الجودة",
+      "subtitle": "توصيل سريع وأفضل الأسعار",
+      "shopNow": "تسوق الآن"
+    },
+    "collections": {
+      "eyebrow": "تصفح حسب",
+      "title": "المجموعات",
+      "viewAll": "عرض كل المجموعات"
+    },
+    "featured": {
+      "eyebrow": "اختياراتنا",
+      "title": "المنتجات المميزة",
+      "viewAll": "عرض الكل",
+      "viewAllProducts": "عرض كل المنتجات"
+    },
+    "specialOffer": {
+      "limitedTime": "لفترة محدودة",
+      "title": "عرض خاص",
+      "exclusive": "حصري",
+      "descriptionPrefix": "عززي روتين جمالك مع",
+      "productName": "Skinage Collagen Prestige",
+      "descriptionSuffix": "أمبولات",
+      "shopNow": "تسوق الآن"
+    },
+    "blog": {
+      "eyebrow": "من المدونة",
+      "title": "أحدث المقالات",
+      "viewAll": "عرض كل المقالات"
+    }
+  },
+  "collectionsPage": {
+    "eyebrow": "تصفح حسب",
+    "title": "المجموعات",
+    "subtitle": "استكشف العلامات التجارية المميزة والعروض الموسمية والمجموعات المختارة من عالم RDS Pharma."
+  },
+  "catalog": {
+    "title": "منتجاتنا",
+    "filter": "تصفية",
+    "sort": "الترتيب حسب",
+    "price": "السعر",
+    "availability": "التوفر",
+    "inStock": "متوفر",
+    "outOfStock": "غير متوفر",
+    "addToCart": "أضف إلى السلة",
+    "added": "تمت الإضافة",
+    "viewDetails": "عرض التفاصيل",
+    "noResults": "لم يتم العثور على منتجات",
+    "loadMore": "تحميل المزيد"
+  },
+  "cart": {
+    "title": "سلة التسوق",
+    "empty": "سلتك فارغة",
+    "continueShopping": "متابعة التسوق",
+    "checkout": "الدفع",
+    "subtotal": "المجموع الفرعي",
+    "shipping": "الشحن",
+    "total": "الإجمالي",
+    "removeItem": "إزالة",
+    "quantity": "الكمية",
+    "item": "عنصر",
+    "items": "عناصر",
+    "drawer": {
+      "title": "سلتك"
+    },
+    "aria": {
+      "shoppingCart": "سلة التسوق",
+      "shoppingCartWithCount": "سلة التسوق، {count} عناصر",
+      "closeCart": "إغلاق السلة"
+    },
+    "retry": "إعادة المحاولة",
+    "loadingCart": "جاري تحميل السلة...",
+    "freeShipping": {
+      "qualifiedPrefix": "تهانينا! طلبك مؤهل لـ",
+      "freeShipping": "الشحن المجاني",
+      "add": "أضف",
+      "toGet": "للحصول على"
+    },
+    "coupon": {
+      "placeholder": "كود الخصم",
+      "apply": "تطبيق",
+      "applied": "تم تطبيق خصم {value}%",
+      "remove": "إزالة كود الخصم"
+    },
+    "discount": "الخصم ({value}%)",
+    "freeShippingIncluded": "الشحن المجاني متضمن • يتم احتساب الضرائب عند الدفع",
+    "shippingTaxesCheckout": "يتم احتساب الشحن والضرائب عند الدفع",
+    "cashOnDelivery": "اطلب الآن - الدفع عند الاستلام",
+    "recommendations": {
+      "title": "قد يعجبك أيضًا",
+      "noImage": "بدون صورة",
+      "addToCart": "إضافة {title} إلى السلة"
+    },
+    "emptyState": {
+      "title": "سلتك فارغة",
+      "descriptionLine1": "يبدو أنك لم تضف أي منتجات بعد.",
+      "descriptionLine2": "ابدأ باستكشاف منتجاتنا!",
+      "continueShopping": "متابعة التسوق"
+    },
+    "itemControls": {
+      "noImage": "بدون صورة",
+      "remove": "إزالة {title}",
+      "decreaseQuantity": "تقليل الكمية",
+      "increaseQuantity": "زيادة الكمية"
+    }
+  },
+  "checkout": {
+    "title": "الدفع",
+    "shippingInfo": "معلومات الشحن",
+    "paymentMethod": "طريقة الدفع",
+    "orderSummary": "ملخص الطلب",
+    "placeOrder": "تأكيد الطلب",
+    "firstName": "الاسم الأول",
+    "lastName": "اسم العائلة",
+    "email": "البريد الإلكتروني",
+    "phone": "رقم الهاتف",
+    "address": "العنوان",
+    "city": "المدينة",
+    "country": "الدولة",
+    "zipCode": "رمز البريد",
+    "steps": {
+      "shipping": "الشحن",
+      "payment": "الدفع"
+    },
+    "shippingInformation": "معلومات الشحن",
+    "optional": "اختياري",
+    "loading": "جاري التحميل...",
+    "processing": "جاري المعالجة...",
+    "continueToPayment": "المتابعة إلى الدفع",
+    "stripeSecure": "بياناتك مشفرة ومؤمنة بواسطة Stripe",
+    "fields": {
+      "firstName": "الاسم الأول",
+      "lastName": "اسم العائلة",
+      "email": "البريد الإلكتروني",
+      "phone": "رقم الهاتف",
+      "country": "الدولة",
+      "state": "الولاية / المنطقة",
+      "city": "المدينة",
+      "postalCode": "الرمز البريدي",
+      "address": "عنوان الشارع",
+      "apartment": "الشقة / الجناح / الطابق",
+      "notes": "ملاحظات التوصيل"
+    },
+    "placeholders": {
+      "firstName": "أحمد",
+      "lastName": "علي",
+      "email": "ahmed@email.com",
+      "country": "الإمارات العربية المتحدة",
+      "state": "دبي",
+      "city": "دبي مارينا",
+      "postalCode": "00000",
+      "address": "مبنى 5، اسم الشارع",
+      "apartment": "شقة 302، الطابق 3",
+      "notes": "أي تعليمات خاصة للتوصيل..."
+    },
+    "errors": {
+      "firstName": "الاسم الأول مطلوب.",
+      "lastName": "اسم العائلة مطلوب.",
+      "email": "البريد الإلكتروني مطلوب.",
+      "emailInvalid": "برجاء إدخال بريد إلكتروني صحيح.",
+      "phone": "رقم الهاتف مطلوب.",
+      "country": "الدولة مطلوبة.",
+      "city": "المدينة مطلوبة.",
+      "address": "العنوان مطلوب.",
+      "sessionRestore": "تعذر استرجاع جلسة الدفع. برجاء مراجعة بيانات الشحن والمتابعة مرة أخرى.",
+      "generic": "حدث خطأ ما. برجاء المحاولة مرة أخرى."
+    },
+    "summary": {
+      "title": "ملخص الطلب",
+      "item": "عنصر",
+      "items": "عناصر",
+      "productFallback": "منتج",
+      "noImage": "بدون صورة",
+      "subtotal": "المجموع الفرعي",
+      "shipping": "الشحن",
+      "free": "مجاني",
+      "discount": "الخصم",
+      "tax": "الضريبة",
+      "total": "الإجمالي",
+      "continueShopping": "متابعة التسوق"
+    },
+    "payment": {
+      "title": "تفاصيل الدفع",
+      "description": "أكمل الدفع بأمان دون مغادرة الموقع.",
+      "unavailable": "جلسة الدفع غير متاحة الآن. برجاء الرجوع والمحاولة مرة أخرى.",
+      "back": "رجوع",
+      "backToShipping": "الرجوع إلى الشحن",
+      "cardSecure": "معلومات بطاقتك مشفرة وتتم معالجتها بأمان بواسطة Stripe."
+    }
+  },
+  "productDetails": {
+    "actions": {
+      "quantity": "الكمية",
+      "decreaseQuantity": "تقليل الكمية",
+      "increaseQuantity": "زيادة الكمية",
+      "loading": "جاري التحميل...",
+      "adding": "جاري الإضافة...",
+      "removing": "جاري الحذف...",
+      "addToCart": "أضف إلى السلة",
+      "removeFromCart": "إزالة من السلة",
+      "buyNow": "اشتر الآن",
+      "cashOnDelivery": "الدفع عند الاستلام"
+    },
+    "secure": {
+      "title": "دفع آمن عند إتمام الطلب",
+      "description": "كل طرق الدفع الرئيسية متاحة. سيتم تأكيد تفاصيل الطلب النهائية قبل الدفع."
+    },
+    "share": {
+      "title": "شارك هذا المنتج",
+      "share": "مشاركة",
+      "copyLink": "نسخ الرابط",
+      "copied": "تم النسخ"
+    },
+    "content": {
+      "eyebrow": "تفاصيل المنتج",
+      "title": "كل ما تحتاج إلى معرفته"
+    },
+    "reviews": {
+      "title": "تقييمات العملاء",
+      "singular": "تقييم",
+      "plural": "تقييمات",
+      "write": "اكتب تقييمًا",
+      "emptyTitle": "لا توجد تقييمات بعد",
+      "emptyDescription": "كن أول من يقيّم هذا المنتج وساعد الآخرين على الاختيار.",
+      "writeFirst": "اكتب أول تقييم",
+      "failedToLoad": "تعذر تحميل التقييمات.",
+      "loading": "جاري التحميل...",
+      "viewMore": "عرض المزيد من التقييمات"
+    },
+    "reviewForm": {
+      "title": "اكتب تقييمًا",
+      "rating": "تقييمك",
+      "review": "رأيك",
+      "placeholder": "شارك تجربتك مع هذا المنتج...",
+      "selectRatingError": "يرجى اختيار تقييم.",
+      "writeCommentError": "يرجى كتابة تعليق.",
+      "submitError": "تعذر إرسال التقييم. يرجى المحاولة مرة أخرى.",
+      "submitting": "جاري الإرسال...",
+      "submit": "إرسال التقييم",
+      "cancel": "إلغاء"
+    },
+    "related": {
+      "title": "قد يعجبك أيضًا",
+      "subtitle": "اختيارات منتقاة بناءً على هذا المنتج",
+      "previous": "المنتج المقترح السابق",
+      "next": "المنتج المقترح التالي",
+      "failedToLoad": "تعذر تحميل المنتجات المقترحة."
+    },
+    "stock": {
+      "inStock": "متوفر",
+      "lowStock": "كمية محدودة",
+      "outOfStock": "غير متوفر",
+      "checkAvailability": "تحقق من التوفر"
+    }
+  },
+  "contact": {
+    "title": "اتصل بنا",
+    "heading": "تواصل معنا",
+    "description": "نود أن نسمع منك. أرسل لنا رسالة.",
+    "heroDescription": "هل لديك سؤال حول منتجاتنا؟ تحتاج مساعدة في طلب؟ أو تريد استكشاف شراكة؟ يسعدنا سماعك. تواصل معنا وسنرد عليك في أقرب وقت.",
+    "formTitle": "أرسل لنا رسالة",
+    "formDescription": "املأ النموذج أدناه وسنرد عليك خلال 24 ساعة.",
+    "name": "اسمك",
+    "email": "البريد الإلكتروني",
+    "subject": "الموضوع",
+    "message": "الرسالة",
+    "send": "إرسال الرسالة",
+    "sending": "جاري الإرسال...",
+    "sentTitle": "تم إرسال الرسالة!",
+    "sentDescription": "شكرًا لتواصلك معنا. سيقوم فريقنا بمراجعة رسالتك والرد عليك في أقرب وقت.",
+    "phone": "الهاتف",
+    "inquiryType": "نوع الاستفسار",
+    "inquiryTypePlaceholder": "اختر نوع الاستفسار",
+    "inquiryTypes": {
+      "general": "استفسار عام",
+      "product": "سؤال عن المنتج",
+      "order": "دعم الطلب",
+      "partnership": "شراكة",
+      "feedback": "شكوى / ملاحظات"
+    },
+    "subjectPlaceholder": "كيف يمكننا المساعدة؟",
+    "messagePlaceholder": "أخبرنا المزيد عن استفسارك...",
+    "formError": "حدث خطأ ما. يرجى المحاولة مرة أخرى.",
+    "getDirections": "الحصول على الاتجاهات",
+    "address": "العنوان",
+    "hours": "ساعات العمل"
+  },
+  "newsletter": {
+    "heading": "ابقَ على اطلاع",
+    "title": "اشترك في النشرة الإخبارية",
+    "description": "احصل على أحدث إطلاقات المنتجات ونصائح العناية بالبشرة والعروض الحصرية مباشرة إلى بريدك.",
+    "placeholder": "أدخل بريدك الإلكتروني",
+    "subscribe": "اشترك",
+    "sending": "جاري الاشتراك...",
+    "subscribed": "تم الاشتراك!",
+    "error": "حدث خطأ ما. يرجى المحاولة مرة أخرى."
+  },
+  "blog": {
+    "title": "المدونة",
+    "eyebrow": "من المدونة",
+    "subtitle": "استكشف آخر الأخبار ونصائح العناية بالبشرة وأفكار العافية من عالم RDS Pharma.",
+    "latestNews": "أحدث الأخبار",
+    "latestArticles": "أحدث المقالات",
+    "readMore": "اقرأ المزيد",
+    "publishedOn": "تم النشر في",
+    "by": "بقلم",
+    "category": "الفئة",
+    "noArticles": "لا توجد مقالات",
+    "empty": {
+      "eyebrow": "لا توجد مقالات بعد",
+      "title": "لا يوجد محتوى حالياً",
+      "description": "نحضّر تحديثات جديدة ونصائح للعناية بالبشرة ومحتوى صحي. يرجى العودة قريباً."
+    }
+  },
+  "auth": {
+    "login": "تسجيل الدخول",
+    "register": "التسجيل",
+    "logout": "تسجيل الخروج",
+    "email": "البريد الإلكتروني",
+    "password": "كلمة المرور",
+    "confirmPassword": "تأكيد كلمة المرور",
+    "forgotPassword": "هل نسيت كلمة المرور؟",
+    "dontHaveAccount": "ليس لديك حساب؟",
+    "alreadyHaveAccount": "هل لديك حساب بالفعل؟",
+    "createAccount": "إنشاء حساب",
+    "resetPassword": "إعادة تعيين كلمة المرور"
+  },
+  "common": {
+    "loading": "جاري التحميل...",
+    "error": "حدث خطأ ما",
+    "success": "تم بنجاح",
+    "cancel": "إلغاء",
+    "save": "حفظ",
+    "delete": "حذف",
+    "edit": "تعديل",
+    "back": "رجوع",
+    "next": "التالي",
+    "previous": "السابق",
+    "search": "بحث",
+    "filter": "تصفية",
+    "sort": "ترتيب",
+    "apply": "تطبيق",
+    "reset": "إعادة تعيين",
+    "tryAgain": "حاول مرة أخرى",
+    "failedToLoadCollections": "تعذر تحميل المجموعات. يرجى المحاولة مرة أخرى.",
+    "noCollections": "لا توجد مجموعات متاحة حالياً."
   }
 }

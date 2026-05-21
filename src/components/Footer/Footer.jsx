@@ -3,7 +3,6 @@
 import React, { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import { useLocale, useTranslations } from "next-intl";
-import { useRouter } from "next/navigation";
 import { ConfigProvider, Select } from "antd";
 import StyledBackground from "./StyledBackground";
 
@@ -314,7 +313,6 @@ export default function Footer({
 }) {
   const t = useTranslations("Footer");
   const locale = useLocale();
-  const router = useRouter();
 
   const isRTL = locale === "ar";
   const textAlign = isRTL ? "text-right" : "text-left";
@@ -347,12 +345,16 @@ export default function Footer({
           body: JSON.stringify({ locale: nextLocale }),
         });
 
-        router.refresh();
+        try {
+          localStorage.setItem("rds_locale", nextLocale);
+        } catch (_) {}
+
+        window.location.reload();
       } catch (error) {
         console.error("Failed to change locale:", error);
       }
     },
-    [router]
+    []
   );
 
   const regionOptions = [
