@@ -314,6 +314,7 @@ export default function Collections() {
     };
   }, []);
 
+  const displayItems = [ALL_COLLECTION_CARD, ...categories];
 
   return (
     <>
