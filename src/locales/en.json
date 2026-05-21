@@ -409,5 +409,10 @@
     "tryAgain": "Try Again",
     "failedToLoadCollections": "Failed to load collections. Please try again.",
     "noCollections": "No collections available right now."
+  },
+  "whatsapp": {
+    "defaultMessage": "Hello RDS Pharma, I have a question.",
+    "tooltip": "Chat with us",
+    "ariaLabel": "Chat with us on WhatsApp"
   }
 }

@@ -246,7 +246,7 @@ function ContactRow({ icon, href, children, isRTL }) {
   return (
     <li
       className={`flex items-center gap-3 ${
-        isRTL ? "flex-row-reverse text-right" : "text-left"
+        isRTL ? "flex-row-reverse text-start!" : "text-left!"
       }`}
     >
       <span className="mt-0.5 shrink-0 text-white/60">{icon}</span>
@@ -334,28 +334,25 @@ export default function Footer({
     } catch (_) {}
   }, []);
 
-  const handleLanguageChange = useCallback(
-    async (nextLocale) => {
+  const handleLanguageChange = useCallback(async (nextLocale) => {
+    try {
+      await fetch("/api/locale", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ locale: nextLocale }),
+      });
+
       try {
-        await fetch("/api/locale", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ locale: nextLocale }),
-        });
+        localStorage.setItem("rds_locale", nextLocale);
+      } catch (_) {}
 
-        try {
-          localStorage.setItem("rds_locale", nextLocale);
-        } catch (_) {}
-
-        window.location.reload();
-      } catch (error) {
-        console.error("Failed to change locale:", error);
-      }
-    },
-    []
-  );
+      window.location.reload();
+    } catch (error) {
+      console.error("Failed to change locale:", error);
+    }
+  }, []);
 
   const regionOptions = [
     { value: "eg", label: t("regions.eg") },
@@ -434,6 +431,7 @@ export default function Footer({
                 </ContactRow>
 
                 <ContactRow
+                
                   icon={<PhoneIcon className="h-4 w-4" />}
                   href={`tel:${storePhone.replace(/\s+/g, "")}`}
                   isRTL={isRTL}

@@ -2,13 +2,13 @@
 
 import { usePathname } from "next/navigation";
 import { useMemo } from "react";
+import { useTranslations } from "next-intl";
 
 /* ═══════════════════════════════════════════════
    Config — change these two values
    ═══════════════════════════════════════════════ */
 
 const WHATSAPP_NUMBER = "971501234567"; // ← بدون + ولا مسافات
-const DEFAULT_MESSAGE = "Hello RDS Pharma, I have a question.";
 
 /* ═══════════════════════════════════════════════
    Pages where the button should NOT appear
@@ -18,6 +18,7 @@ const HIDDEN_PATHS = ["/checkout", "/checkout/success"];
 
 export default function WhatsAppButton() {
   const pathname = usePathname();
+  const t = useTranslations("whatsapp");
 
   const isHidden = useMemo(() => {
     if (!pathname) return false;
@@ -29,7 +30,7 @@ export default function WhatsAppButton() {
   if (isHidden) return null;
 
   const href = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(
-    DEFAULT_MESSAGE
+    t("defaultMessage")
   )}`;
 
   return (
@@ -37,13 +38,13 @@ export default function WhatsAppButton() {
       href={href}
       target="_blank"
       rel="noopener noreferrer"
-      aria-label="Chat with us on WhatsApp"
-      className="group fixed bottom-5 right-5 z-50 flex items-center sm:bottom-6 sm:right-6"
+      aria-label={t("ariaLabel")}
+      className="group fixed bottom-5 ltr:right-5 rtl:left-5 z-50 flex items-center sm:bottom-6 ltr:sm:right-6 rtl:sm:left-6"
     >
       {/* Tooltip */}
       <span
         className="
-          pointer-events-none mr-3 hidden whitespace-nowrap rounded-xl
+          pointer-events-none ltr:mr-3 rtl:ml-3 hidden whitespace-nowrap rounded-xl
           bg-soft-black px-3.5 py-2 text-xs font-medium text-white
           opacity-0 shadow-[0_10px_24px_rgba(45,45,45,0.18)]
           transition-all duration-200
@@ -51,7 +52,7 @@ export default function WhatsAppButton() {
           sm:block
         "
       >
-        Chat with us
+        {t("tooltip")}
       </span>
 
       {/* Button */}

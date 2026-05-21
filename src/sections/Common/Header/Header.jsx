@@ -231,7 +231,7 @@ const HeaderIcons = memo(function HeaderIcons({
         <ShoppingBag size={22} strokeWidth={1.5} />
         {cartCount > 0 && (
           <span
-            className="absolute -top-2 -right-2 flex h-[18px] min-w-[18px]
+            className="absolute -top-2 ltr:-right-2 rtl:-left-2 flex h-[18px] min-w-[18px]
                        items-center justify-center rounded-full bg-main px-1
                        shadow-sm"
           >
@@ -257,12 +257,8 @@ const TopBar = memo(function TopBar({ compact = false }) {
         className={`text-center text-white font-semibold tracking-wide leading-snug
                     ${compact ? "text-[10px] sm:text-[11px]" : "text-[11px] sm:text-xs md:text-sm"}`}
       >
-        <span className="hidden sm:inline">
-          {t("topBar")}
-        </span>
-        <span className="sm:hidden">
-          {t("topBarMobile")}
-        </span>
+        <span className="hidden sm:inline">{t("topBar")}</span>
+        <span className="sm:hidden">{t("topBarMobile")}</span>
       </p>
     </div>
   );
@@ -377,10 +373,10 @@ const LanguageDropdown = memo(function LanguageDropdown() {
       <div
         role="listbox"
         className={`
-          absolute right-0 top-full mt-3 min-w-[150px]
+          absolute ltr:right-0 rtl:left-0 top-full mt-3 min-w-[150px]
           bg-white rounded-xl border border-gray-100
           shadow-[0_12px_32px_rgba(0,0,0,0.08)]
-          overflow-hidden origin-top-right z-50
+          overflow-hidden ltr:origin-top-right! rtl:origin-top-left! z-50
           transition-all duration-200 ease-out
           ${
             open

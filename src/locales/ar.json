@@ -409,5 +409,10 @@
     "tryAgain": "حاول مرة أخرى",
     "failedToLoadCollections": "تعذر تحميل المجموعات. يرجى المحاولة مرة أخرى.",
     "noCollections": "لا توجد مجموعات متاحة حالياً."
+  },
+  "whatsapp": {
+    "defaultMessage": "مرحباً صيدلية RDS، لدي سؤال.",
+    "tooltip": "تحدث معنا",
+    "ariaLabel": "تحدث معنا على الواتساب"
   }
 }

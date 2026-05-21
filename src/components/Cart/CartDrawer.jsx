@@ -5,7 +5,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { useRouter } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
 import { X, AlertCircle } from "lucide-react";
-import { useTranslations } from "next-intl";
+import { useTranslations, useLocale } from "next-intl";
 import { closeCart, fetchCart, clearError } from "../../store/cartSlice";
 import FreeShippingBar from "./FreeShippingBar";
 import CartItemList from "./CartItemList";
@@ -20,11 +20,6 @@ const BACKDROP_VARIANTS = {
 };
 const BACKDROP_TRANSITION = { duration: 0.25, ease: "easeOut" };
 
-const DRAWER_VARIANTS = {
-  hidden: { x: "100%" },
-  visible: { x: 0 },
-  exit: { x: "100%" },
-};
 const DRAWER_TRANSITION = {
   type: "spring",
   stiffness: 380,
@@ -34,6 +29,8 @@ const DRAWER_TRANSITION = {
 
 const CartDrawer = memo(function CartDrawer() {
   const t = useTranslations("cart");
+  const locale = useLocale();
+  const isRtl = locale === "ar";
   const dispatch = useDispatch();
   const router = useRouter();
   const isOpen = useSelector((s) => s.cart.isOpen);
@@ -116,10 +113,14 @@ const CartDrawer = memo(function CartDrawer() {
 
           {/* Drawer - NOT full width on mobile */}
           <motion.aside
-            className="fixed inset-y-0 right-0 z-2500 flex w-[88%] max-w-[400px] 
-                       flex-col bg-white shadow-[-8px_0_30px_rgba(0,0,0,0.08)]
+            className="fixed inset-y-0 ltr:right-0 rtl:left-0 z-2500 flex w-[88%] max-w-[400px] 
+                       flex-col bg-white shadow-[-8px_0_30px_rgba(0,0,0,0.08)] rtl:shadow-[8px_0_30px_rgba(0,0,0,0.08)]
                        sm:w-[420px] sm:max-w-none md:w-[460px] lg:w-[480px]"
-            variants={DRAWER_VARIANTS}
+            variants={{
+              hidden: { x: isRtl ? "-100%" : "100%" },
+              visible: { x: 0 },
+              exit: { x: isRtl ? "-100%" : "100%" },
+            }}
             initial="hidden"
             animate="visible"
             exit="exit"
