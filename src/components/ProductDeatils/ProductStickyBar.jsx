@@ -6,6 +6,7 @@ import { useDispatch, useSelector } from "react-redux";
 import Image from "next/image";
 import { addToCart, removeFromCart } from "../../store/cartSlice";
 import { setBuyNowItem } from "../../utils/buyNow";
+import { resolveMediaSrc } from "./ProductGallery";
 
 function isUAECountry(country) {
   if (!country) return false;
@@ -45,7 +46,6 @@ export default function ProductStickyBar({ product }) {
   const isInCart = initialized ? Boolean(cartItem) : Boolean(product?.inCart);
   const isOutOfStock = product?.stockStatus === "out_of_stock";
 
-  /* ── IntersectionObserver: show when original actions leave viewport ── */
   useEffect(() => {
     const target = document.querySelector("[data-purchase-actions]");
     if (!target) return;
@@ -54,7 +54,7 @@ export default function ProductStickyBar({ product }) {
       ([entry]) => {
         setIsVisible(!entry.isIntersecting);
       },
-      { threshold: 0, rootMargin: "0px 0px -80px 0px" }
+      { threshold: 0, rootMargin: "0px 0px -80px 0px" },
     );
 
     observer.observe(target);
@@ -71,7 +71,9 @@ export default function ProductStickyBar({ product }) {
       if (isInCart) {
         await dispatch(removeFromCart({ productId: product.id })).unwrap();
       } else {
-        await dispatch(addToCart({ productId: product.id, quantity: 1 })).unwrap();
+        await dispatch(
+          addToCart({ productId: product.id, quantity: 1 }),
+        ).unwrap();
       }
     } catch {
       /* handled by Redux */
@@ -87,7 +89,8 @@ export default function ProductStickyBar({ product }) {
     const primary =
       media.find((m) => m?.type === "image" && m?.isPrimary) ||
       media.find((m) => m?.type === "image");
-    const image = product?.frontImage || primary?.src || product?.backImage || "";
+    const image =
+      product?.frontImage || primary?.src || product?.backImage || "";
 
     setBuyNowItem({
       productId: product.id,
@@ -102,12 +105,14 @@ export default function ProductStickyBar({ product }) {
 
   if (!product?.id) return null;
 
-  const thumb = product?.media?.[0]?.url || product?.frontImage;
-  const normalizedThumb = thumb
-    ? thumb.startsWith("http")
-      ? thumb
-      : `https://www.rdspharma.online${thumb}`
-    : null;
+  // ✅ الفيكس هنا فقط — src بدل url + resolveMediaSrc
+  const media = Array.isArray(product?.media) ? product.media : [];
+  const primaryMedia =
+    media.find((m) => m?.type === "image" && m?.isPrimary) ||
+    media.find((m) => m?.type === "image");
+
+  const rawThumb = primaryMedia?.src || product?.frontImage || "";
+  const normalizedThumb = rawThumb ? resolveMediaSrc(rawThumb) : null;
 
   const currency = product?.currency || "AED";
   const price = Number(product?.newPrice || 0).toFixed(2);
@@ -115,9 +120,7 @@ export default function ProductStickyBar({ product }) {
   return (
     <div
       className={`pointer-events-none fixed inset-x-0 bottom-0 z-[100] transition-all duration-300 ${
-        isVisible
-          ? "translate-y-0 opacity-100"
-          : "translate-y-full opacity-0"
+        isVisible ? "translate-y-0 opacity-100" : "translate-y-full opacity-0"
       }`}
       aria-hidden={!isVisible}
     >
@@ -146,14 +149,13 @@ export default function ProductStickyBar({ product }) {
             </p>
           </div>
 
-          {/* ── Buy Now (hidden on very small screens) ── */}
+          {/* ── Buy Now ── */}
           <button
             type="button"
             onClick={handleBuyNow}
             disabled={isOutOfStock}
             className="hidden h-10 items-center justify-center gap-1.5 rounded-xl bg-soft-black px-4 text-xs font-semibold uppercase tracking-[0.1em] text-white shadow-[0_6px_16px_rgba(45,45,45,0.2)] transition hover:bg-[#1a1a1a] disabled:cursor-not-allowed disabled:opacity-50 xsm:inline-flex sm:h-11 sm:px-5"
           >
-            {/* <BoltIcon /> */}
             <span>Buy</span>
           </button>
 
@@ -186,7 +188,11 @@ export default function ProductStickyBar({ product }) {
                   stroke="currentColor"
                   strokeWidth={2}
                 >
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M20 12H4" />
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M20 12H4"
+                  />
                 </svg>
                 <span>Remove</span>
               </>

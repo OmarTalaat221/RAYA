@@ -4,11 +4,9 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Image from "next/image";
 
 const IMAGE_BASE_URL =
-  process.env.NEXT_PUBLIC_IMAGE_URL ||
-  process.env.NEXT_PUBLIC_API_BASE_URL ||
-  "https://rdspharma.cloud";
+  process.env.NEXT_PUBLIC_IMAGE_URL || "https://rdspharma.cloud";
 
-function resolveMediaSrc(src) {
+export function resolveMediaSrc(src) {
   if (!src) return "";
 
   if (src.startsWith("http://") || src.startsWith("https://")) {
@@ -26,7 +24,6 @@ function resolveMediaSrc(src) {
 
   return src;
 }
-
 function PlayIcon({ className = "h-6 w-6 text-white" }) {
   return (
     <svg
@@ -87,6 +84,9 @@ function MainSlide({ item, index, isPrimary, productTitle }) {
   const resolvedSrc = resolveMediaSrc(item.src);
   const resolvedPoster = item.poster ? resolveMediaSrc(item.poster) : undefined;
 
+  console.log(resolvedSrc, "resolvedSrc");
+
+  console.log(resolvedPoster, "resolvedPoster");
   return (
     <div className="relative aspect-[4/5] overflow-hidden rounded-3xl bg-[#f7f7f4]">
       <span className="absolute bottom-4 right-4 z-10 rounded-full bg-white/90 px-3 py-1 text-xs font-medium text-soft-black shadow-sm backdrop-blur-sm">
@@ -189,7 +189,7 @@ export default function ProductGallery({ media, productTitle }) {
       const next = Math.max(0, Math.min(items.length - 1, index));
       setActiveIndex(next);
     },
-    [items.length]
+    [items.length],
   );
 
   const goPrev = useCallback(() => {
@@ -202,7 +202,7 @@ export default function ProductGallery({ media, productTitle }) {
 
   useEffect(() => {
     const activeThumb = thumbsRef.current?.querySelector(
-      `[data-thumb-index="${activeIndex}"]`
+      `[data-thumb-index="${activeIndex}"]`,
     );
 
     if (activeThumb) {
