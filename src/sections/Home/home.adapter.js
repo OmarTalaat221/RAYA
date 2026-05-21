@@ -149,6 +149,8 @@ function adaptProduct(product, lang = "en") {
     brand: product?.brand || "",
     sku: product?.sku || "",
     badge: product?.badge || "",
+    discountPercentage: product?.discountPercentage || 0,
+    // discountValue: product?.discountValue || 0,
     stockStatus: product?.stockStatus || "",
     inCart: Boolean(product?.inCart),
   };

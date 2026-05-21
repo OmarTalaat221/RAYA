@@ -44,6 +44,27 @@ function resolveSrcSet(srcSet) {
   return "";
 }
 
+const IMAGE_BASE_URL = process.env.NEXT_PUBLIC_IMAGE_URL || "https://rdspharma.cloud";
+
+function resolveMediaSrc(src) {
+  if (!src) return "";
+
+  if (src.startsWith("http://") || src.startsWith("https://")) {
+    return src;
+  }
+
+  if (src.startsWith("/cdn/shop/")) {
+    return `https://www.rdspharma.online${src}`;
+  }
+
+  if (src.startsWith("uploads/") || src.startsWith("/uploads/")) {
+    const cleanPath = src.startsWith("/") ? src : `/${src}`;
+    return `${IMAGE_BASE_URL}${cleanPath}`;
+  }
+
+  return src;
+}
+
 /**
  * Resolves product href from product translations.
  */
@@ -91,7 +112,7 @@ export function adaptBlogItem(item) {
     excerpt,
     category,
     date: item.date || "",
-    image: item.image || "",
+    image: resolveMediaSrc(item.image),
     srcSet: resolveSrcSet(item.srcSet),
     slug: item.slug || "",
     isFeatured: item.isFeatured || false,
