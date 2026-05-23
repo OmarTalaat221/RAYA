@@ -158,16 +158,19 @@ export const clearEntireCart = createAsyncThunk(
 
 export const applyCoupon = createAsyncThunk(
   "cart/applyCoupon",
-  async (couponCode, { getState, rejectWithValue }) => {
+  async (payload, { getState, rejectWithValue }) => {
     try {
-      const state = getState();
-      const cartItems = state.cart.items;
+      const code = typeof payload === "string" ? payload : payload.couponCode;
+      const customItems = typeof payload === "object" ? payload.items : null;
 
-      if (!cartItems.length) {
+      const state = getState();
+      const cartItems = customItems || state.cart.items;
+
+      if (!cartItems || !cartItems.length) {
         return rejectWithValue("Your cart is empty.");
       }
 
-      const response = await applyCouponApi({ cartItems, couponCode });
+      const response = await applyCouponApi({ cartItems, couponCode: code });
       return response?.data || null;
     } catch (error) {
       console.error("[Cart] applyCoupon failed:", error);

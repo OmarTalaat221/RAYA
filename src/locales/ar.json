@@ -242,7 +242,13 @@
       "discount": "الخصم",
       "tax": "الضريبة",
       "total": "الإجمالي",
-      "continueShopping": "متابعة التسوق"
+      "continueShopping": "متابعة التسوق",
+      "coupon": {
+        "placeholder": "أدخل كود الخصم",
+        "apply": "تطبيق",
+        "applied": "تم تطبيق الخصم بنجاح",
+        "remove": "إزالة"
+      }
     },
     "payment": {
       "title": "تفاصيل الدفع",
@@ -316,6 +322,12 @@
       "lowStock": "كمية محدودة",
       "outOfStock": "غير متوفر",
       "checkAvailability": "تحقق من التوفر"
+    },
+    "coupon": {
+      "placeholder": "أدخل كود الخصم",
+      "apply": "تطبيق",
+      "applied": "تم تطبيق الخصم ({value}%)",
+      "remove": "إزالة الكود"
     }
   },
   "contact": {

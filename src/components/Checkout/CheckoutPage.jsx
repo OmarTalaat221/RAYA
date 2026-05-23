@@ -285,6 +285,36 @@ function CheckoutInner() {
 
   const isBuyNowMode = Boolean(buyNowItem?.productId);
 
+  const effectiveSubtotal = isBuyNowMode
+    ? (buyNowItem.price || 0) * (buyNowItem.quantity || 1)
+    : subtotal;
+
+  /* ── Build client-side summary for shipping step (before server confirms) ── */
+  const clientSummary = useMemo(() => {
+    if (!coupon?.code || couponDiscount <= 0) return null;
+
+    const currency = isBuyNowMode
+      ? buyNowItem.currency || "AED"
+      : items[0]?.currency || "AED";
+
+    return {
+      currency,
+      subtotal: effectiveSubtotal,
+      shipping: 0,
+      discountAmount: couponDiscount,
+      total: Math.max(0, effectiveSubtotal - couponDiscount),
+      orderItems: [],
+      coupon,
+    };
+  }, [
+    coupon,
+    couponDiscount,
+    isBuyNowMode,
+    buyNowItem,
+    items,
+    effectiveSubtotal,
+  ]);
+
   const effectiveItems = useMemo(
     () =>
       isBuyNowMode
@@ -440,24 +470,6 @@ function CheckoutInner() {
   ) {
     return null;
   }
-
-  const effectiveSubtotal = isBuyNowMode
-    ? (buyNowItem.price || 0) * (buyNowItem.quantity || 1)
-    : subtotal;
-
-  /* ── Build client-side summary for shipping step (before server confirms) ── */
-  const clientSummary =
-    !isBuyNowMode && coupon?.code && couponDiscount > 0
-      ? {
-          currency: items[0]?.currency || "AED",
-          subtotal,
-          shipping: 0,
-          discountAmount: couponDiscount,
-          total: cartTotal,
-          orderItems: [],
-          coupon,
-        }
-      : null;
 
   return (
     <>

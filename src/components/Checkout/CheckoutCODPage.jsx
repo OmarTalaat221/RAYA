@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback, memo, Suspense } from "react";
+import { useState, useEffect, useCallback, useMemo, memo, Suspense } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
@@ -119,6 +119,36 @@ function CheckoutCODInner() {
 
   const isBuyNowMode = Boolean(buyNowItem?.productId);
 
+  const effectiveSubtotal = isBuyNowMode
+    ? (buyNowItem.price || 0) * (buyNowItem.quantity || 1)
+    : subtotal;
+
+  /* ── Build client-side summary with discount ── */
+  const clientSummary = useMemo(() => {
+    if (!coupon?.code || couponDiscount <= 0) return null;
+
+    const currency = isBuyNowMode
+      ? buyNowItem.currency || "AED"
+      : items[0]?.currency || "AED";
+
+    return {
+      currency,
+      subtotal: effectiveSubtotal,
+      shipping: 0,
+      discountAmount: couponDiscount,
+      total: Math.max(0, effectiveSubtotal - couponDiscount),
+      orderItems: [],
+      coupon,
+    };
+  }, [
+    coupon,
+    couponDiscount,
+    isBuyNowMode,
+    buyNowItem,
+    items,
+    effectiveSubtotal,
+  ]);
+
   const effectiveItems = isBuyNowMode
     ? [
         {
@@ -200,24 +230,6 @@ function CheckoutCODInner() {
   if (!isBuyNowMode && initialized && items.length === 0) {
     return null;
   }
-
-  const effectiveSubtotal = isBuyNowMode
-    ? (buyNowItem.price || 0) * (buyNowItem.quantity || 1)
-    : subtotal;
-
-  /* ── Build client-side summary with discount ── */
-  const clientSummary =
-    !isBuyNowMode && coupon?.code && couponDiscount > 0
-      ? {
-          currency: items[0]?.currency || "AED",
-          subtotal,
-          shipping: 0,
-          discountAmount: couponDiscount,
-          total: cartTotal,
-          orderItems: [],
-          coupon,
-        }
-      : null;
 
   return (
     <>

@@ -1,9 +1,16 @@
 "use client";
 
-import { memo, useMemo } from "react";
+import { memo, useMemo, useState, useCallback } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import Image from "next/image";
 import Link from "next/link";
 import { useLocale, useTranslations } from "next-intl";
+import { Loader2, X, Check } from "lucide-react";
+import {
+  applyCoupon,
+  removeCoupon,
+  clearCouponError,
+} from "../../store/cartSlice";
 
 const IMAGE_BASE_URL =
   process.env.NEXT_PUBLIC_API_BASE_URL || "https://rdspharma.cloud";
@@ -33,7 +40,7 @@ function resolveOrderItemImage(item) {
     media.find((m) => m?.type === "image" && m?.isPrimary) ||
     media.find((m) => m?.type === "image");
   return resolveImage(
-    product?.frontImage || primary?.src || product?.backImage || ""
+    product?.frontImage || primary?.src || product?.backImage || "",
   );
 }
 
@@ -44,6 +51,37 @@ const CheckoutSummary = memo(function CheckoutSummary({
 }) {
   const locale = useLocale();
   const t = useTranslations("checkout.summary");
+  const dispatch = useDispatch();
+
+  const coupon = useSelector((s) => s.cart.coupon);
+  const couponLoading = useSelector((s) => s.cart.couponLoading);
+  const couponError = useSelector((s) => s.cart.couponError);
+
+  const [couponInput, setCouponInput] = useState("");
+
+  const handleApplyCoupon = useCallback(
+    (e) => {
+      e?.preventDefault?.();
+      const code = couponInput.trim();
+      if (!code || couponLoading) return;
+      // Pass items from summary for discount calculation
+      dispatch(applyCoupon({ couponCode: code, items }));
+    },
+    [couponInput, couponLoading, dispatch, items],
+  );
+
+  const handleRemoveCoupon = useCallback(() => {
+    dispatch(removeCoupon());
+    setCouponInput("");
+  }, [dispatch]);
+
+  const handleInputChange = useCallback(
+    (e) => {
+      setCouponInput(e.target.value.toUpperCase());
+      if (couponError) dispatch(clearCouponError());
+    },
+    [couponError, dispatch],
+  );
 
   const summaryItems = useMemo(() => {
     if (
@@ -106,26 +144,24 @@ const CheckoutSummary = memo(function CheckoutSummary({
   }, [items, locale, serverSummary, t]);
 
   const currencyCode = toCurrency(
-    serverSummary?.currency || summaryItems[0]?.currency
+    serverSummary?.currency || summaryItems[0]?.currency,
   );
 
   const subtotal = toNumber(serverSummary?.subtotal ?? cartSubtotal ?? 0);
   const shipping = toNumber(serverSummary?.shipping ?? 0);
   const discount = toNumber(
-    serverSummary?.discountAmount ?? serverSummary?.discount ?? 0
+    serverSummary?.discountAmount ?? serverSummary?.discount ?? 0,
   );
   const tax = toNumber(serverSummary?.tax ?? 0);
   const total = toNumber(
-    serverSummary?.total ?? subtotal + shipping - discount + tax
+    serverSummary?.total ?? subtotal + shipping - discount + tax,
   );
 
   return (
     <div className="lg:sticky lg:top-8">
       <div className="rounded-[20px] border border-black/5 bg-[#fafaf9] p-5 sm:p-6">
         <div className="mb-5 flex items-center justify-between">
-          <h2 className="text-lg font-oswald! text-soft-black">
-            {t("title")}
-          </h2>
+          <h2 className="text-lg font-oswald! text-soft-black">{t("title")}</h2>
           <span className="rounded-full bg-black/5 px-2.5 py-0.5 text-xs font-medium text-secondary">
             {summaryItems.length}{" "}
             {summaryItems.length === 1 ? t("item") : t("items")}
@@ -182,6 +218,64 @@ const CheckoutSummary = memo(function CheckoutSummary({
           })}
         </div>
 
+        {/* ── Coupon section ── */}
+        <div className="mb-5 border-t border-black/5 pt-5">
+          {!coupon?.code ? (
+            <form
+              onSubmit={handleApplyCoupon}
+              className="flex items-stretch gap-2"
+            >
+              <div className="relative flex-1">
+                <input
+                  type="text"
+                  value={couponInput}
+                  onChange={handleInputChange}
+                  placeholder={t("coupon.placeholder")}
+                  disabled={couponLoading}
+                  className="font-poppins! h-10 w-full rounded-xl border border-black/10 bg-white pl-3 pr-3 text-[12.5px] font-medium uppercase tracking-wide text-soft-black outline-none transition-colors duration-200 placeholder:font-normal placeholder:normal-case placeholder:tracking-normal placeholder:text-gray-400 focus:border-main/50 focus:ring-4 focus:ring-main/5"
+                />
+              </div>
+              <button
+                type="submit"
+                disabled={couponLoading || !couponInput.trim()}
+                className="inline-flex h-10 shrink-0 items-center justify-center rounded-xl bg-soft-black px-4 text-xs font-semibold uppercase tracking-wide text-white transition hover:bg-[#1a1a1a] disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                {couponLoading ? (
+                  <Loader2 size={16} className="animate-spin" />
+                ) : (
+                  t("coupon.apply")
+                )}
+              </button>
+            </form>
+          ) : (
+            <div className="flex items-center justify-between gap-2 rounded-xl border border-main/20 bg-main/5 px-3 py-2">
+              <div className="flex items-center gap-2">
+                <div className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-main text-white">
+                  <Check size={10} strokeWidth={3} />
+                </div>
+                <div className="min-w-0">
+                  <p className="truncate text-xs font-bold uppercase tracking-wide text-soft-black">
+                    {coupon.code}
+                  </p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={handleRemoveCoupon}
+                className="flex h-7 w-7 items-center justify-center rounded-full text-secondary transition hover:bg-white hover:text-soft-black"
+              >
+                <X size={14} strokeWidth={2} />
+              </button>
+            </div>
+          )}
+
+          {couponError && !coupon?.code && (
+            <p className="mt-2 text-[11px] font-medium text-red-500">
+              {couponError}
+            </p>
+          )}
+        </div>
+
         <div className="my-4 border-t border-black/5" />
 
         <div className="space-y-2.5">
@@ -209,7 +303,14 @@ const CheckoutSummary = memo(function CheckoutSummary({
 
           {discount > 0 && (
             <div className="flex justify-between text-sm">
-              <span className="text-main">{t("discount")}</span>
+              <span className="text-main flex items-center gap-1.5">
+                {t("discount")}
+                {coupon?.code && (
+                  <span className="text-[10px] bg-main/10 px-1.5 py-0.5 rounded uppercase font-bold tracking-wider">
+                    {coupon.code}
+                  </span>
+                )}
+              </span>
               <span className="font-medium text-main">
                 -{discount.toFixed(2)} {currencyCode}
               </span>

@@ -1,10 +1,18 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { useDispatch, useSelector } from "react-redux";
-import { addToCart, fetchCart, removeFromCart } from "../../store/cartSlice";
+import { Loader2, Tag, X, Check } from "lucide-react";
+import {
+  addToCart,
+  fetchCart,
+  removeFromCart,
+  applyCoupon,
+  removeCoupon,
+  clearCouponError,
+} from "../../store/cartSlice";
 import { setBuyNowItem } from "../../utils/buyNow";
 
 /* ── tiny inline icons ── */
@@ -148,6 +156,12 @@ export default function ProductPurchaseActions({
 
   const [quantity, setQuantity] = useState(1);
   const [copied, setCopied] = useState(false);
+  const coupon = useSelector((s) => s.cart.coupon);
+  const couponDiscount = useSelector((s) => s.cart.couponDiscount);
+  const couponLoading = useSelector((s) => s.cart.couponLoading);
+  const couponError = useSelector((s) => s.cart.couponError);
+
+  const [couponInput, setCouponInput] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitMode, setSubmitMode] = useState("");
   const [cartError, setCartError] = useState("");
@@ -196,6 +210,35 @@ export default function ProductPurchaseActions({
     setQuantity(value);
   }
 
+  const handleApplyCoupon = useCallback(
+    (e) => {
+      e?.preventDefault?.();
+      const code = couponInput.trim();
+      if (!code || couponLoading) return;
+      // Pass current product as item for discount calculation
+      dispatch(
+        applyCoupon({
+          couponCode: code,
+          items: [{ id: product.id, quantity }],
+        }),
+      );
+    },
+    [couponInput, couponLoading, dispatch, product.id, quantity],
+  );
+
+  const handleRemoveCoupon = useCallback(() => {
+    dispatch(removeCoupon());
+    setCouponInput("");
+  }, [dispatch]);
+
+  const handleInputChange = useCallback(
+    (e) => {
+      setCouponInput(e.target.value.toUpperCase());
+      if (couponError) dispatch(clearCouponError());
+    },
+    [couponError, dispatch],
+  );
+
   function getButtonText() {
     if (isCartSyncing) return t("actions.loading");
     if (isSubmitting && submitMode === "add") return t("actions.adding");
@@ -220,13 +263,13 @@ export default function ProductPurchaseActions({
           addToCart({
             productId: product.id,
             quantity,
-          })
+          }),
         );
       }
 
       if (action.error) {
         throw new Error(
-          action.payload || action.error?.message || "Failed to update cart."
+          action.payload || action.error?.message || "Failed to update cart.",
         );
       }
     } catch (error) {
@@ -381,11 +424,6 @@ export default function ProductPurchaseActions({
           {getButtonText()}
         </button>
       </div>
-
-      {/* ── error ── */}
-      {cartError && (
-        <p className="font-poppins! mt-3 text-sm text-red-500">{cartError}</p>
-      )}
 
       {/* ── buy now (prominent) ── */}
       <button

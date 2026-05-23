@@ -242,7 +242,13 @@
       "discount": "Discount",
       "tax": "Tax",
       "total": "Total",
-      "continueShopping": "Continue Shopping"
+      "continueShopping": "Continue Shopping",
+      "coupon": {
+        "placeholder": "Coupon code",
+        "apply": "Apply",
+        "applied": "Coupon applied",
+        "remove": "Remove coupon"
+      }
     },
     "payment": {
       "title": "Payment Details",
@@ -316,6 +322,12 @@
       "lowStock": "Low stock",
       "outOfStock": "Out of stock",
       "checkAvailability": "Check availability"
+    },
+    "coupon": {
+      "placeholder": "Coupon code",
+      "apply": "Apply",
+      "applied": "{value}% off applied",
+      "remove": "Remove coupon"
     }
   },
   "contact": {
