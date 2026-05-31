@@ -22,6 +22,11 @@ const nextConfig = {
         hostname: "rdspharma.cloud",
         pathname: "/**",
       },
+      {
+        protocol: "https",
+        hostname: "cdn.shopify.com",
+        pathname: "/**",
+      },
     ],
     formats: ["image/avif", "image/webp"],
   },

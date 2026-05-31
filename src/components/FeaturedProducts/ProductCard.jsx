@@ -134,12 +134,12 @@ export default function ProductCard({
   /* ── Image ── */
   const showBackImage = canHover && backImage && isHovered;
 
-  const normalizedFrontImage = frontImage?.startsWith("http")
+  const normalizedFrontImage = frontImage?.startsWith("http")||frontImage.startsWith("https")
     ? frontImage
     : `https://www.rdspharma.online${frontImage}`;
 
   const normalizedBackImage = backImage
-    ? backImage.startsWith("http")
+    ? backImage.startsWith("http")||backImage.startsWith("https")
       ? backImage
       : `https://www.rdspharma.online${backImage}`
     : null;
