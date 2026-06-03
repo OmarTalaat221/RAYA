@@ -79,9 +79,12 @@ export default function BlogCard({
 
           {/* Excerpt — only if available */}
           {excerpt ? (
-            <p className="line-clamp-3 flex-1 font-poppins! text-[12px] leading-relaxed text-secondary">
-              <div className="" _dangerouslySetInnerHTML={{ __html: excerpt }} />
-            </p>
+            <div className="line-clamp-3 flex-1 font-poppins! text-[12px] leading-relaxed text-secondary">
+              <div
+                className=""
+                _dangerouslySetInnerHTML={{ __html: excerpt }}
+              />
+            </div>
           ) : (
             <div className="flex-1" />
           )}

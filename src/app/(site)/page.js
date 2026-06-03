@@ -14,6 +14,7 @@ export default async function HomePage() {
 
   try {
     const response = await getHomeData();
+    
     homeData = adaptHomeResponse(response, "en");
   } catch (error) {
     console.error("[HomePage] failed to fetch home data:", error);

@@ -12,6 +12,7 @@ import { getLocale, getMessages } from "next-intl/server";
 import { Poppins, EB_Garamond, Oswald, Cairo, Almarai } from "next/font/google";
 
 import ReduxProvider from "../store/ReduxProvider";
+import AppPreloader from "../sections/Common/AppPreloader/AppPreloader";
 
 const poppins = Poppins({
   subsets: ["latin"],
@@ -98,7 +99,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
         {/* End Google Tag Manager (noscript) */}
         <ReduxProvider>
           <NextIntlClientProvider locale={locale} messages={messages}>
-            {children}
+            <AppPreloader>{children}</AppPreloader>
           </NextIntlClientProvider>
         </ReduxProvider>
       </body>

@@ -43,6 +43,7 @@ export const fetchGeoInfo = createAsyncThunk(
       const response = await getGeoInfo();
       const data = response?.data || {};
 
+
       // 3) Persist to sessionStorage
       if (data?.currency) {
         writeSession(data);
