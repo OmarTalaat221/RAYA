@@ -152,7 +152,7 @@ export default function ProductPurchaseActions({
   } = useSelector((state) => state.cart);
 
   const geoCountry = useSelector((state) => state.geo?.country);
-  const isUAE = isUAECountry(geoCountry);
+  //const isUAE = isUAECountry(geoCountry);
 
   const [quantity, setQuantity] = useState(1);
   const [copied, setCopied] = useState(false);
@@ -437,7 +437,8 @@ export default function ProductPurchaseActions({
       </button>
 
       {/* ── cash on delivery (UAE only) ── */}
-      {isUAE && (
+      {/* {isUAE
+       && */}(
         <button
           type="button"
           onClick={handleCashOnDelivery}
@@ -447,7 +448,7 @@ export default function ProductPurchaseActions({
           <TruckIcon />
           <span>{t("actions.cashOnDelivery")}</span>
         </button>
-      )}
+      )
 
       {/* ── secure note ── */}
       <div className="mt-4 flex items-start gap-3 rounded-2xl border border-main/10 bg-white p-4">
