@@ -31,7 +31,7 @@ const fallbackStore = {
     ar: "المحل 2، بناية سالم العويس، الشارقة، الإمارات",
   },
   phone: "+971 6 535 3772",
-  email: "care@rdspharma.com",
+  email: "Rdspharma.online@gmail.com",
 };
 
 // ─── helper ───────────────────────────────────────────────
@@ -431,7 +431,6 @@ export default function Footer({
                 </ContactRow>
 
                 <ContactRow
-                
                   icon={<PhoneIcon className="h-4 w-4" />}
                   href={`tel:${storePhone.replace(/\s+/g, "")}`}
                   isRTL={isRTL}

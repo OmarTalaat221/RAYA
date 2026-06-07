@@ -1,44 +1,79 @@
-// services/products.service.js
-
 import axiosInstance from "./axios";
 
-function buildProductParams(opts = {}) {
+function buildProductParams(options = {}) {
   const params = {};
-  if (opts.page) params.page = opts.page;
-  if (opts.limit) params.limit = opts.limit;
-  if (opts.sortBy) params.sortBy = opts.sortBy;
-  if (opts.sortOrder) params.sortOrder = opts.sortOrder;
-  if (typeof opts.in_stock === "boolean") params.in_stock = opts.in_stock;
-  if (opts.priceRange) params.priceRange = opts.priceRange;
+
+  const page = Number(options.page);
+  const limit = Number(options.limit);
+
+  if (Number.isFinite(page) && page > 0) {
+    params.page = page;
+  }
+
+  if (Number.isFinite(limit) && limit > 0) {
+    params.limit = limit;
+  }
+
+  if (options.sortBy) {
+    params.sortBy = options.sortBy;
+  }
+
+  if (options.sortOrder) {
+    params.sortOrder = options.sortOrder;
+  }
+
+  if (typeof options.in_stock === "boolean") {
+    params.in_stock = options.in_stock;
+  }
+
+  if (
+    options.priceRange !== undefined &&
+    options.priceRange !== null &&
+    options.priceRange !== ""
+  ) {
+    params.priceRange = options.priceRange;
+  }
+
   return params;
+}
+
+function getResponseData(response) {
+  return response?.data?.data;
 }
 
 export async function getProducts(options = {}) {
   const response = await axiosInstance.get("/products", {
     params: buildProductParams(options),
   });
-  return response.data?.data;
+
+  return getResponseData(response);
 }
 
 export async function getProductsByCategorySlug(slug, options = {}) {
-  const response = await axiosInstance.get(`/products/category/${slug}`, {
-    params: buildProductParams(options),
-  });
-  return response.data?.data;
+  const response = await axiosInstance.get(
+    `/products/category/${encodeURIComponent(slug)}`,
+    {
+      params: buildProductParams(options),
+    }
+  );
+
+  return getResponseData(response);
 }
 
 export async function getProductBySlug(slug) {
-  const response = await axiosInstance.get(`/products/${slug}`);
-  return response.data?.data;
-}
+  const response = await axiosInstance.get(
+    `/products/${encodeURIComponent(slug)}`
+  );
 
-/* ─── Reviews ────────────────────────────────────────────────────────────── */
+  return getResponseData(response);
+}
 
 export async function getProductReviews(productId, { page = 1, limit = 5 } = {}) {
   const response = await axiosInstance.get(`/products/${productId}/reviews`, {
-    params: { page, limit },
+    params: buildProductParams({ page, limit }),
   });
-  return response.data?.data;
+
+  return getResponseData(response);
 }
 
 export async function submitProductReview({ productId, rating, comment }) {
@@ -47,17 +82,15 @@ export async function submitProductReview({ productId, rating, comment }) {
     rating: String(rating),
     comment,
   });
-  return response.data?.data;
-}
 
-/* ─── Random / Related Products ──────────────────────────────────────────── */
+  return getResponseData(response);
+}
 
 export async function getRandomProducts() {
   const response = await axiosInstance.get("/products/random");
-  return response.data?.data;
-}
 
-/* ─── Sitemap helper ─────────────────────────────────────────────────────── */
+  return getResponseData(response);
+}
 
 export async function getAllProductsForSitemap({ pageSize = 100 } = {}) {
   const allItems = [];
@@ -72,6 +105,7 @@ export async function getAllProductsForSitemap({ pageSize = 100 } = {}) {
 
       for (const item of items) {
         const slug = item?.translations?.[0]?.slug || item?.slug || null;
+
         if (!slug) continue;
 
         allItems.push({

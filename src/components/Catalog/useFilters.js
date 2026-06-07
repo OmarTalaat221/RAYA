@@ -6,6 +6,7 @@ import { usePathname, useRouter, useSearchParams } from "next/navigation";
 const PRODUCTS_PER_PAGE = 12;
 
 const VALID_AVAILABILITY = ["in_stock", "out_of_stock"];
+
 const VALID_SORTS = [
   "default",
   "price-asc",
@@ -43,6 +44,7 @@ function setPageParam(params, page) {
     params.delete("page");
     return;
   }
+
   params.set("page", String(page));
 }
 
@@ -60,7 +62,6 @@ export default function useFilters(products = [], options = {}) {
     [searchParamsString]
   );
 
-  // ─── url-driven state ─────────────────────────────────
   const availability = useMemo(
     () => parseAvailability(currentParams.get("availability")),
     [currentParams]
@@ -79,7 +80,6 @@ export default function useFilters(products = [], options = {}) {
   const minPriceFromParams = currentParams.get("minPrice") || "";
   const maxPriceFromParams = currentParams.get("maxPrice") || "";
 
-  // ─── local input state for debounced price ────────────
   const [priceRange, setPriceRange] = useState({
     from: minPriceFromParams,
     to: maxPriceFromParams,
@@ -89,6 +89,8 @@ export default function useFilters(products = [], options = {}) {
     from: minPriceFromParams,
     to: maxPriceFromParams,
   });
+
+  const debounceRef = useRef(null);
 
   useEffect(() => {
     setPriceRange((prev) =>
@@ -104,13 +106,15 @@ export default function useFilters(products = [], options = {}) {
     );
   }, [minPriceFromParams, maxPriceFromParams]);
 
-  const debounceRef = useRef(null);
-
   useEffect(() => {
     if (debounceRef.current) clearTimeout(debounceRef.current);
 
     debounceRef.current = setTimeout(() => {
-      setDebouncedPrice(priceRange);
+      setDebouncedPrice((prev) =>
+        prev.from === priceRange.from && prev.to === priceRange.to
+          ? prev
+          : priceRange
+      );
     }, 400);
 
     return () => {
@@ -171,10 +175,6 @@ export default function useFilters(products = [], options = {}) {
     });
   }, [debouncedPrice, currentParams, updateSearchParams]);
 
-  // ─── derived data ─────────────────────────────────────
-  // priceStats:
-  //  - serverDriven → use serverHighestPrice from API (min = 0)
-  //  - else         → compute from local products
   const priceStats = useMemo(() => {
     if (serverDriven) {
       return { min: 0, max: Number(serverHighestPrice) || 0 };
@@ -182,29 +182,41 @@ export default function useFilters(products = [], options = {}) {
 
     if (!products.length) return { min: 0, max: 0 };
 
-    const prices = products.map((p) => Number(p.newPrice) || 0);
+    let min = Infinity;
+    let max = 0;
+
+    for (const product of products) {
+      const price = Number(product.newPrice) || 0;
+
+      if (price < min) min = price;
+      if (price > max) max = price;
+    }
+
     return {
-      min: Math.min(...prices),
-      max: Math.max(...prices),
+      min: Number.isFinite(min) ? min : 0,
+      max,
     };
   }, [products, serverDriven, serverHighestPrice]);
 
-  // availabilityCounts: only meaningful when client-driven
   const availabilityCounts = useMemo(() => {
     if (serverDriven) {
       return { inStock: 0, outOfStock: 0 };
     }
 
-    const inStock = products.filter((p) => p.inStock !== false).length;
+    let inStock = 0;
+
+    for (const product of products) {
+      if (product.inStock !== false) {
+        inStock += 1;
+      }
+    }
+
     return {
       inStock,
       outOfStock: products.length - inStock,
     };
   }, [products, serverDriven]);
 
-  // ─── filtered + sorted ────────────────────────────────
-  // serverDriven → API already did everything → return as-is
-  // else         → apply local filtering/sorting
   const filteredProducts = useMemo(() => {
     if (serverDriven) {
       return products;
@@ -214,8 +226,9 @@ export default function useFilters(products = [], options = {}) {
 
     if (availability.length > 0 && availability.length < 2) {
       const wantInStock = availability.includes("in_stock");
-      result = result.filter((p) => {
-        const isInStock = p.inStock !== false;
+
+      result = result.filter((product) => {
+        const isInStock = product.inStock !== false;
         return wantInStock ? isInStock : !isInStock;
       });
     }
@@ -225,32 +238,41 @@ export default function useFilters(products = [], options = {}) {
     const toPrice = debouncedPrice.to !== "" ? Number(debouncedPrice.to) : null;
 
     if (fromPrice !== null || toPrice !== null) {
-      result = result.filter((p) => {
-        const price = Number(p.newPrice) || 0;
+      result = result.filter((product) => {
+        const price = Number(product.newPrice) || 0;
+
         if (fromPrice !== null && price < fromPrice) return false;
         if (toPrice !== null && price > toPrice) return false;
+
         return true;
       });
     }
 
     if (sortBy !== "default") {
       result = [...result];
+
       switch (sortBy) {
         case "price-asc":
           result.sort(
             (a, b) => (Number(a.newPrice) || 0) - (Number(b.newPrice) || 0)
           );
           break;
+
         case "price-desc":
           result.sort(
             (a, b) => (Number(b.newPrice) || 0) - (Number(a.newPrice) || 0)
           );
           break;
+
         case "title-asc":
           result.sort((a, b) => (a.title || "").localeCompare(b.title || ""));
           break;
+
         case "title-desc":
           result.sort((a, b) => (b.title || "").localeCompare(a.title || ""));
+          break;
+
+        default:
           break;
       }
     }
@@ -258,7 +280,6 @@ export default function useFilters(products = [], options = {}) {
     return result;
   }, [products, availability, debouncedPrice, sortBy, serverDriven]);
 
-  // ─── pagination ───────────────────────────────────────
   const totalFiltered = filteredProducts.length;
 
   const totalPages = serverDriven
@@ -278,6 +299,7 @@ export default function useFilters(products = [], options = {}) {
 
     const start = (currentPage - 1) * PRODUCTS_PER_PAGE;
     const end = start + PRODUCTS_PER_PAGE;
+
     return filteredProducts.slice(start, end);
   }, [filteredProducts, currentPage, serverDriven]);
 
@@ -285,6 +307,7 @@ export default function useFilters(products = [], options = {}) {
     if (serverDriven) return;
 
     const maxPage = totalFiltered > 0 ? totalPages : 1;
+
     if (currentPageFromParams > maxPage) {
       updateSearchParams((params) => {
         setPageParam(params, maxPage);
@@ -301,7 +324,6 @@ export default function useFilters(products = [], options = {}) {
   const hasActiveFilters =
     availability.length > 0 || priceRange.from !== "" || priceRange.to !== "";
 
-  // ─── actions ──────────────────────────────────────────
   const toggleAvailability = useCallback(
     (value) => {
       updateSearchParams((params) => {
@@ -331,7 +353,10 @@ export default function useFilters(products = [], options = {}) {
   }, [updateSearchParams]);
 
   const updatePriceRange = useCallback((field, value) => {
-    setPriceRange((prev) => ({ ...prev, [field]: value }));
+    setPriceRange((prev) => {
+      if (prev[field] === value) return prev;
+      return { ...prev, [field]: value };
+    });
   }, []);
 
   const resetPriceRange = useCallback(() => {
@@ -353,6 +378,7 @@ export default function useFilters(products = [], options = {}) {
         } else {
           params.set("sort", value);
         }
+
         setPageParam(params, 1);
       });
     },
@@ -384,7 +410,7 @@ export default function useFilters(products = [], options = {}) {
   return {
     availability,
     priceRange,
-    debouncedPrice, // exposed so CatalogClient can build API params
+    debouncedPrice,
     sortBy,
     filteredProducts,
     visibleProducts,

@@ -1,5 +1,6 @@
 "use client";
 
+import { memo, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import useCanHover from "./useCanHover";
 import useFilters from "./useFilters";
@@ -11,15 +12,25 @@ import EmptyState from "./EmptyState";
 
 const PRODUCTS_PER_PAGE = 12;
 
-/**
- * source = "all"            → Server driven
- * source = "category:<slug>" → Server driven
- */
+const filterBarTransition = {
+  duration: 0.4,
+  delay: 0.1,
+  ease: [0.22, 1, 0.36, 1],
+};
+
+const activeFiltersTransition = {
+  duration: 0.25,
+};
+
+const gridTransition = {
+  duration: 0.2,
+};
+
 function isServerSource(source) {
   return typeof source === "string" && source.length > 0;
 }
 
-export default function CatalogClient({
+function CatalogClient({
   products = [],
   pagination = null,
   highestPrice = 0,
@@ -29,7 +40,8 @@ export default function CatalogClient({
   source = null,
 }) {
   const canHover = useCanHover();
-  const serverDriven = isServerSource(source);
+
+  const serverDriven = useMemo(() => isServerSource(source), [source]);
 
   const filters = useFilters(products, {
     serverDriven,
@@ -37,26 +49,23 @@ export default function CatalogClient({
   });
 
   const totalPages = serverDriven
-    ? (pagination?.totalPages || 1)
+    ? pagination?.totalPages || 1
     : filters.totalPages;
 
   const totalItems = serverDriven
-    ? (pagination?.totalItems || 0)
+    ? pagination?.totalItems || 0
     : filters.totalFiltered;
 
-  const showEmpty =
-    serverDriven ? products.length === 0 : filters.totalFiltered === 0;
+  const showEmpty = serverDriven
+    ? products.length === 0
+    : filters.totalFiltered === 0;
 
   return (
     <>
       <motion.div
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{
-          duration: 0.4,
-          delay: 0.1,
-          ease: [0.22, 1, 0.36, 1],
-        }}
+        transition={filterBarTransition}
         className="mb-5 rounded-2xl border border-gray-100 bg-white p-4 shadow-[0_2px_12px_rgba(0,0,0,0.03)] sm:p-5"
       >
         <FilterBar
@@ -81,7 +90,7 @@ export default function CatalogClient({
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: "auto" }}
             exit={{ opacity: 0, height: 0 }}
-            transition={{ duration: 0.25 }}
+            transition={activeFiltersTransition}
             className="mb-6 overflow-hidden"
           >
             <ActiveFilters
@@ -106,7 +115,7 @@ export default function CatalogClient({
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              transition={{ duration: 0.2 }}
+              transition={gridTransition}
             >
               <ProductsGrid
                 products={filters.visibleProducts}
@@ -129,3 +138,5 @@ export default function CatalogClient({
     </>
   );
 }
+
+export default memo(CatalogClient);

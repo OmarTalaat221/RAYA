@@ -1,18 +1,17 @@
 "use client";
 
+import { memo } from "react";
 import ProductCard from "../FeaturedProducts/ProductCard";
 import ProductSkeleton from "./ProductSkeleton";
 
-export default function ProductsGrid({
-  products,
-  isLoading = false,
-  canHover = false,
-}) {
+const SKELETON_ITEMS = Array.from({ length: 8 });
+
+function ProductsGrid({ products = [], isLoading = false, canHover = false }) {
   if (isLoading) {
     return (
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5 md:grid-cols-3 lg:grid-cols-4 xl:gap-6">
-        {Array.from({ length: 8 }).map((_, i) => (
-          <ProductSkeleton key={i} />
+        {SKELETON_ITEMS.map((_, index) => (
+          <ProductSkeleton key={index} />
         ))}
       </div>
     );
@@ -22,8 +21,8 @@ export default function ProductsGrid({
     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5 md:grid-cols-3 lg:grid-cols-4 xl:gap-6">
       {products.map((product, index) => (
         <ProductCard
+          key={product.id || product.href || index}
           id={product.id}
-          key={product.id || index}
           title={product.title}
           href={product.href}
           frontImage={product.frontImage}
@@ -41,3 +40,5 @@ export default function ProductsGrid({
     </div>
   );
 }
+
+export default memo(ProductsGrid);

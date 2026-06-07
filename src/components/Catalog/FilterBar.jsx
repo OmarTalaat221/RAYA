@@ -1,12 +1,13 @@
 "use client";
 
+import { memo, useMemo } from "react";
 import FilterPopover from "./FilterPopover";
 import AvailabilityFilter from "./AvailabilityFilter";
 import PriceFilter from "./PriceFilter";
 import SortDropdown from "./SortDropdown";
 import MobileFiltersDrawer from "./MobileFiltersDrawer";
 
-export default function FilterBar({
+function FilterBar({
   availability,
   priceRange,
   priceStats,
@@ -22,11 +23,14 @@ export default function FilterBar({
 }) {
   const hasPrice = priceRange.from !== "" || priceRange.to !== "";
 
+  const productLabel = useMemo(
+    () => `${totalFiltered} product${totalFiltered !== 1 ? "s" : ""}`,
+    [totalFiltered],
+  );
+
   return (
     <>
-      {/* ── Desktop / Large Tablet ───────────────────────────────────── */}
       <div className="hidden lg:flex lg:items-center lg:justify-between lg:gap-6">
-        {/* left: filters */}
         <div className="flex flex-wrap items-center gap-2">
           <span className="text-xs font-semibold uppercase tracking-[0.18em] text-secondary font-poppins!">
             Filter:
@@ -61,21 +65,19 @@ export default function FilterBar({
           </FilterPopover>
         </div>
 
-        {/* right: sort + count */}
         <div className="flex items-center gap-4">
           <SortDropdown value={sortBy} onChange={onUpdateSort} />
 
           <span className="text-sm text-secondary font-poppins!">
-            {totalFiltered} product{totalFiltered !== 1 ? "s" : ""}
+            {productLabel}
           </span>
         </div>
       </div>
 
-      {/* ── Mobile / Tablet ──────────────────────────────────────────── */}
       <div className="lg:hidden space-y-3">
         <div className="flex items-center justify-between gap-3">
           <span className="text-sm text-secondary font-poppins!">
-            {totalFiltered} product{totalFiltered !== 1 ? "s" : ""}
+            {productLabel}
           </span>
 
           <MobileFiltersDrawer
@@ -98,3 +100,5 @@ export default function FilterBar({
     </>
   );
 }
+
+export default memo(FilterBar);

@@ -1,35 +1,38 @@
 "use client";
 
-import { useState, useRef, useEffect, useCallback } from "react";
+import { memo, useState, useRef, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ChevronDown } from "lucide-react";
 
-export default function FilterPopover({
-  label,
-  isActive = false,
-  children,
-  align = "left",
-}) {
+function FilterPopover({ label, isActive = false, children, align = "left" }) {
   const [open, setOpen] = useState(false);
   const ref = useRef(null);
 
-  const close = useCallback(() => setOpen(false), []);
+  const close = useCallback(() => {
+    setOpen(false);
+  }, []);
+
+  const toggleOpen = useCallback(() => {
+    setOpen((prev) => !prev);
+  }, []);
 
   useEffect(() => {
-    const handleClickOutside = (e) => {
-      if (ref.current && !ref.current.contains(e.target)) {
+    if (!open) return;
+
+    const handleClickOutside = (event) => {
+      if (ref.current && !ref.current.contains(event.target)) {
         close();
       }
     };
 
-    const handleEscape = (e) => {
-      if (e.key === "Escape") close();
+    const handleEscape = (event) => {
+      if (event.key === "Escape") {
+        close();
+      }
     };
 
-    if (open) {
-      document.addEventListener("mousedown", handleClickOutside);
-      document.addEventListener("keydown", handleEscape);
-    }
+    document.addEventListener("mousedown", handleClickOutside);
+    document.addEventListener("keydown", handleEscape);
 
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
@@ -40,7 +43,8 @@ export default function FilterPopover({
   return (
     <div ref={ref} className="relative">
       <button
-        onClick={() => setOpen((prev) => !prev)}
+        type="button"
+        onClick={toggleOpen}
         aria-expanded={open}
         className={`inline-flex items-center gap-1.5 rounded-full border px-4 py-2 text-sm font-medium transition-all duration-200 font-poppins! ${
           isActive
@@ -49,10 +53,13 @@ export default function FilterPopover({
         }`}
       >
         {label}
+
         <ChevronDown
           size={14}
           strokeWidth={2}
-          className={`transition-transform duration-200 ${open ? "rotate-180" : ""}`}
+          className={`transition-transform duration-200 ${
+            open ? "rotate-180" : ""
+          }`}
         />
       </button>
 
@@ -74,3 +81,5 @@ export default function FilterPopover({
     </div>
   );
 }
+
+export default memo(FilterPopover);

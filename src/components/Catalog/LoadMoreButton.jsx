@@ -1,5 +1,6 @@
 "use client";
 
+import { memo, useCallback, useMemo } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
 function buildPages(currentPage, totalPages) {
@@ -24,47 +25,64 @@ function buildPages(currentPage, totalPages) {
   return pages;
 }
 
-export default function LoadMoreButton({
+function LoadMoreButton({
   currentPage,
   totalPages,
   total,
   pageSize,
   onPageChange,
 }) {
-  if (totalPages <= 1) return null;
+  const pages = useMemo(
+    () => buildPages(currentPage, totalPages),
+    [currentPage, totalPages],
+  );
 
-  const pages = buildPages(currentPage, totalPages);
-  const rangeStart = total === 0 ? 0 : (currentPage - 1) * pageSize + 1;
-  const rangeEnd = Math.min(currentPage * pageSize, total);
+  const rangeStart = useMemo(() => {
+    if (total === 0) return 0;
+    return (currentPage - 1) * pageSize + 1;
+  }, [currentPage, pageSize, total]);
 
-  const handlePaginationChange = (page) => {
-    if (page < 1 || page > totalPages || page === currentPage) return;
+  const rangeEnd = useMemo(
+    () => Math.min(currentPage * pageSize, total),
+    [currentPage, pageSize, total],
+  );
 
-    window.scrollTo({
-      top: 0,
-      left: 0,
-      behavior: "auto",
-    });
+  const progressWidth = useMemo(
+    () => `${Math.min((currentPage / totalPages) * 100, 100)}%`,
+    [currentPage, totalPages],
+  );
 
-    onPageChange(page);
+  const handlePaginationChange = useCallback(
+    (page) => {
+      if (page < 1 || page > totalPages || page === currentPage) return;
 
-    requestAnimationFrame(() => {
       window.scrollTo({
         top: 0,
         left: 0,
         behavior: "auto",
       });
-    });
-  };
+
+      onPageChange(page);
+
+      requestAnimationFrame(() => {
+        window.scrollTo({
+          top: 0,
+          left: 0,
+          behavior: "auto",
+        });
+      });
+    },
+    [currentPage, totalPages, onPageChange],
+  );
+
+  if (totalPages <= 1) return null;
 
   return (
     <div className="flex flex-col items-center gap-4 pt-10">
       <div className="h-1 w-40 overflow-hidden rounded-full bg-gray-100">
         <div
           className="h-full rounded-full bg-main transition-all duration-500"
-          style={{
-            width: `${Math.min((currentPage / totalPages) * 100, 100)}%`,
-          }}
+          style={{ width: progressWidth }}
         />
       </div>
 
@@ -130,3 +148,5 @@ export default function LoadMoreButton({
     </div>
   );
 }
+
+export default memo(LoadMoreButton);

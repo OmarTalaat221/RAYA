@@ -29,8 +29,8 @@ const contactDetails = [
   {
     icon: Mail,
     label: "Email Us",
-    value: "care@rdspharma.com",
-    href: "mailto:care@rdspharma.com",
+    value: "Rdspharma.online@gmail.com",
+    href: "mailto:Rdspharma.online@gmail.com",
   },
 ];
 

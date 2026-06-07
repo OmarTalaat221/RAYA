@@ -1,14 +1,35 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { memo, useMemo, useState, useCallback } from "react";
 import { ConfigProvider, Drawer } from "antd";
 import { SlidersHorizontal, X } from "lucide-react";
 
 import AvailabilityFilter from "./AvailabilityFilter";
 import PriceFilter from "./PriceFilter";
 
-export default function MobileFiltersDrawer({
-  availability,
+const drawerTheme = {
+  token: {
+    colorPrimary: "#68bc52",
+    borderRadius: 16,
+    fontFamily: "Poppins, sans-serif",
+    colorBgElevated: "#ffffff",
+    colorText: "#2d2d2d",
+    boxShadowSecondary: "0 18px 40px rgba(15, 23, 42, 0.12)",
+  },
+};
+
+const drawerStyles = {
+  header: {
+    padding: "18px 20px",
+    borderBottom: "1px solid rgba(0,0,0,0.06)",
+  },
+  body: {
+    padding: "20px",
+  },
+};
+
+function MobileFiltersDrawer({
+  availability = [],
   priceRange,
   priceStats,
   availabilityCounts,
@@ -21,33 +42,38 @@ export default function MobileFiltersDrawer({
   const [open, setOpen] = useState(false);
 
   const hasPrice = priceRange.from !== "" || priceRange.to !== "";
+
   const activeCount = useMemo(() => {
     let count = 0;
-    if (availability.length > 0) count += availability.length;
-    if (hasPrice) count += 1;
+
+    if (availability.length > 0) {
+      count += availability.length;
+    }
+
+    if (hasPrice) {
+      count += 1;
+    }
+
     return count;
   }, [availability.length, hasPrice]);
 
   const hasActiveFilters = activeCount > 0;
 
-  const handleResetAll = () => {
+  const openDrawer = useCallback(() => {
+    setOpen(true);
+  }, []);
+
+  const closeDrawer = useCallback(() => {
+    setOpen(false);
+  }, []);
+
+  const handleResetAll = useCallback(() => {
     onResetAvailability();
     onResetPrice();
-  };
+  }, [onResetAvailability, onResetPrice]);
 
   return (
-    <ConfigProvider
-      theme={{
-        token: {
-          colorPrimary: "#68bc52",
-          borderRadius: 16,
-          fontFamily: "Poppins, sans-serif",
-          colorBgElevated: "#ffffff",
-          colorText: "#2d2d2d",
-          boxShadowSecondary: "0 18px 40px rgba(15, 23, 42, 0.12)",
-        },
-      }}
-    >
+    <ConfigProvider theme={drawerTheme}>
       <>
         <style>{`
           .catalog-filters-drawer .ant-drawer-content {
@@ -68,7 +94,7 @@ export default function MobileFiltersDrawer({
 
         <button
           type="button"
-          onClick={() => setOpen(true)}
+          onClick={openDrawer}
           className={`inline-flex h-11 items-center gap-2 rounded-full border px-4 text-sm font-medium transition-all duration-300 font-poppins! ${
             hasActiveFilters
               ? "border-main/30 bg-main/5 text-main"
@@ -87,9 +113,9 @@ export default function MobileFiltersDrawer({
 
         <Drawer
           open={open}
-          onClose={() => setOpen(false)}
+          onClose={closeDrawer}
           placement="right"
-          size="min(100vw, 420px)"
+          width="min(100vw, 420px)"
           destroyOnClose
           maskClosable
           rootClassName="catalog-filters-drawer"
@@ -99,15 +125,7 @@ export default function MobileFiltersDrawer({
               Filter Products
             </span>
           }
-          styles={{
-            header: {
-              padding: "18px 20px",
-              borderBottom: "1px solid rgba(0,0,0,0.06)",
-            },
-            body: {
-              padding: "20px",
-            },
-          }}
+          styles={drawerStyles}
         >
           <div className="flex h-full flex-col">
             <div className="space-y-4">
@@ -117,7 +135,7 @@ export default function MobileFiltersDrawer({
                   counts={availabilityCounts}
                   onToggle={onToggleAvailability}
                   onReset={onResetAvailability}
-                  onClose={() => setOpen(false)}
+                  onClose={closeDrawer}
                 />
               </div>
 
@@ -127,7 +145,7 @@ export default function MobileFiltersDrawer({
                   priceStats={priceStats}
                   onUpdate={onUpdatePrice}
                   onReset={onResetPrice}
-                  onClose={() => setOpen(false)}
+                  onClose={closeDrawer}
                   currency={currency}
                 />
               </div>
@@ -146,7 +164,7 @@ export default function MobileFiltersDrawer({
 
                 <button
                   type="button"
-                  onClick={() => setOpen(false)}
+                  onClick={closeDrawer}
                   className="inline-flex h-11 items-center justify-center rounded-full bg-main px-4 text-sm font-semibold text-white shadow-[0_10px_24px_rgba(104,188,82,0.22)] transition-all duration-300 hover:bg-[#5fb14a] font-poppins!"
                 >
                   Done
@@ -159,3 +177,5 @@ export default function MobileFiltersDrawer({
     </ConfigProvider>
   );
 }
+
+export default memo(MobileFiltersDrawer);

@@ -1,16 +1,28 @@
 "use client";
 
-import { useState, useCallback, memo } from "react";
+import { useCallback, memo } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import Link from "next/link";
 import Image from "next/image";
 import { useTranslations } from "next-intl";
 import SaleRibbon from "./SaleRibbon";
-import { addToCart, removeFromCart } from "../../store/cartSlice";
+import { addToCart } from "../../store/cartSlice";
 
-/* ═══════════════════════════════════════════════
-   Cart Button
-   ═══════════════════════════════════════════════ */
+const IMAGE_HOST = "https://www.rdspharma.online";
+
+function normalizeImage(src) {
+  if (!src) return null;
+
+  if (src.startsWith("http://") || src.startsWith("https://")) {
+    return src;
+  }
+
+  if (src.startsWith("/")) {
+    return `${IMAGE_HOST}${src}`;
+  }
+
+  return `${IMAGE_HOST}/${src}`;
+}
 
 const CartToggleButton = memo(function CartToggleButton({
   isInCart,
@@ -20,11 +32,12 @@ const CartToggleButton = memo(function CartToggleButton({
   const t = useTranslations("catalog");
 
   const handleClick = useCallback(
-    (e) => {
-      e.preventDefault();
-      e.stopPropagation();
+    (event) => {
+      event.preventDefault();
+      event.stopPropagation();
 
       if (isLoading || isInCart) return;
+
       onAdd();
     },
     [isInCart, isLoading, onAdd],
@@ -85,11 +98,7 @@ const CartToggleButton = memo(function CartToggleButton({
 
 CartToggleButton.displayName = "CartToggleButton";
 
-/* ═══════════════════════════════════════════════
-   Main ProductCard
-   ═══════════════════════════════════════════════ */
-
-export default function ProductCard({
+function ProductCard({
   id,
   title,
   href,
@@ -105,111 +114,94 @@ export default function ProductCard({
   inCart = false,
 }) {
   const dispatch = useDispatch();
-  const [isHovered, setIsHovered] = useState(false);
-  const [localLoading, setLocalLoading] = useState(false);
 
-  /* ═══════════════════════════════════════════════
-     Cart state
-     ═══════════════════════════════════════════════ */
-  const cartItems = useSelector((state) => state.cart.items);
+  const productKey = id === undefined || id === null ? "" : String(id);
+
   const isCartInitialized = useSelector((state) => state.cart.initialized);
 
-  const isInCart = isCartInitialized
-    ? cartItems.some((item) => item.id === id)
-    : inCart;
+  const isInCartFromStore = useSelector((state) =>
+    productKey ? Boolean(state.cart.itemIds?.[productKey]) : false,
+  );
 
-  /* ── Actions ── */
-  const handleAdd = useCallback(async () => {
-    if (!id) return;
-    setLocalLoading(true);
-    try {
-      await dispatch(addToCart({ productId: id, quantity: 1 })).unwrap();
-    } catch {
-      /* error handled by Redux */
-    } finally {
-      setLocalLoading(false);
-    }
-  }, [id, dispatch]);
+  const isLoading = useSelector(
+    (state) =>
+      Boolean(state.cart.actionLoading) &&
+      String(state.cart.actionProductId) === productKey,
+  );
 
-  /* ── Image ── */
-  const showBackImage = canHover && backImage && isHovered;
+  const isInCart = isCartInitialized ? isInCartFromStore : inCart;
 
-  const normalizedFrontImage = frontImage?.startsWith("http")||frontImage.startsWith("https")
-    ? frontImage
-    : `https://www.rdspharma.online${frontImage}`;
+  const normalizedFrontImage = normalizeImage(frontImage);
+  const normalizedBackImage =
+    canHover && backImage ? normalizeImage(backImage) : null;
 
-  const normalizedBackImage = backImage
-    ? backImage.startsWith("http")||backImage.startsWith("https")
-      ? backImage
-      : `https://www.rdspharma.online${backImage}`
-    : null;
+  const productHref = href || "/catalog";
+  const safeTitle = title || "Product";
+  const safeOldPrice = Number(oldPrice) || 0;
+  const safeNewPrice = Number(newPrice) || 0;
+  const showOldPrice = safeOldPrice > safeNewPrice;
+
+  const handleAdd = useCallback(() => {
+    if (!id || isLoading || isInCart) return;
+
+    dispatch(addToCart({ productId: id, quantity: 1 }));
+  }, [id, isLoading, isInCart, dispatch]);
 
   return (
-    <article
-      className="h-full w-full transition-transform duration-300 hover:-translate-y-1"
-      onMouseEnter={() => canHover && setIsHovered(true)}
-      onMouseLeave={() => canHover && setIsHovered(false)}
-    >
+    <article className="h-full w-full transition-transform duration-300 hover:-translate-y-1">
       <div className="group flex h-full flex-col overflow-hidden rounded-[22px] bg-white shadow-[0_8px_30px_rgba(0,0,0,0.04)] hover:shadow-[0_16px_40px_rgba(0,0,0,0.08)]">
-        {/* ── Image (clickable → PDP) ── */}
         <Link
-          href={href || "/catalog"}
+          href={productHref}
           className="relative block w-full overflow-hidden bg-white"
           style={{ aspectRatio: "2.5 / 2" }}
         >
           {isOnSale && <SaleRibbon discountPercentage={discountPercentage} />}
 
-          {/* Front */}
           <div
             className={`absolute inset-0 transition-all duration-300 ${
-              showBackImage ? "scale-[1.04] opacity-0" : "opacity-100"
+              normalizedBackImage
+                ? "group-hover:scale-[1.04] group-hover:opacity-0"
+                : ""
             }`}
           >
-            <Image
-              src={normalizedFrontImage}
-              alt={title}
-              fill
-              sizes="(max-width:768px) 50vw, 25vw"
-              className="object-contain p-4"
-              priority={priority}
-              loading="eager"
-            />
+            {normalizedFrontImage && (
+              <Image
+                src={normalizedFrontImage}
+                alt={safeTitle}
+                fill
+                sizes="(max-width: 640px) 100vw, (max-width: 768px) 50vw, (max-width: 1024px) 33vw, 25vw"
+                className="object-contain p-4"
+                priority={priority}
+              />
+            )}
           </div>
 
-          {/* Back */}
           {normalizedBackImage && (
-            <div
-              className={`absolute inset-0 transition-all duration-300 ${
-                showBackImage ? "opacity-100" : "scale-[1.04] opacity-0"
-              }`}
-            >
+            <div className="absolute inset-0 scale-[1.04] opacity-0 transition-all duration-300 group-hover:scale-100 group-hover:opacity-100">
               <Image
                 src={normalizedBackImage}
-                alt={`${title} back`}
+                alt={`${safeTitle} back`}
                 fill
-                sizes="(max-width:768px) 50vw, 25vw"
+                sizes="(max-width: 640px) 100vw, (max-width: 768px) 50vw, (max-width: 1024px) 33vw, 25vw"
                 className="object-contain p-4"
-                loading="lazy"
               />
             </div>
           )}
         </Link>
 
-        {/* ── Body ── */}
         <div className="flex flex-1 flex-col items-center px-4 py-5 text-center">
-          <Link href={href || "/catalog"}>
+          <Link href={productHref}>
             <h3 className="min-h-[3.75rem] line-clamp-3 text-sm font-semibold leading-5 text-soft-black transition-colors duration-200 hover:text-main">
-              {title}
+              {safeTitle}
             </h3>
           </Link>
 
           <div className="my-3 h-px w-8 bg-[#e4e1db]" />
 
-          {/* Price */}
           <div className="flex items-center gap-2">
-            {oldPrice > newPrice && (
+            {showOldPrice && (
               <span className="text-xs text-secondary line-through">
-                {currency} {Number(oldPrice).toFixed(2)}
+                {currency} {safeOldPrice.toFixed(2)}
               </span>
             )}
 
@@ -218,15 +210,14 @@ export default function ProductCard({
                 isOnSale ? "text-red-500" : "text-soft-black"
               }`}
             >
-              {currency} {Number(newPrice).toFixed(2)}
+              {currency} {safeNewPrice.toFixed(2)}
             </span>
           </div>
 
-          {/* ── Cart Button ── */}
           <div className="mt-4 w-full">
             <CartToggleButton
               isInCart={isInCart}
-              isLoading={localLoading}
+              isLoading={isLoading}
               onAdd={handleAdd}
             />
           </div>
@@ -235,3 +226,5 @@ export default function ProductCard({
     </article>
   );
 }
+
+export default memo(ProductCard);

@@ -1,18 +1,27 @@
 "use client";
 
+import { memo, useMemo, useCallback } from "react";
 import { Check } from "lucide-react";
 
-export default function AvailabilityFilter({
-  availability,
-  counts,
+function AvailabilityFilter({
+  availability = [],
+  counts = { inStock: 0, outOfStock: 0 },
   onToggle,
   onReset,
   onClose,
 }) {
-  const options = [
-    { key: "in_stock", label: "In stock", count: counts.inStock },
-    { key: "out_of_stock", label: "Out of stock", count: counts.outOfStock },
-  ];
+  const options = useMemo(
+    () => [
+      { key: "in_stock", label: "In stock", count: counts.inStock },
+      { key: "out_of_stock", label: "Out of stock", count: counts.outOfStock },
+    ],
+    [counts.inStock, counts.outOfStock],
+  );
+
+  const handleReset = useCallback(() => {
+    onReset();
+    onClose?.();
+  }, [onReset, onClose]);
 
   return (
     <div>
@@ -24,10 +33,7 @@ export default function AvailabilityFilter({
         {availability.length > 0 && (
           <button
             type="button"
-            onClick={() => {
-              onReset();
-              onClose?.();
-            }}
+            onClick={handleReset}
             className="text-xs font-medium text-main underline underline-offset-2 transition-colors hover:text-main/80 font-poppins!"
           >
             Reset
@@ -58,10 +64,6 @@ export default function AvailabilityFilter({
                 {option.label}
               </span>
 
-              <span className="text-xs text-secondary font-poppins!">
-                ({option.count})
-              </span>
-
               <input
                 type="checkbox"
                 checked={isChecked}
@@ -75,3 +77,5 @@ export default function AvailabilityFilter({
     </div>
   );
 }
+
+export default memo(AvailabilityFilter);

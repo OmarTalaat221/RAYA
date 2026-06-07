@@ -7,7 +7,7 @@ export default function CatalogPage({
   title = "All Products",
   subtitle = "Explore our carefully curated collection of premium skincare, wellness, and pharmacy essentials.",
   currency = "AED",
-  source = null, // "all" | "category:slug" | null
+  source = null,
 }) {
   return (
     <section className="w-full bg-[#f9f9f8] pb-12 pt-8 sm:pb-16 sm:pt-10 md:pb-20 md:pt-12">

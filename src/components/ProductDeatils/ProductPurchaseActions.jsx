@@ -424,7 +424,6 @@ export default function ProductPurchaseActions({
           {getButtonText()}
         </button>
       </div>
-
       {/* ── buy now (prominent) ── */}
       <button
         type="button"
@@ -435,21 +434,19 @@ export default function ProductPurchaseActions({
         {/* <BoltIcon /> */}
         <span>{t("actions.buyNow")}</span>
       </button>
-
       {/* ── cash on delivery (UAE only) ── */}
       {/* {isUAE
-       && */}(
-        <button
-          type="button"
-          onClick={handleCashOnDelivery}
-          disabled={isOutOfStock || isSubmitting || actionLoading}
-          className="mt-2.5 inline-flex h-12 w-full items-center justify-center gap-2 rounded-2xl border border-black/10 bg-white px-6 text-sm font-semibold text-soft-black transition hover:border-main hover:text-main disabled:cursor-not-allowed disabled:opacity-50"
-        >
-          <TruckIcon />
-          <span>{t("actions.cashOnDelivery")}</span>
-        </button>
-      )
+       && */}
 
+      <button
+        type="button"
+        onClick={handleCashOnDelivery}
+        disabled={isOutOfStock || isSubmitting || actionLoading}
+        className="mt-2.5 inline-flex h-12 w-full items-center justify-center gap-2 rounded-2xl border border-black/10 bg-white px-6 text-sm font-semibold text-soft-black transition hover:border-main hover:text-main disabled:cursor-not-allowed disabled:opacity-50"
+      >
+        <TruckIcon />
+        <span>{t("actions.cashOnDelivery")}</span>
+      </button>
       {/* ── secure note ── */}
       <div className="mt-4 flex items-start gap-3 rounded-2xl border border-main/10 bg-white p-4">
         <div className="mt-0.5 shrink-0">
@@ -464,7 +461,6 @@ export default function ProductPurchaseActions({
           </p>
         </div>
       </div>
-
       {/* ── share row ── */}
       <div className="mt-6 flex flex-wrap items-center justify-between gap-3 border-t border-black/5 pt-5">
         <p className="text-sm text-secondary">{t("share.title")}</p>
