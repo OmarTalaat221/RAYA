@@ -152,7 +152,7 @@ export default function ProductPurchaseActions({
   } = useSelector((state) => state.cart);
 
   const geoCountry = useSelector((state) => state.geo?.country);
-  //const isUAE = isUAECountry(geoCountry);
+  const isUAE = isUAECountry(geoCountry);
 
   const [quantity, setQuantity] = useState(1);
   const [copied, setCopied] = useState(false);
@@ -404,11 +404,10 @@ export default function ProductPurchaseActions({
           type="button"
           disabled={disableButton}
           onClick={handleCartToggle}
-          className={`inline-flex h-12 items-center justify-center rounded-2xl px-6 text-sm font-semibold transition ${
-            isInCart
+          className={`inline-flex h-12 items-center justify-center rounded-2xl px-6 text-sm font-semibold transition ${isInCart
               ? "bg-red-50 text-red-600 hover:bg-red-100 disabled:opacity-50"
               : "bg-main text-white hover:brightness-95 disabled:cursor-not-allowed disabled:opacity-50"
-          }`}
+            }`}
         >
           {isInCart && !isSubmitting && (
             <svg
@@ -435,18 +434,17 @@ export default function ProductPurchaseActions({
         <span>{t("actions.buyNow")}</span>
       </button>
       {/* ── cash on delivery (UAE only) ── */}
-      {/* {isUAE
-       && */}
-
-      <button
-        type="button"
-        onClick={handleCashOnDelivery}
-        disabled={isOutOfStock || isSubmitting || actionLoading}
-        className="mt-2.5 inline-flex h-12 w-full items-center justify-center gap-2 rounded-2xl border border-black/10 bg-white px-6 text-sm font-semibold text-soft-black transition hover:border-main hover:text-main disabled:cursor-not-allowed disabled:opacity-50"
-      >
-        <TruckIcon />
-        <span>{t("actions.cashOnDelivery")}</span>
-      </button>
+      {true && (
+        <button
+          type="button"
+          onClick={handleCashOnDelivery}
+          disabled={isOutOfStock || isSubmitting || actionLoading}
+          className="mt-2.5 inline-flex h-12 w-full items-center justify-center gap-2 rounded-2xl border border-black/10 bg-white px-6 text-sm font-semibold text-soft-black transition hover:border-main hover:text-main disabled:cursor-not-allowed disabled:opacity-50"
+        >
+          <TruckIcon />
+          <span>{t("actions.cashOnDelivery")}</span>
+        </button>
+      )}
       {/* ── secure note ── */}
       <div className="mt-4 flex items-start gap-3 rounded-2xl border border-main/10 bg-white p-4">
         <div className="mt-0.5 shrink-0">

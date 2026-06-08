@@ -1,17 +1,17 @@
 {
   "header": {
-    "topBar": "UAE Delivery Free Over 150AED Within 2Days | GCC Free over 600AED Within 4Days",
-    "topBarMobile": "🚚 UAE Free >150AED | GCC Free >600AED",
+    "topBar": "UAE Delivery Free Over 400AED | Global Shipping Available",
+    "topBarMobile": "🚚 UAE Free >400AED | Global Shipping",
     "search": {
       "placeholder": "Search products..."
     },
     "sidebar": {
       "about": "Your trusted pharmacy partner for quality products and professional services.",
-      "address": "Shop 2, Salim Al Owis Building, Sharjah, UAE",
-      "email": "info@rdspharma.com"
+      "address": "Dubai, United Arab Emirates",
+      "email": "Rdspharma.online@gmail.com"
     },
     "contact": {
-      "phone": "+971 6 535 3772"
+      "phone": "+971501234567"
     },
     "nav": {
       "home": "Home",
@@ -124,6 +124,7 @@
     "removeItem": "Remove",
     "quantity": "Quantity",
     "item": "item",
+    "invalid": "Invalid coupon code.",
     "items": "items",
     "drawer": {
       "title": "Your Cart"
@@ -145,7 +146,8 @@
       "placeholder": "Coupon code",
       "apply": "Apply",
       "applied": "{value}% off applied",
-      "remove": "Remove coupon"
+      "remove": "Remove coupon",
+      "invalid": "Invalid coupon code."
     },
     "discount": "Discount ({value}%)",
     "freeShippingIncluded": "Free shipping included • Taxes calculated at checkout",
@@ -247,7 +249,8 @@
         "placeholder": "Coupon code",
         "apply": "Apply",
         "applied": "Coupon applied",
-        "remove": "Remove coupon"
+        "remove": "Remove coupon",
+        "invalid": "Invalid coupon code."
       }
     },
     "payment": {

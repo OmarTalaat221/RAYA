@@ -92,8 +92,7 @@ const CartDrawer = memo(function CartDrawer() {
 
   const isEmpty = items.length === 0;
 
-  const currency =
-    items.length > 0 && items[0]?.currency ? items[0].currency : "AED";
+  const currency = useSelector((s) => s.cart.currency) || "AED";
 
   return (
     <AnimatePresence mode="wait">

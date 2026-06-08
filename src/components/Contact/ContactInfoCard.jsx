@@ -1,6 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
+import { useSelector } from "react-redux";
 import { MapPin, Phone, Mail, Clock, ExternalLink } from "lucide-react";
 
 const cardVariant = {
@@ -12,35 +13,37 @@ const cardVariant = {
   },
 };
 
-const contactDetails = [
-  {
-    icon: MapPin,
-    label: "Visit Us",
-    value: "Shop 2, Salim Al Owis Building, Sharjah, UAE",
-    href: "https://maps.google.com/?q=Al+Reaya+Al+Owla+Medicine+Sharjah",
-    external: true,
-  },
-  {
-    icon: Phone,
-    label: "Call Us",
-    value: "+971 6 535 3772",
-    href: "tel:+97165353772",
-  },
-  {
-    icon: Mail,
-    label: "Email Us",
-    value: "Rdspharma.online@gmail.com",
-    href: "mailto:Rdspharma.online@gmail.com",
-  },
-];
-
-const businessHours = [
-  { day: "Monday – Friday", time: "9:00 AM – 9:00 PM" },
-  { day: "Saturday", time: "10:00 AM – 8:00 PM" },
-  { day: "Sunday", time: "10:00 AM – 6:00 PM" },
-];
-
 export default function ContactInfoCard() {
+  const siteInfo = useSelector((s) => s.site.data);
+
+  const contactDetails = [
+    {
+      icon: MapPin,
+      label: "Visit Us",
+      value: siteInfo.address || "Dubai, United Arab Emirates",
+      href: `https://maps.google.com/?q=${encodeURIComponent(siteInfo.address || "Dubai, United Arab Emirates")}`,
+      external: true,
+    },
+    {
+      icon: Phone,
+      label: "Call Us",
+      value: siteInfo.phone || "+971 50 123 4567",
+      href: `tel:${(siteInfo.phone || "+971501234567").replace(/\s+/g, "")}`,
+    },
+    {
+      icon: Mail,
+      label: "Email Us",
+      value: siteInfo.email || "Rdspharma.online@gmail.com",
+      href: `mailto:${siteInfo.email || "Rdspharma.online@gmail.com"}`,
+    },
+  ];
+
+  const businessHours = [
+    { day: "Monday – Friday", time: "9:00 AM – 9:00 PM" },
+    { day: "Saturday", time: "10:00 AM – 8:00 PM" },
+    { day: "Sunday", time: "10:00 AM – 6:00 PM" },
+  ];
+
   return (
     <motion.div
       className="h-full rounded-2xl bg-soft-black p-6 text-white sm:p-8"
@@ -51,7 +54,7 @@ export default function ContactInfoCard() {
     >
       {/* Store name */}
       <h2 className="mb-1 font-oswald! text-xl font-bold uppercase tracking-wide">
-        Al Reaya Al Owla Medicine
+        {siteInfo.siteName || "RDS Pharma"}
       </h2>
 
       <p className="mb-8 font-poppins! text-sm text-white/60">

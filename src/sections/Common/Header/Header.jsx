@@ -13,7 +13,9 @@ import {
 } from "react";
 import { usePathname } from "next/navigation";
 import { useSelector, useDispatch } from "react-redux";
-import { toggleCart, fetchCart } from "../../../store/cartSlice";
+import { toggleCart, fetchCart, setShippingCost, setCurrency, setFreeShippingThreshold, reapplyCouponSilently } from "../../../store/cartSlice";
+import { fetchSiteInfo, selectLocalizedSiteInfo, selectShippingPrice, selectTopBarMessage, selectFreeShippingThreshold } from "../../../store/siteSlice";
+import { fetchGeoInfo } from "../../../store/geoSlice";
 import { useLocale, useTranslations } from "next-intl";
 
 const SearchOverlay = dynamic(
@@ -49,10 +51,13 @@ const Logo = memo(function Logo({ size = "default" }) {
     small: { className: "w-20 h-14! sm:w-24 sm:h-18!" },
   };
 
+  const locale = useLocale();
+  const { siteName } = useSelector((s) => selectLocalizedSiteInfo(s, locale));
+
   return (
     <img
       src="https://res.cloudinary.com/dbvh5i83q/image/upload/v1776082859/rds_logo_xpmbfn.webp"
-      alt="RDS Pharma"
+      alt={siteName}
       className={`${sizes[size].className} object-contain`}
       loading="eager"
       fetchPriority="high"
@@ -160,10 +165,9 @@ const NavMenu = memo(function NavMenu({ pathname, ariaLabel }) {
                   relative z-10 inline-flex items-center
                   px-4 py-2 text-sm font-medium tracking-wide
                   whitespace-nowrap transition-colors duration-200
-                  ${
-                    isActive || isHovered
-                      ? "text-main"
-                      : "text-secondary hover:text-soft-black"
+                  ${isActive || isHovered
+                    ? "text-main"
+                    : "text-secondary hover:text-soft-black"
                   }
                 `}
               >
@@ -192,10 +196,9 @@ const MobileNavLink = memo(function MobileNavLink({ item, pathname, onClick }) {
         text-sm font-medium tracking-wide
         border-b border-gray-100 last:border-none
         transition-colors duration-200
-        ${
-          isActive
-            ? "text-main bg-white"
-            : "text-soft-black hover:text-main hover:bg-white"
+        ${isActive
+          ? "text-main bg-white"
+          : "text-soft-black hover:text-main hover:bg-white"
         }
       `}
     >
@@ -249,7 +252,12 @@ const HeaderIcons = memo(function HeaderIcons({
 
 /* ─── Top Bar ─── */
 const TopBar = memo(function TopBar({ compact = false }) {
-  const t = useTranslations("header");
+  const locale = useLocale();
+  const geoCountry = useSelector((s) => s.geo.country);
+  const isUae = /^(ae|are|united arab emirates)$/i.test((geoCountry || "").trim());
+  const shippingType = isUae ? "inside" : "outside";
+
+  const dynamicMessage = useSelector((s) => selectTopBarMessage(s, locale, shippingType));
 
   return (
     <div className={`w-full bg-main ${compact ? "py-1.5" : "py-2"} px-4`}>
@@ -257,8 +265,7 @@ const TopBar = memo(function TopBar({ compact = false }) {
         className={`text-center text-white font-semibold tracking-wide leading-snug
                     ${compact ? "text-[10px] sm:text-[11px]" : "text-[11px] sm:text-xs md:text-sm"}`}
       >
-        <span className="hidden sm:inline">{t("topBar")}</span>
-        <span className="sm:hidden">{t("topBarMobile")}</span>
+        <span className="">{dynamicMessage}</span>
       </p>
     </div>
   );
@@ -274,10 +281,9 @@ const MobileMenu = memo(function MobileMenu({ visible, pathname, closeMenu }) {
       className={`
         lg:hidden overflow-hidden
         transition-all duration-300 ease-in-out
-        ${
-          visible
-            ? "max-h-screen opacity-100"
-            : "max-h-0 opacity-0 pointer-events-none"
+        ${visible
+          ? "max-h-screen opacity-100"
+          : "max-h-0 opacity-0 pointer-events-none"
         }
       `}
     >
@@ -337,7 +343,7 @@ const LanguageDropdown = memo(function LanguageDropdown() {
         });
         try {
           localStorage.setItem("rds_locale", code);
-        } catch (_) {}
+        } catch (_) { }
         window.location.reload();
       } catch (error) {
         console.error("Failed to change locale:", error);
@@ -378,10 +384,9 @@ const LanguageDropdown = memo(function LanguageDropdown() {
           shadow-[0_12px_32px_rgba(0,0,0,0.08)]
           overflow-hidden ltr:origin-top-right! rtl:origin-top-left! z-50
           transition-all duration-200 ease-out
-          ${
-            open
-              ? "opacity-100 scale-100 translate-y-0 pointer-events-auto"
-              : "opacity-0 scale-95 -translate-y-1 pointer-events-none"
+          ${open
+            ? "opacity-100 scale-100 translate-y-0 pointer-events-auto"
+            : "opacity-0 scale-95 -translate-y-1 pointer-events-none"
           }
         `}
       >
@@ -397,10 +402,9 @@ const LanguageDropdown = memo(function LanguageDropdown() {
               className={`
                 w-full flex items-center justify-between gap-3
                 px-4 py-2.5 text-sm transition-colors duration-150
-                ${
-                  isActive
-                    ? "text-main bg-main/5 font-semibold"
-                    : "text-soft-black hover:bg-[#f7f7f7]"
+                ${isActive
+                  ? "text-main bg-main/5 font-semibold"
+                  : "text-soft-black hover:bg-[#f7f7f7]"
                 }
               `}
             >
@@ -442,12 +446,47 @@ export default function Header() {
 
   const cartCount = useSelector((s) => s.cart.itemCount);
   const cartInitialized = useSelector((s) => s.cart.initialized);
+  const siteInitialized = useSelector((s) => s.site.initialized);
+  const geoInitialized = useSelector((s) => s.geo.initialized);
+  const geoCountry = useSelector((s) => s.geo.country);
+
+  const isUae = /^(ae|are|united arab emirates)$/i.test((geoCountry || "").trim());
+  const shippingType = isUae ? "inside" : "outside";
+
+  const siteShippingPrice = useSelector((s) => selectShippingPrice(s, shippingType));
+  const siteCurrency = useSelector((s) => s.site.data.targetCurrency);
+  const siteThreshold = useSelector((s) => selectFreeShippingThreshold(s));
 
   useEffect(() => {
     if (!cartInitialized) {
-      dispatch(fetchCart());
+      dispatch(fetchCart()).then((action) => {
+        if (action.meta.requestStatus === "fulfilled") {
+           dispatch(reapplyCouponSilently());
+        }
+      });
     }
-  }, [cartInitialized, dispatch]);
+    if (!siteInitialized) {
+      dispatch(fetchSiteInfo());
+    }
+    if (!geoInitialized) {
+      dispatch(fetchGeoInfo());
+    }
+
+    if (siteInitialized && geoInitialized) {
+      // Sync cart config once both are ready
+      dispatch(setShippingCost(siteShippingPrice));
+      dispatch(setCurrency(siteCurrency));
+      dispatch(setFreeShippingThreshold(siteThreshold.price));
+    }
+  }, [
+    cartInitialized,
+    siteInitialized,
+    geoInitialized,
+    siteShippingPrice,
+    siteCurrency,
+    siteThreshold,
+    dispatch,
+  ]);
 
   const [menuOpen, setMenuOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);

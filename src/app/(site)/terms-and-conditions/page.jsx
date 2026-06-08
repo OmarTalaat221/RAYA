@@ -1,7 +1,7 @@
 import { getLocale } from "next-intl/server";
 
 export const metadata = {
-  title: "Terms of Service | Al Reaya Al Owla Medicine",
+  title: "Terms of Service | RDS Pharma",
 };
 
 const content = {

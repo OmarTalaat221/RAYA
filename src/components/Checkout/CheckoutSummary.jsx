@@ -11,6 +11,7 @@ import {
   removeCoupon,
   clearCouponError,
 } from "../../store/cartSlice";
+import { selectShippingPrice } from "../../store/siteSlice";
 
 const IMAGE_BASE_URL =
   process.env.NEXT_PUBLIC_API_BASE_URL || "https://rdspharma.cloud";
@@ -148,7 +149,12 @@ const CheckoutSummary = memo(function CheckoutSummary({
   );
 
   const subtotal = toNumber(serverSummary?.subtotal ?? cartSubtotal ?? 0);
-  const shipping = toNumber(serverSummary?.shipping ?? 0);
+  const siteShippingPrice = useSelector((s) => s.cart.shippingCost);
+  const freeThreshold = useSelector((s) => s.cart.freeShippingThreshold);
+
+  const calculatedShipping = subtotal >= freeThreshold ? 0 : siteShippingPrice;
+  const shipping = toNumber(serverSummary?.shipping ?? calculatedShipping);
+
   const discount = toNumber(
     serverSummary?.discountAmount ?? serverSummary?.discount ?? 0,
   );
@@ -271,7 +277,7 @@ const CheckoutSummary = memo(function CheckoutSummary({
 
           {couponError && !coupon?.code && (
             <p className="mt-2 text-[11px] font-medium text-red-500">
-              {couponError}
+              {t("coupon.invalid")}
             </p>
           )}
         </div>

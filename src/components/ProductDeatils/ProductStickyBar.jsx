@@ -37,7 +37,7 @@ export default function ProductStickyBar({ product }) {
 
   const { items = [], initialized } = useSelector((state) => state.cart);
   const geoCountry = useSelector((state) => state.geo?.country);
-  //const isUAE = isUAECountry(geoCountry);
+  const isUAE = isUAECountry(geoCountry);
 
   const [isVisible, setIsVisible] = useState(false);
   const [isAdding, setIsAdding] = useState(false);

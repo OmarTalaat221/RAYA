@@ -1,7 +1,7 @@
 import { getLocale } from "next-intl/server";
 
 export const metadata = {
-  title: "Refund Policy | Al Reaya Al Owla Medicine",
+  title: "Refund Policy | RDS Pharma",
 };
 
 const content = {

@@ -95,7 +95,7 @@ function CheckoutCODInner() {
   const dispatch = useDispatch();
   const router = useRouter();
 
-  const { items, subtotal, initialized, loading } = useSelector(
+  const { items, subtotal, initialized, loading, shippingCost, freeShippingThreshold } = useSelector(
     (state) => state.cart,
   );
 
@@ -131,12 +131,17 @@ function CheckoutCODInner() {
       ? buyNowItem.currency || "AED"
       : items[0]?.currency || "AED";
 
+    const shippingPrice = shippingCost || 0;
+    const threshold = freeShippingThreshold || 400;
+    const qualifies = effectiveSubtotal >= threshold;
+    const shipping = qualifies ? 0 : shippingPrice;
+
     return {
       currency,
       subtotal: effectiveSubtotal,
-      shipping: 0,
+      shipping,
       discountAmount: couponDiscount,
-      total: Math.max(0, effectiveSubtotal - couponDiscount),
+      total: Math.max(0, effectiveSubtotal + shipping - couponDiscount),
       orderItems: [],
       coupon,
     };
@@ -147,6 +152,8 @@ function CheckoutCODInner() {
     buyNowItem,
     items,
     effectiveSubtotal,
+    shippingCost,
+    freeShippingThreshold,
   ]);
 
   const effectiveItems = isBuyNowMode

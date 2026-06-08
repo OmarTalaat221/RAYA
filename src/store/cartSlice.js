@@ -8,7 +8,7 @@ import {
 import { applyCouponApi } from "../services/checkout.service";
 import { adaptCartResponse } from "../components/Cart/cart.adapter";
 
-const FREE_SHIPPING_THRESHOLD = 250;
+const FREE_SHIPPING_THRESHOLD = 400;
 const COUPON_STORAGE_KEY = "rds-coupon";
 
 function persistCoupon(coupon) {
@@ -56,12 +56,14 @@ const recalculate = (state) => {
   state.itemCount = state.items.reduce((sum, item) => sum + item.quantity, 0);
   state.freeShippingRemaining = Math.max(
     0,
-    FREE_SHIPPING_THRESHOLD - state.subtotal
+    state.freeShippingThreshold - state.subtotal
   );
-  state.qualifiesForFreeShipping = state.subtotal >= FREE_SHIPPING_THRESHOLD;
+  state.qualifiesForFreeShipping = state.subtotal >= state.freeShippingThreshold;
 
   const discount = Number(state.couponDiscount || 0);
-  state.total = Math.max(0, state.subtotal - discount);
+  const currentShipping = state.qualifiesForFreeShipping ? 0 : (state.shippingCost || 0);
+  
+  state.total = Math.max(0, state.subtotal + currentShipping - discount);
 };
 
 const applyCartData = (state, cartData = {}) => {
@@ -227,9 +229,9 @@ const initialState = {
   subtotal: 0,
   apiSubtotal: null,
   itemCount: 0,
-  freeShippingRemaining: FREE_SHIPPING_THRESHOLD,
+  freeShippingRemaining: 400,
   qualifiesForFreeShipping: false,
-  freeShippingThreshold: FREE_SHIPPING_THRESHOLD,
+  freeShippingThreshold: 400,
   loading: false,
   actionLoading: false,
   actionProductId: null,
@@ -239,6 +241,8 @@ const initialState = {
   couponDiscount: 0,
   couponLoading: false,
   couponError: null,
+  shippingCost: 20, 
+  currency: "AED",
   total: 0,
 };
 
@@ -266,6 +270,17 @@ const cartSlice = createSlice({
       state.couponDiscount = 0;
       state.couponError = null;
       persistCoupon(null);
+      recalculate(state);
+    },
+    setShippingCost(state, action) {
+      state.shippingCost = Number(action.payload || 0);
+      recalculate(state);
+    },
+    setCurrency(state, action) {
+      state.currency = action.payload || "AED";
+    },
+    setFreeShippingThreshold(state, action) {
+      state.freeShippingThreshold = Number(action.payload || 400);
       recalculate(state);
     },
   },
@@ -407,6 +422,11 @@ export const {
   clearError,
   clearCouponError,
   removeCoupon,
+  setShippingCost,
+  setCurrency,
+  setFreeShippingThreshold,
 } = cartSlice.actions;
+
+export { reapplyCouponSilently };
 
 export default cartSlice.reducer;

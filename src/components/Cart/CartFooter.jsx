@@ -165,7 +165,7 @@ const CartFooter = memo(function CartFooter({
 
         {couponError && !hasCoupon && (
           <p className="font-poppins! mt-2 text-[11.5px] font-medium text-red-500">
-            {couponError}
+            {t("coupon.invalid")}
           </p>
         )}
       </div>
@@ -176,9 +176,8 @@ const CartFooter = memo(function CartFooter({
           {t("subtotal")}
         </span>
         <span
-          className={`font-poppins! text-[14px] font-semibold sm:text-[15px] ${
-            hasDiscount ? "text-gray-400 line-through" : "text-soft-black"
-          }`}
+          className={`font-poppins! text-[14px] font-semibold sm:text-[15px] ${hasDiscount ? "text-gray-400 line-through" : "text-soft-black"
+            }`}
         >
           {formatMoney(subtotal, currency)}
         </span>

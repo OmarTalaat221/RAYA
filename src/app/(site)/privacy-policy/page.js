@@ -1,7 +1,7 @@
 import { getLocale } from "next-intl/server";
 
 export const metadata = {
-  title: "Privacy Policy | Al Reaya Al Owla Medicine",
+  title: "Privacy Policy | RDS Pharma",
 };
 
 const content = {
@@ -27,7 +27,7 @@ const content = {
       },
       {
         title: "Contact",
-        text: "For privacy questions, please contact us at Dloahmad.86@hotmail.com or at AL QULIAHA, shop2, Sharjah, UAE.",
+        text: "For privacy questions, please contact us at support@rdspharma.com or at Dubai, United Arab Emirates.",
       },
     ],
   },
@@ -53,7 +53,7 @@ const content = {
       },
       {
         title: "التواصل",
-        text: "لأي أسئلة متعلقة بالخصوصية، يمكنك التواصل معنا عبر Dloahmad.86@hotmail.com أو على عنوان AL QULIAHA, shop2, Sharjah, UAE.",
+        text: "لأي أسئلة متعلقة بالخصوصية، يمكنك التواصل معنا عبر support@rdspharma.com أو على عنوان دبي، الإمارات العربية المتحدة.",
       },
     ],
   },

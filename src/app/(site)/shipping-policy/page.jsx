@@ -1,17 +1,17 @@
 import { getLocale } from "next-intl/server";
 
 export const metadata = {
-  title: "Shipping Policy | Al Reaya Al Owla Medicine",
+  title: "Shipping Policy | RDS Pharma",
 };
 
 const content = {
   en: {
     title: "Shipping policy",
-    lines: ["Free Delivery over 150AED", "Delivery within two working Days"],
+    lines: ["Free Delivery over 400AED", "Delivery within UAE and Global Shipping Available"],
   },
   ar: {
     title: "سياسة الشحن",
-    lines: ["توصيل مجاني للطلبات التي تزيد عن 150 درهم", "التوصيل خلال يومي عمل"],
+    lines: ["توصيل مجاني للطلبات التي تزيد عن 400 درهم", "التوصيل داخل الإمارات والشحن الدولي متاح"],
   },
 };
 

@@ -3,6 +3,8 @@
 import React, { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import { useLocale, useTranslations } from "next-intl";
+import { useSelector } from "react-redux";
+import { selectLocalizedSiteInfo } from "../../store/siteSlice";
 import { ConfigProvider, Select } from "antd";
 import StyledBackground from "./StyledBackground";
 
@@ -25,12 +27,12 @@ const legalLinks = [
 
 // ─── fallback store ───────────────────────────────────────
 const fallbackStore = {
-  name: "Al Reaya Al Owla Medicine",
+  name: "RDS Pharma",
   address: {
-    en: "Shop 2, Salim Al Owis Building, Sharjah, UAE",
-    ar: "المحل 2، بناية سالم العويس، الشارقة، الإمارات",
+    en: "Dubai, United Arab Emirates",
+    ar: "دبي، الإمارات العربية المتحدة",
   },
-  phone: "+971 6 535 3772",
+  phone: "+971501234567",
   email: "Rdspharma.online@gmail.com",
 };
 
@@ -186,21 +188,57 @@ export function WhatsAppIcon({ className = "" }) {
   );
 }
 
+export function LinkedInIcon({ className = "" }) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      fill="currentColor"
+      className={className}
+      aria-hidden="true"
+    >
+      <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z" />
+    </svg>
+  );
+}
+
+export function XIcon({ className = "" }) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      fill="currentColor"
+      className={className}
+      aria-hidden="true"
+    >
+      <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.045 4.126H5.078z" />
+    </svg>
+  );
+}
+
 // ─── default socials ──────────────────────────────────────
 const defaultSocials = [
   {
     name: "Instagram",
-    href: "https://instagram.com",
+    href: "https://instagram.com/rdspharma",
     Icon: InstagramIcon,
   },
   {
     name: "Facebook",
-    href: "https://facebook.com",
+    href: "https://facebook.com/rdspharma",
     Icon: FacebookIcon,
   },
   {
+    name: "LinkedIn",
+    href: "https://linkedin.com/company/rdspharma",
+    Icon: LinkedInIcon,
+  },
+  {
+    name: "X",
+    href: "https://x.com/rdspharma",
+    Icon: XIcon,
+  },
+  {
     name: "WhatsApp",
-    href: "https://wa.me/201000000000",
+    href: "https://wa.me/971501234567",
     Icon: WhatsAppIcon,
   },
 ];
@@ -209,9 +247,8 @@ const defaultSocials = [
 function SectionTitle({ children, isRTL }) {
   return (
     <h3
-      className={`mb-4 text-[11px] font-semibold text-white/68 font-poppins! sm:text-xs ${
-        isRTL ? "" : "uppercase tracking-[0.2em]"
-      }`}
+      className={`mb-4 text-[11px] font-semibold text-white/68 font-poppins! sm:text-xs ${isRTL ? "" : "uppercase tracking-[0.2em]"
+        }`}
     >
       {children}
     </h3>
@@ -245,9 +282,8 @@ function ContactRow({ icon, href, children, isRTL }) {
 
   return (
     <li
-      className={`flex items-center gap-3 ${
-        isRTL ? "flex-row-reverse text-start!" : "text-left!"
-      }`}
+      className={`flex items-center gap-3 ${isRTL ? "flex-row-reverse text-start!" : "text-left!"
+        }`}
     >
       <span className="mt-0.5 shrink-0 text-white/60">{icon}</span>
       <div className="min-w-0">{content}</div>
@@ -259,9 +295,8 @@ function SelectField({ label, value, onChange, options, isRTL, size }) {
   return (
     <label className="block">
       <span
-        className={`mb-2 block text-[11px] font-medium text-white/62 font-poppins! ${
-          isRTL ? "" : "uppercase tracking-[0.18em]"
-        }`}
+        className={`mb-2 block text-[11px] font-medium text-white/62 font-poppins! ${isRTL ? "" : "uppercase tracking-[0.18em]"
+          }`}
       >
         {label}
       </span>
@@ -294,9 +329,8 @@ function SelectField({ label, value, onChange, options, isRTL, size }) {
           showSearch={false}
           suffixIcon={<ChevronDownIcon className="h-4 w-4" />}
           classNames={{ popup: { root: "footer-ant-select-dropdown" } }}
-          className={`footer-ant-select ${
-            isRTL ? "footer-ant-select--rtl" : ""
-          }`}
+          className={`footer-ant-select ${isRTL ? "footer-ant-select--rtl" : ""
+            }`}
           getPopupContainer={(trigger) => trigger.parentElement}
         />
       </ConfigProvider>
@@ -305,17 +339,60 @@ function SelectField({ label, value, onChange, options, isRTL, size }) {
 }
 
 // ─── main Footer component ────────────────────────────────
-export default function Footer({
-  store = fallbackStore,
-  logoSrc,
-  logoAlt = "RDS Pharma",
-  socials = defaultSocials,
-}) {
+export default function Footer() {
   const t = useTranslations("Footer");
   const locale = useLocale();
 
+  const siteInfo = useSelector((s) => s.site.data);
+  const { siteName, address } = useSelector((s) =>
+    selectLocalizedSiteInfo(s, locale)
+  );
+
   const isRTL = locale === "ar";
   const textAlign = isRTL ? "text-right" : "text-left";
+
+  const store = {
+    name: siteName,
+    address: address,
+    phone: siteInfo.phone || fallbackStore.phone,
+    email: siteInfo.email || fallbackStore.email,
+  };
+
+
+  // لو الفاليو بتاعته مش موجوده متعرضهوش 
+  const socials = [
+    {
+      name: "Instagram",
+      href: siteInfo.socialLinks?.instagram || "https://instagram.com/rdspharma",
+      Icon: InstagramIcon,
+    },
+    {
+      name: "Facebook",
+      href: siteInfo.socialLinks?.facebook || "https://facebook.com/rdspharma",
+      Icon: FacebookIcon,
+    },
+
+    {
+      name: "LinkedIn",
+      href:
+        siteInfo.socialLinks?.linkedin ||
+        "https://linkedin.com/company/rdspharma",
+      Icon: LinkedInIcon,
+    },
+    {
+      name: "X",
+      href: siteInfo.socialLinks?.twitter || "https://x.com/rdspharma",
+      Icon: XIcon,
+    },
+    {
+      name: "WhatsApp",
+      href: `https://wa.me/+${(siteInfo.whatsapp || "+971501234567").replace(/\+/g, "")}`,
+      Icon: WhatsAppIcon,
+    },
+  ];
+
+  const logoSrc = "https://res.cloudinary.com/dbvh5i83q/image/upload/v1776082859/rds_logo_xpmbfn.webp"; // Or use from siteInfo if available
+  const logoAlt = store.name;
 
   const [region, setRegion] = useState("eg");
 
@@ -323,7 +400,7 @@ export default function Footer({
     try {
       const savedRegion = localStorage.getItem("rds_region");
       if (savedRegion) setRegion(savedRegion);
-    } catch (_) {}
+    } catch (_) { }
   }, []);
 
   const handleRegionChange = useCallback((nextRegion) => {
@@ -331,7 +408,7 @@ export default function Footer({
 
     try {
       localStorage.setItem("rds_region", nextRegion);
-    } catch (_) {}
+    } catch (_) { }
   }, []);
 
   const handleLanguageChange = useCallback(async (nextLocale) => {
@@ -346,7 +423,7 @@ export default function Footer({
 
       try {
         localStorage.setItem("rds_locale", nextLocale);
-      } catch (_) {}
+      } catch (_) { }
 
       window.location.reload();
     } catch (error) {
@@ -413,9 +490,8 @@ export default function Footer({
                   </div>
                 ) : (
                   <div
-                    className={`text-[1.65rem] leading-none text-white ${
-                      isRTL ? "font-semibold font-poppins!" : "font-oswald!"
-                    }`}
+                    className={`text-[1.65rem] leading-none text-white ${isRTL ? "font-semibold font-poppins!" : "font-oswald!"
+                      }`}
                   >
                     {storeName}
                   </div>
@@ -530,9 +606,8 @@ export default function Footer({
           {/* ── bottom legal bar ──────────────────────────── */}
           <div className="border-t border-white/14 py-5 backdrop-blur-sm sm:py-6">
             <div
-              className={`flex flex-col gap-4 md:items-center md:justify-between ${
-                isRTL ? "md:flex-row-reverse" : "md:flex-row"
-              }`}
+              className={`flex flex-col gap-4 md:items-center md:justify-between ${isRTL ? "md:flex-row-reverse" : "md:flex-row"
+                }`}
             >
               <p className="text-sm text-white/72 font-poppins!">
                 {t("copyright", { year })}

@@ -2,13 +2,14 @@
 
 import { usePathname } from "next/navigation";
 import { useMemo } from "react";
+import { useSelector } from "react-redux";
 import { useTranslations } from "next-intl";
 
 /* ═══════════════════════════════════════════════
    Config — change these two values
    ═══════════════════════════════════════════════ */
 
-const WHATSAPP_NUMBER = "971501234567"; // ← بدون + ولا مسافات
+// const WHATSAPP_NUMBER = "971501234567"; // Moved into component to be dynamic
 
 /* ═══════════════════════════════════════════════
    Pages where the button should NOT appear
@@ -18,6 +19,7 @@ const HIDDEN_PATHS = ["/checkout", "/checkout/success"];
 
 export default function WhatsAppButton() {
   const pathname = usePathname();
+  const siteInfo = useSelector((s) => s.site.data);
   const t = useTranslations("whatsapp");
 
   const isHidden = useMemo(() => {
@@ -29,7 +31,12 @@ export default function WhatsAppButton() {
 
   if (isHidden) return null;
 
-  const href = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(
+  const whatsappNumber = (siteInfo.whatsapp || "971501234567").replace(
+    /\D/g,
+    ""
+  );
+
+  const href = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(
     t("defaultMessage")
   )}`;
 
