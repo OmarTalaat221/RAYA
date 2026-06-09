@@ -434,7 +434,7 @@ export default function ProductPurchaseActions({
         <span>{t("actions.buyNow")}</span>
       </button>
       {/* ── cash on delivery (UAE only) ── */}
-      {true && (
+      {isUAE && (
         <button
           type="button"
           onClick={handleCashOnDelivery}

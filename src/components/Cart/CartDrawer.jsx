@@ -52,7 +52,7 @@ const CartDrawer = memo(function CartDrawer() {
   );
 
   const geoCountry = useSelector((s) => s.geo?.country || "");
- // const isUAE = /^(ae|are|united arab emirates)$/i.test(geoCountry.trim());
+  const isUAE = /^(ae|are|united arab emirates)$/i.test(geoCountry.trim());
 
   useEffect(() => {
     if (isOpen && !initialized) {
@@ -236,12 +236,12 @@ const CartDrawer = memo(function CartDrawer() {
                   qualifiesForFreeShipping={qualifiesForFreeShipping}
                   loading={actionLoading}
                   onCashOnDelivery={
-                    //  isUAE
-                    () => {
-                      dispatch(closeCart());
-                      router.push("/checkout/cod");
-                    }
-                    //: undefined
+                    isUAE
+                      ? () => {
+                          dispatch(closeCart());
+                          router.push("/checkout/cod");
+                        }
+                      : undefined 
                   }
                 />
               </>
