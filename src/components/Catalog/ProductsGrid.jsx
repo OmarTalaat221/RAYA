@@ -24,7 +24,7 @@ function ProductsGrid({ products = [], isLoading = false, canHover = false }) {
           key={product.id || product.href || index}
           id={product.id}
           title={product.title}
-          href={product.href}
+          href={`/products/${product.slug}`}
           frontImage={product.frontImage}
           backImage={product.backImage}
           oldPrice={product.oldPrice}

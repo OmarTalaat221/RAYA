@@ -101,7 +101,7 @@ function ProductsSlider({ products, canHover }) {
             <ProductCard
               id={product.id}
               title={product.title}
-              href={product.href}
+              href={`/products/${product.slug}`}
               frontImage={product.frontImage}
               backImage={product.backImage}
               oldPrice={product.oldPrice}
@@ -135,7 +135,7 @@ function DesktopGrid({ products, canHover }) {
           <ProductCard
             id={product.id}
             title={product.title}
-            href={product.href}
+            href={`/products/${product.slug}`}
             frontImage={product.frontImage}
             backImage={product.backImage}
             oldPrice={product.oldPrice}

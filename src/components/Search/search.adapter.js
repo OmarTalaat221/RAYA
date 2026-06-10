@@ -102,9 +102,7 @@ function adaptProductItem(item, lang = "en") {
       translation?.title?.trim() ||
       titleFromSlug(slug || item?.sku || item?.id),
     slug,
-    href: stripLocalePrefix(
-      translation?.href || (slug ? `/products/${slug}` : "/products")
-    ),
+    href: slug ? `/products/${slug}` : "/products",
     frontImage,
     backImage,
     oldPrice: oldPrice ?? effectivePrice,

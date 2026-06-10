@@ -1,6 +1,7 @@
 "use client";
 
-import { memo, useCallback, useMemo } from "react";
+import { memo, useCallback, useEffect, useMemo, useState } from "react";
+import { Check } from "lucide-react";
 
 function PriceFilter({
   priceRange,
@@ -10,7 +11,23 @@ function PriceFilter({
   onClose,
   currency = "AED",
 }) {
-  const hasValues = priceRange.from !== "" || priceRange.to !== "";
+  /* ── Local draft state (not applied until user clicks Apply) ── */
+  const [localFrom, setLocalFrom] = useState(priceRange.from ?? "");
+  const [localTo, setLocalTo] = useState(priceRange.to ?? "");
+
+  /* ── Sync local state when parent values change externally (reset / URL change) ── */
+  useEffect(() => {
+    setLocalFrom(priceRange.from ?? "");
+  }, [priceRange.from]);
+
+  useEffect(() => {
+    setLocalTo(priceRange.to ?? "");
+  }, [priceRange.to]);
+
+  const hasAppliedValues = priceRange.from !== "" || priceRange.to !== "";
+  const hasLocalChanges =
+    String(localFrom) !== String(priceRange.from ?? "") ||
+    String(localTo) !== String(priceRange.to ?? "");
 
   const maxPrice = useMemo(() => {
     const value = Number(priceStats?.max) || 0;
@@ -18,22 +35,35 @@ function PriceFilter({
   }, [priceStats?.max]);
 
   const handleReset = useCallback(() => {
+    setLocalFrom("");
+    setLocalTo("");
     onReset();
     onClose?.();
   }, [onReset, onClose]);
 
-  const handleFromChange = useCallback(
-    (event) => {
-      onUpdate("from", event.target.value);
-    },
-    [onUpdate],
-  );
+  const handleFromChange = useCallback((event) => {
+    setLocalFrom(event.target.value);
+  }, []);
 
-  const handleToChange = useCallback(
+  const handleToChange = useCallback((event) => {
+    setLocalTo(event.target.value);
+  }, []);
+
+  const handleApply = useCallback(() => {
+    /* ── Apply both values to parent ── */
+    onUpdate("from", localFrom);
+    onUpdate("to", localTo);
+    onClose?.();
+  }, [localFrom, localTo, onUpdate, onClose]);
+
+  const handleKeyDown = useCallback(
     (event) => {
-      onUpdate("to", event.target.value);
+      if (event.key === "Enter") {
+        event.preventDefault();
+        handleApply();
+      }
     },
-    [onUpdate],
+    [handleApply],
   );
 
   return (
@@ -43,7 +73,7 @@ function PriceFilter({
           Price
         </span>
 
-        {hasValues && (
+        {hasAppliedValues && (
           <button
             type="button"
             onClick={handleReset}
@@ -79,8 +109,9 @@ function PriceFilter({
               inputMode="decimal"
               min="0"
               step="0.01"
-              value={priceRange.from}
+              value={localFrom}
               onChange={handleFromChange}
+              onKeyDown={handleKeyDown}
               placeholder="0.00"
               className="h-12 w-full rounded-xl border border-gray-200 bg-white pl-14 pr-4 text-[15px] font-medium text-soft-black outline-none transition-all duration-200 placeholder:text-gray-300 focus:border-main/40 focus:ring-2 focus:ring-main/10 font-poppins!"
             />
@@ -106,13 +137,28 @@ function PriceFilter({
               inputMode="decimal"
               min="0"
               step="0.01"
-              value={priceRange.to}
+              value={localTo}
               onChange={handleToChange}
+              onKeyDown={handleKeyDown}
               placeholder={maxPrice}
               className="h-12 w-full rounded-xl border border-gray-200 bg-white pl-14 pr-4 text-[15px] font-medium text-soft-black outline-none transition-all duration-200 placeholder:text-gray-300 focus:border-main/40 focus:ring-2 focus:ring-main/10 font-poppins!"
             />
           </div>
         </div>
+      </div>
+
+      {/* ── Apply button ── */}
+      <div className="mt-5 flex justify-end">
+        <button
+          type="button"
+          onClick={handleApply}
+          disabled={!hasLocalChanges}
+          aria-label="Apply price filter"
+          className="inline-flex h-10 items-center gap-1.5 rounded-full bg-main px-4 text-[12.5px] font-semibold text-white shadow-[0_8px_18px_rgba(104,188,82,0.22)] transition-all duration-200 hover:bg-[#5fb14a] disabled:pointer-events-none disabled:opacity-40 font-poppins!"
+        >
+          <Check size={14} strokeWidth={2.5} />
+          Apply
+        </button>
       </div>
     </div>
   );
