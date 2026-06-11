@@ -1,7 +1,39 @@
 import { getLocale } from "next-intl/server";
 
+import {
+  SITE_NAME,
+  SITE_DESCRIPTION,
+  DEFAULT_OG_IMAGE,
+} from "../../../lib/site-config";
+
 export const metadata = {
-  title: "Privacy Policy | RDS Pharma",
+  title: `Privacy Policy | ${SITE_NAME}`,
+  description:
+    "Read RDS Pharma Privacy Policy to understand how we collect, use, share, and protect your personal information.",
+  alternates: {
+    canonical: "/privacy-policy",
+  },
+  openGraph: {
+    type: "website",
+    title: `Privacy Policy | ${SITE_NAME}`,
+    description:
+      "Read RDS Pharma Privacy Policy to understand how we collect, use, share, and protect your personal information.",
+    url: "/privacy-policy",
+    images: [
+      {
+        url: DEFAULT_OG_IMAGE,
+        width: 1200,
+        height: 630,
+        alt: SITE_NAME,
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: `Privacy Policy | ${SITE_NAME}`,
+    description: SITE_DESCRIPTION,
+    images: [DEFAULT_OG_IMAGE],
+  },
 };
 
 const content = {
@@ -65,17 +97,24 @@ export default async function PrivacyPolicy() {
   const isRTL = locale === "ar";
 
   return (
-    <main className="min-h-screen bg-white py-12 font-sans md:py-20" dir={isRTL ? "rtl" : "ltr"}>
+    <main
+      className="min-h-screen bg-white py-12 font-sans md:py-20"
+      dir={isRTL ? "rtl" : "ltr"}
+    >
       <div className="container mx-auto max-w-4xl px-4">
         <h1 className="mb-4 text-center text-[clamp(2.25rem,5vw,3.25rem)] font-medium leading-tight text-soft-black">
           {page.title}
         </h1>
-        <p className="mb-10 text-center text-sm text-soft-black/60">{page.updated}</p>
+        <p className="mb-10 text-center text-sm text-soft-black/60">
+          {page.updated}
+        </p>
 
         <div className="space-y-7 text-base leading-8 text-soft-black/75">
           {page.sections.map((section) => (
             <section key={section.title} className="space-y-2">
-              <h2 className="text-xl font-semibold text-soft-black">{section.title}</h2>
+              <h2 className="text-xl font-semibold text-soft-black">
+                {section.title}
+              </h2>
               <p>{section.text}</p>
             </section>
           ))}

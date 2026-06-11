@@ -6,8 +6,23 @@ import {
   adaptBlogDetail,
   adaptRelatedBlog,
 } from "../../../../../components/Blog/blog.adapter";
-import { toAbsoluteUrl } from "../../../../../components/Blog/blog-details.utils";
 import { getBlogBySlug } from "../../../../../services/blogs.service";
+
+import {
+  SITE_URL,
+  SITE_NAME,
+  DEFAULT_OG_IMAGE,
+} from "../../../../../lib/site-config";
+
+function absoluteUrl(path = "/") {
+  if (!path) return SITE_URL;
+
+  if (/^https?:\/\//i.test(path)) {
+    return path;
+  }
+
+  return `${SITE_URL}${path.startsWith("/") ? path : `/${path}`}`;
+}
 
 export async function generateMetadata({ params }) {
   const { slug } = await params;
@@ -18,28 +33,43 @@ export async function generateMetadata({ params }) {
 
     if (!article) {
       return {
-        title: "Article Not Found | RDS Pharma",
+        title: `Article Not Found | ${SITE_NAME}`,
         description: "The requested article could not be found.",
+        robots: {
+          index: false,
+          follow: false,
+        },
       };
     }
 
-    const canonicalUrl = toAbsoluteUrl(`/blog/news/${article.slug || slug}`);
-    const pageTitle = `${article.meta_title || article.title} | RDS Pharma`;
+    const canonicalUrl = absoluteUrl(`/blog/news/${article.slug || slug}`);
+    const pageTitle = `${article.meta_title || article.title} | ${SITE_NAME}`;
     const description =
       article.meta_description || article.excerpt || article.title;
-    const imageUrl = article.image;
+    const imageUrl = article.image || DEFAULT_OG_IMAGE;
 
     return {
       title: pageTitle,
       description,
-      alternates: { canonical: canonicalUrl },
+      alternates: {
+        canonical: canonicalUrl,
+      },
       openGraph: {
         title: pageTitle,
         description,
         type: "article",
         url: canonicalUrl,
         publishedTime: article.publishedAt,
-        images: imageUrl ? [{ url: imageUrl }] : [],
+        images: imageUrl
+          ? [
+              {
+                url: imageUrl,
+                width: 1200,
+                height: 630,
+                alt: article.title,
+              },
+            ]
+          : [],
       },
       twitter: {
         card: "summary_large_image",
@@ -50,7 +80,11 @@ export async function generateMetadata({ params }) {
     };
   } catch {
     return {
-      title: "Article Not Found | RDS Pharma",
+      title: `Article Not Found | ${SITE_NAME}`,
+      robots: {
+        index: false,
+        follow: false,
+      },
     };
   }
 }
@@ -79,13 +113,48 @@ export default async function BlogDetailsRoute({ params }) {
         .filter(Boolean)
     : [];
 
-  const canonicalUrl = toAbsoluteUrl(`/blog/news/${article.slug || slug}`);
+  const canonicalUrl = absoluteUrl(`/blog/news/${article.slug || slug}`);
+
+  const articleJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    headline: article.title,
+    description: article.meta_description || article.excerpt || article.title,
+    image: [article.image || absoluteUrl(DEFAULT_OG_IMAGE)],
+    datePublished: article.publishedAt,
+    dateModified: article.updatedAt || article.publishedAt,
+    author: {
+      "@type": "Organization",
+      name: SITE_NAME,
+    },
+    publisher: {
+      "@type": "Organization",
+      name: SITE_NAME,
+      logo: {
+        "@type": "ImageObject",
+        url: absoluteUrl("/favicon.png"),
+      },
+    },
+    mainEntityOfPage: {
+      "@type": "WebPage",
+      "@id": canonicalUrl,
+    },
+  };
 
   return (
-    <BlogDetailsPage
-      article={article}
-      canonicalUrl={canonicalUrl}
-      relatedPosts={relatedPosts}
-    />
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(articleJsonLd).replace(/</g, "\\u003c"),
+        }}
+      />
+
+      <BlogDetailsPage
+        article={article}
+        canonicalUrl={canonicalUrl}
+        relatedPosts={relatedPosts}
+      />
+    </>
   );
 }

@@ -1,3 +1,10 @@
+import {
+  SITE_URL,
+  SITE_NAME,
+  SITE_DESCRIPTION,
+  DEFAULT_OG_IMAGE,
+} from "../../lib/site-config";
+
 import HeroBanner from "../../components/HeroBanner";
 import SpecialOffer from "../../sections/Home/SpecialOffer";
 import FeaturedProducts from "../../components/FeaturedProducts/FeaturedProducts";
@@ -8,6 +15,35 @@ import {
   adaptHomeResponse,
   EMPTY_HOME_DATA,
 } from "../../sections/Home/home.adapter";
+
+
+export const metadata = {
+  title: `${SITE_NAME} | Online Pharmacy, Skincare & Wellness`,
+  description: SITE_DESCRIPTION,
+  alternates: {
+    canonical: "/",
+  },
+  openGraph: {
+    type: "website",
+    title: `${SITE_NAME} | Online Pharmacy, Skincare & Wellness`,
+    description: SITE_DESCRIPTION,
+    url: SITE_URL,
+    images: [
+      {
+        url: DEFAULT_OG_IMAGE,
+        width: 1200,
+        height: 630,
+        alt: SITE_NAME,
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: `${SITE_NAME} | Online Pharmacy, Skincare & Wellness`,
+    description: SITE_DESCRIPTION,
+    images: [DEFAULT_OG_IMAGE],
+  },
+};
 
 export default async function HomePage() {
   let homeData = EMPTY_HOME_DATA;

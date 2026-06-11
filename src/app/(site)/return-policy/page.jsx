@@ -1,7 +1,39 @@
 import { getLocale } from "next-intl/server";
 
+import {
+  SITE_NAME,
+  SITE_DESCRIPTION,
+  DEFAULT_OG_IMAGE,
+} from "../../../lib/site-config";
+
 export const metadata = {
-  title: "Refund Policy | RDS Pharma",
+  title: `Return & Refund Policy | ${SITE_NAME}`,
+  description:
+    "Read RDS Pharma Return and Refund Policy, including return eligibility, damages, exchanges, and refund processing.",
+  alternates: {
+    canonical: "/return-policy",
+  },
+  openGraph: {
+    type: "website",
+    title: `Return & Refund Policy | ${SITE_NAME}`,
+    description:
+      "Read RDS Pharma Return and Refund Policy, including return eligibility, damages, exchanges, and refund processing.",
+    url: "/return-policy",
+    images: [
+      {
+        url: DEFAULT_OG_IMAGE,
+        width: 1200,
+        height: 630,
+        alt: SITE_NAME,
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: `Return & Refund Policy | ${SITE_NAME}`,
+    description: SITE_DESCRIPTION,
+    images: [DEFAULT_OG_IMAGE],
+  },
 };
 
 const content = {
@@ -67,7 +99,10 @@ export default async function RefundPolicy() {
   const isRTL = locale === "ar";
 
   return (
-    <main className="min-h-screen bg-white py-12 font-sans md:py-20" dir={isRTL ? "rtl" : "ltr"}>
+    <main
+      className="min-h-screen bg-white py-12 font-sans md:py-20"
+      dir={isRTL ? "rtl" : "ltr"}
+    >
       <div className="container mx-auto max-w-4xl px-4">
         <h1 className="mb-10 text-center text-[clamp(2.25rem,5vw,3.25rem)] font-medium leading-tight text-soft-black">
           {page.title}
@@ -80,7 +115,9 @@ export default async function RefundPolicy() {
 
           {page.sections.map((section) => (
             <section key={section.title} className="space-y-2">
-              <h2 className="text-xl font-semibold text-soft-black">{section.title}</h2>
+              <h2 className="text-xl font-semibold text-soft-black">
+                {section.title}
+              </h2>
               <p>{section.text}</p>
             </section>
           ))}

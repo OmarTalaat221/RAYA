@@ -15,6 +15,12 @@ import {
   priceRangeToApiParam,
 } from "../../../../components/Catalog/filters.utils";
 
+import {
+  SITE_URL,
+  SITE_NAME,
+  DEFAULT_OG_IMAGE,
+} from "../../../../lib/site-config";
+
 const DEFAULT_LIMIT = 12;
 
 const EMPTY_PRODUCTS_DATA = {
@@ -28,6 +34,16 @@ const EMPTY_PRODUCTS_DATA = {
   highestPrice: 0,
   currency: "AED",
 };
+
+function absoluteUrl(path = "/") {
+  if (!path) return SITE_URL;
+
+  if (/^https?:\/\//i.test(path)) {
+    return path;
+  }
+
+  return `${SITE_URL}${path.startsWith("/") ? path : `/${path}`}`;
+}
 
 const fetchCategorySlugs = cache(async (lang = "en") => {
   try {
@@ -194,9 +210,36 @@ export async function generateMetadata(props) {
   const { slug } = params;
 
   if (slug === "all") {
+    const title = `All Products | ${SITE_NAME}`;
+    const description = "Browse our complete catalogue of premium products.";
+    const canonical = absoluteUrl("/collections/all");
+
     return {
-      title: "All Products | RDS Pharma",
-      description: "Browse our complete catalogue of premium products.",
+      title,
+      description,
+      alternates: {
+        canonical,
+      },
+      openGraph: {
+        type: "website",
+        title,
+        description,
+        url: canonical,
+        images: [
+          {
+            url: DEFAULT_OG_IMAGE,
+            width: 1200,
+            height: 630,
+            alt: SITE_NAME,
+          },
+        ],
+      },
+      twitter: {
+        card: "summary_large_image",
+        title,
+        description,
+        images: [DEFAULT_OG_IMAGE],
+      },
     };
   }
 
@@ -205,15 +248,47 @@ export async function generateMetadata(props) {
 
   if (!category) {
     return {
-      title: "Collection Not Found | RDS Pharma",
+      title: `Collection Not Found | ${SITE_NAME}`,
+      robots: {
+        index: false,
+        follow: false,
+      },
     };
   }
 
+  const title = `${category.meta?.metaTitle || category.title} | ${SITE_NAME}`;
+  const description =
+    category.meta?.metaDescription || `Explore our ${category.title} range.`;
+  const canonical = absoluteUrl(`/collections/${slug}`);
+  const image = category.image || DEFAULT_OG_IMAGE;
+
   return {
-    title: `${category.meta?.metaTitle || category.title} | RDS Pharma`,
-    description:
-      category.meta?.metaDescription || `Explore our ${category.title} range.`,
+    title,
+    description,
     keywords: category.meta?.metaKeywords || undefined,
+    alternates: {
+      canonical,
+    },
+    openGraph: {
+      type: "website",
+      title,
+      description,
+      url: canonical,
+      images: [
+        {
+          url: image,
+          width: 1200,
+          height: 630,
+          alt: category.title,
+        },
+      ],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description,
+      images: [image],
+    },
   };
 }
 

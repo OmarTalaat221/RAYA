@@ -3,6 +3,13 @@ import { getLocale } from "next-intl/server";
 import ProductDetailsPage from "../../../../components/ProductDeatils/ProductDetailsPage";
 import { getProductBySlug } from "../../../../services/products.service";
 
+import {
+  SITE_URL,
+  SITE_NAME,
+  SITE_DESCRIPTION,
+  DEFAULT_OG_IMAGE,
+} from "../../../../lib/site-config";
+
 /* ─── helpers ─────────────────────────────────────────────────────────────── */
 
 function pickTranslation(translations = [], lang = "en") {
@@ -18,6 +25,38 @@ function stripLocalePrefix(path) {
 function toNumber(value) {
   const parsed = Number(value);
   return Number.isFinite(parsed) ? parsed : null;
+}
+
+function absoluteUrl(path = "/") {
+  if (!path) return SITE_URL;
+
+  if (/^https?:\/\//i.test(path)) {
+    return path;
+  }
+
+  return `${SITE_URL}${path.startsWith("/") ? path : `/${path}`}`;
+}
+
+function cleanText(value = "") {
+  return String(value)
+    .replace(/<[^>]*>/g, "")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+function truncateText(value = "", max = 155) {
+  const text = cleanText(value);
+  if (text.length <= max) return text;
+  return `${text.slice(0, max - 1).trim()}…`;
+}
+
+function getProductImage(product) {
+  return (
+    product?.media?.find((item) => item?.type === "image" && item?.src)?.src ||
+    product?.frontImage ||
+    product?.backImage ||
+    DEFAULT_OG_IMAGE
+  );
 }
 
 function buildProductMedia(product, title) {
@@ -85,7 +124,6 @@ function adaptProductForDetails(product, lang = "en") {
     currency: product.currency || "AED",
     isOnSale: Boolean(product.isOnSale),
 
-    /* ── NEW ── */
     discountPercentage: toNumber(product.discountPercentage) || 0,
     discountValue: toNumber(product.discountValue) || 0,
 
@@ -128,19 +166,54 @@ export async function generateMetadata({ params }) {
 
     if (!product) {
       return {
-        title: "Product not found | RDS Pharma",
+        title: `Product not found | ${SITE_NAME}`,
         description: "The requested product could not be found.",
+        robots: {
+          index: false,
+          follow: false,
+        },
       };
     }
 
+    const title = `${product.title} | ${SITE_NAME}`;
+    const description =
+      truncateText(product.shortDescription) ||
+      `${product.title} is available at ${SITE_NAME}.`;
+
+    const canonical = absoluteUrl(`/products/${slug}`);
+    const image = absoluteUrl(getProductImage(product));
+
     return {
-      title: `${product.title} | RDS Pharma`,
-      description: product.shortDescription || product.title,
+      title,
+      description,
+      alternates: {
+        canonical,
+      },
+      openGraph: {
+        type: "website",
+        title,
+        description,
+        url: canonical,
+        images: [
+          {
+            url: image,
+            width: 1200,
+            height: 630,
+            alt: product.title,
+          },
+        ],
+      },
+      twitter: {
+        card: "summary_large_image",
+        title,
+        description,
+        images: [image],
+      },
     };
   } catch {
     return {
-      title: "Product | RDS Pharma",
-      description: "Explore premium products at RDS Pharma.",
+      title: `Product | ${SITE_NAME}`,
+      description: SITE_DESCRIPTION,
     };
   }
 }
@@ -157,5 +230,57 @@ export default async function ProductPage({ params }) {
     notFound();
   }
 
-  return <ProductDetailsPage product={product} />;
+  const productImage = absoluteUrl(getProductImage(product));
+  const price = product.newPrice ?? product.oldPrice;
+
+  const productJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    name: product.title,
+    image: [productImage],
+    description:
+      cleanText(product.shortDescription) ||
+      `${product.title} is available at ${SITE_NAME}.`,
+    sku: product.sku || String(product.id),
+    brand: {
+      "@type": "Brand",
+      name: product.brand || SITE_NAME,
+    },
+    ...(price !== null && price !== undefined
+      ? {
+          offers: {
+            "@type": "Offer",
+            url: absoluteUrl(`/products/${slug}`),
+            priceCurrency: product.currency || "AED",
+            price: String(price),
+            availability: product.stockStatus?.toLowerCase().includes("out")
+              ? "https://schema.org/OutOfStock"
+              : "https://schema.org/InStock",
+            itemCondition: "https://schema.org/NewCondition",
+          },
+        }
+      : {}),
+    ...(product.rating > 0 && product.reviewCount > 0
+      ? {
+          aggregateRating: {
+            "@type": "AggregateRating",
+            ratingValue: String(product.rating),
+            reviewCount: String(product.reviewCount),
+          },
+        }
+      : {}),
+  };
+
+  return (
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(productJsonLd).replace(/</g, "\\u003c"),
+        }}
+      />
+
+      <ProductDetailsPage product={product} />
+    </>
+  );
 }

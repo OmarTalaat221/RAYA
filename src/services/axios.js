@@ -3,8 +3,8 @@
 import axios from "axios";
 import { getOrCreateDeviceId } from "../utils/deviceId";
 
-const API_BASE_URL = "https://rdspharma.cloud";
-
+const API_BASE_URL =
+  process.env.NEXT_PUBLIC_API_BASE_URL || "https://rdspharma.cloud";
 const TOKEN_KEY = "raya-token";
 
 /* ─── Store reference (injected from Provider) ────────────────────────────── */

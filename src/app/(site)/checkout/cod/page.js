@@ -1,8 +1,12 @@
 import CheckoutCODPage from "../../../../components/Checkout/CheckoutCODPage";
 
 export const metadata = {
-  title: "Cash On Delivery Checkout — RDS Pharma",
-  description: "Complete your order securely with Cash on Delivery.",
+  title: "Cash on Delivery Checkout | RDS Pharma",
+  description: "Complete your RDS Pharma order securely with Cash on Delivery.",
+  robots: {
+    index: false,
+    follow: false,
+  },
 };
 
 export default function CheckoutCOD() {

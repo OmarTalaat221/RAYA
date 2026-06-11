@@ -1,4 +1,5 @@
 import sanitizeHtml from "sanitize-html";
+import { SITE_URL } from "../../lib/site-config";
 
 // ─── Media ────────────────────────────────────────────────────────────────────
 
@@ -25,12 +26,10 @@ export function resolveMediaSrc(src) {
 }
 
 export function toAbsoluteUrl(path = "") {
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://rdspharma.cloud";
-
   try {
-    return new URL(path, baseUrl).toString();
+    return new URL(path, SITE_URL).toString();
   } catch {
-    return baseUrl;
+    return SITE_URL;
   }
 }
 
@@ -110,8 +109,6 @@ export function sanitizeRichText(html = "") {
 }
 
 // ─── Adapter ──────────────────────────────────────────────────────────────────
-// Maps the existing blogData shape → what BlogDetailsPage expects.
-// The original blogData object is NEVER mutated.
 
 export function adaptBlogPost(post) {
   if (!post) return null;
@@ -134,11 +131,6 @@ export function adaptBlogPost(post) {
 }
 
 // ─── Related posts ────────────────────────────────────────────────────────────
-// Returns:
-// 1) prioritized posts from relatedIds first
-// 2) then the rest of posts
-// 3) excluding current post
-// This preserves old data and lets the related section show all other posts.
 
 export function getRelatedPosts(allPosts, relatedIds = [], currentPostId) {
   if (!Array.isArray(allPosts) || allPosts.length === 0) return [];

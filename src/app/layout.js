@@ -1,3 +1,10 @@
+
+import {
+  SITE_URL,
+  SITE_NAME,
+  SITE_DESCRIPTION,
+  DEFAULT_OG_IMAGE,
+} from "../lib/site-config";
 import "~/public/main-assets/css/fontawesome.min.css";
 import "~/public/main-assets/css/nice-select.min.css";
 import "~/public/main-assets/css/remixicon.css";
@@ -50,8 +57,50 @@ const almarai = Almarai({
 });
 
 export const metadata = {
-  title: "Raya Pharmacy",
-  description: "Raya Pharmacy",
+  metadataBase: new URL(SITE_URL),
+
+  title: SITE_NAME,
+  description: SITE_DESCRIPTION,
+
+  applicationName: SITE_NAME,
+  creator: SITE_NAME,
+  publisher: SITE_NAME,
+
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+      "max-video-preview": -1,
+    },
+  },
+
+  openGraph: {
+    type: "website",
+    siteName: SITE_NAME,
+    title: SITE_NAME,
+    description: SITE_DESCRIPTION,
+    url: SITE_URL,
+    images: [
+      {
+        url: DEFAULT_OG_IMAGE,
+        width: 1200,
+        height: 630,
+        alt: SITE_NAME,
+      },
+    ],
+  },
+
+  twitter: {
+    card: "summary_large_image",
+    title: SITE_NAME,
+    description: SITE_DESCRIPTION,
+    images: [DEFAULT_OG_IMAGE],
+  },
+
   icons: {
     icon: [
       { rel: "icon", type: "image/png", sizes: "32x32", url: "/favicon.png" },
@@ -60,7 +109,6 @@ export const metadata = {
     shortcut: [{ rel: "shortcut icon", url: "/favicon.png" }],
   },
 };
-
 export default async function RootLayout({ children }) {
   const locale = await getLocale();
   const messages = await getMessages();

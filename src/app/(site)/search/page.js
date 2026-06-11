@@ -6,6 +6,15 @@ import {
   EMPTY_SEARCH_RESULTS,
 } from "../../../components/Search/search.adapter";
 
+export const metadata = {
+  title: "Search | RDS Pharma",
+  description: "Search RDS Pharma products.",
+  robots: {
+    index: false,
+    follow: true,
+  },
+};
+
 export default async function SearchPageRoute({ searchParams }) {
   const resolvedSearchParams = await searchParams;
 
