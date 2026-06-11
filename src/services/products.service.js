@@ -62,7 +62,9 @@ export async function getProductsByCategorySlug(slug, options = {}) {
 
 export async function getProductBySlug(slug) {
   const response = await axiosInstance.get(
-    `/products/${encodeURIComponent(slug)}`
+    `/products/${(slug)}`
+
+    
   );
 
   return getResponseData(response);
