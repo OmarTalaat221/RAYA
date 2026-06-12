@@ -13,13 +13,31 @@ function normalizeSiteUrl(url = "") {
 
 export const SITE_URL = normalizeSiteUrl(
   process.env.NEXT_PUBLIC_SITE_URL ||
-    (process.env.NODE_ENV === "production" ? PRODUCTION_URL : STAGING_URL)
+  (process.env.NODE_ENV === "production" ? PRODUCTION_URL : STAGING_URL)
 );
 
 export const SITE_NAME = "RDS Pharma";
 
+export const SITE_BRAND_TITLE =
+  "RDS Pharma | Al Reaya Al Owla Medicine | الرعاية الأولى";
+
 export const SITE_DESCRIPTION =
-  "RDS Pharma offers pharmacy, skincare, wellness, beauty, and personal care essentials with trusted online shopping.";
+  "RDS Pharma, also known as Al Reaya Al Owla Medicine and الرعاية الأولى, offers pharmacy, skincare, wellness, beauty, and personal care products in the UAE.";
+
+export const BRAND_ALIASES = [
+  "RDS Pharma",
+  "RDS",
+  "Al Reaya Al Owla",
+  "Al Reaya Al Owla Medicine",
+  "AL REAYA AL OWLA",
+  "Al Reaya Pharmacy",
+  "Raya Pharmacy",
+  "الرعاية الأولى",
+  "الرعايه الاولى",
+  "الرعاية",
+  "الرعايه",
+  "الرعاية فارما",
+];
 
 export const DEFAULT_OG_IMAGE = "/favicon.png";
 
