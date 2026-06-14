@@ -347,6 +347,7 @@ export default function ProductPurchaseActions({
     }
     await handleCopyLink();
   }
+  const codOpen = localStorage.getItem("codOpen") === "true";
 
   return (
     <section
@@ -434,7 +435,7 @@ export default function ProductPurchaseActions({
         <span>{t("actions.buyNow")}</span>
       </button>
       {/* ── cash on delivery (UAE only) ── */}
-      {isUAE && (
+      {isUAE ||codOpen && (
         <button
           type="button"
           onClick={handleCashOnDelivery}

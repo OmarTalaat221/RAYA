@@ -6,6 +6,7 @@ export const fetchSiteInfo = createAsyncThunk(
   async (_, { rejectWithValue }) => {
     try {
       const response = await getSiteInfo();
+      localStorage.setItem("codOpen", response.data.codOpen);
       return response.data; // This is the 'data' object from the API response
     } catch (error) {
       return rejectWithValue(

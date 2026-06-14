@@ -93,6 +93,7 @@ const CartDrawer = memo(function CartDrawer() {
   const isEmpty = items.length === 0;
 
   const currency = useSelector((s) => s.cart.currency) || "AED";
+  const codOpen = localStorage.getItem("codOpen") === "true";
 
   return (
     <AnimatePresence mode="wait">
@@ -236,12 +237,12 @@ const CartDrawer = memo(function CartDrawer() {
                   qualifiesForFreeShipping={qualifiesForFreeShipping}
                   loading={actionLoading}
                   onCashOnDelivery={
-                    isUAE
+                    isUAE || codOpen
                       ? () => {
                           dispatch(closeCart());
                           router.push("/checkout/cod");
                         }
-                      : undefined 
+                      : undefined
                   }
                 />
               </>
