@@ -2,22 +2,74 @@ import { NextResponse } from "next/server";
 
 const LOCALE_PREFIX_RE = /^\/(ar|en)(?=\/|$)/;
 
+const LEGACY_PRODUCT_REDIRECTS = {
+  "/products/ivita-shower-filter-cherry-blossom":
+    "/products/i-vita-vitamin-shower-filter-cherry-blossom",
+
+  "/product/3-omniflex-flexvital-syrup-500ml":
+    "/products/3-omniflex-flexvital-syrup-500ml-",
+};
+
 export function middleware(request) {
+  const url = request.nextUrl.clone();
   const { pathname } = request.nextUrl;
   const hostname = request.nextUrl.hostname;
 
-  const url = request.nextUrl.clone();
+  /*
+   * Canonical domain:
+   * Force www.rdspharmaco.com to rdspharmaco.com
+   */
+  if (hostname === "www.rdspharmaco.com") {
+    url.hostname = "rdspharmaco.com";
+    return NextResponse.redirect(url, 301);
+  }
 
+  /*
+   * Fix malformed inspected URLs like:
+   * /https://rdspharmaco.com
+   * /-https://rdspharmaco.com/product/example
+   * /http://example.com
+   */
+  if (
+    pathname.startsWith("/https:/") ||
+    pathname.startsWith("/http:/") ||
+    pathname.startsWith("/-https:/") ||
+    pathname.startsWith("/-http:/")
+  ) {
+    const cleanedPath = pathname
+      .replace(/^\/-?https?:\/+[^/]+/i, "")
+      .trim();
 
-  if (pathname.startsWith("/https:/") || pathname.startsWith("/http:/")) {
-    url.pathname = "/";
+    const targetPath = cleanedPath || "/";
+
+    if (LEGACY_PRODUCT_REDIRECTS[targetPath]) {
+      url.pathname = LEGACY_PRODUCT_REDIRECTS[targetPath];
+    } else if (targetPath.startsWith("/product/")) {
+      url.pathname = targetPath.replace(/^\/product\//, "/products/");
+    } else {
+      url.pathname = targetPath;
+    }
+
     url.search = "";
     return NextResponse.redirect(url, 301);
   }
 
+  /*
+   * Direct legacy URL redirects.
+   */
+  if (LEGACY_PRODUCT_REDIRECTS[pathname]) {
+    url.pathname = LEGACY_PRODUCT_REDIRECTS[pathname];
+    url.search = "";
+    return NextResponse.redirect(url, 301);
+  }
 
-  if (hostname === "www.rdspharmaco.com") {
-    url.hostname = "rdspharmaco.com";
+  /*
+   * Generic old route:
+   * /product/slug -> /products/slug
+   */
+  if (pathname.startsWith("/product/")) {
+    url.pathname = pathname.replace(/^\/product\//, "/products/");
+    url.search = "";
     return NextResponse.redirect(url, 301);
   }
 
@@ -25,7 +77,6 @@ export function middleware(request) {
    * Existing locale cleanup:
    * /ar/products/example -> /products/example
    * /en/products/example -> /products/example
-   * And save locale in cookie.
    */
   const match = pathname.match(LOCALE_PREFIX_RE);
 
@@ -35,7 +86,7 @@ export function middleware(request) {
 
   url.pathname = pathname.replace(LOCALE_PREFIX_RE, "") || "/";
 
-  const response = NextResponse.redirect(url);
+  const response = NextResponse.redirect(url, 301);
 
   response.cookies.set("NEXT_LOCALE", match[1], {
     path: "/",

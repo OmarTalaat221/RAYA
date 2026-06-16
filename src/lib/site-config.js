@@ -44,7 +44,7 @@ export const DEFAULT_OG_IMAGE = "/favicon.png";
 /* ─── Sitemap config ─────────────────────────────────────────────────────── */
 
 export const SITEMAP_REVALIDATE = 3600;
-export const SITEMAP_PAGE_SIZE = 100;
+export const SITEMAP_PAGE_SIZE = 200;
 
 /* ─── Static routes ──────────────────────────────────────────────────────── */
 
