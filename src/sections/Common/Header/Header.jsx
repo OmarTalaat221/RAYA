@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import dynamic from "next/dynamic";
-import { Search, ShoppingBag, Menu, X, Globe } from "lucide-react";
+import { Search, ShoppingBag, Menu, X, Globe, User } from "lucide-react";
 import {
   useState,
   useEffect,
@@ -224,6 +224,15 @@ const HeaderIcons = memo(function HeaderIcons({
       >
         <Search size={22} strokeWidth={1.5} />
       </button>
+
+
+      {/* <Link
+        aria-label="My Account"
+        href="/login"
+        className="text-soft-black hover:text-main! transition-colors duration-200"
+      >
+        <User size={22} strokeWidth={1.5} />
+      </Link> */}
 
       <button
         type="button"
@@ -455,13 +464,12 @@ export default function Header() {
 
   const siteShippingPrice = useSelector((s) => selectShippingPrice(s, shippingType));
   const siteCurrency = useSelector((s) => s.site.data.targetCurrency);
-  const siteThreshold = useSelector((s) => selectFreeShippingThreshold(s));
-
+  const siteThreshold = useSelector((s) => selectFreeShippingThreshold(s, shippingType));
   useEffect(() => {
     if (!cartInitialized) {
       dispatch(fetchCart()).then((action) => {
         if (action.meta.requestStatus === "fulfilled") {
-           dispatch(reapplyCouponSilently());
+          dispatch(reapplyCouponSilently());
         }
       });
     }

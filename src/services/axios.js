@@ -11,11 +11,6 @@ const TOKEN_KEY = "raya-token";
 
 let storeRef = null;
 
-/**
- * Called once from the Redux Provider after the store is created.
- * Allows axios to read state (currency, etc.) without importing the store
- * directly (avoids circular dependencies).
- */
 export function injectStore(store) {
   storeRef = store;
 }
@@ -53,7 +48,7 @@ async function getCurrentLocale() {
   if (isBrowser()) {
     try {
       return normalizeLocale(
-        getCookieValue("NEXT_LOCALE") || localStorage.getItem("rds_locale")
+        getCookieValue("NEXT_LOCALE") || localStorage.getItem("rds_locale"),
       );
     } catch {
       return "en";
@@ -119,12 +114,9 @@ axiosInstance.interceptors.request.use(
         const headersList = await headers();
         const forwardedFor = headersList.get("x-forwarded-for");
         const realIp = headersList.get("x-real-ip");
-        
+
         const isLocalIp = (ip) =>
-          !ip ||
-          ip === "::1" ||
-          ip === "127.0.0.1" ||
-          ip.includes("localhost");
+          !ip || ip === "::1" || ip === "127.0.0.1" || ip.includes("localhost");
 
         if (forwardedFor && !isLocalIp(forwardedFor)) {
           setHeader(config, "x-forwarded-for", forwardedFor);
@@ -139,7 +131,7 @@ axiosInstance.interceptors.request.use(
           setHeader(config, "x-device-id", deviceId);
         }
       } catch (error) {
-        // Safe to ignore: might be used outside request context or static generation
+        // Safe to ignore
       }
     }
 
@@ -150,8 +142,8 @@ axiosInstance.interceptors.request.use(
       setHeader(config, "x-currency", currency);
     }
 
-    // ─── Auth token ───
-    if (config.withToken === true) {
+    // ─── Auth token (auto-attach if available, unless explicitly disabled) ───
+    if (config.withToken !== false) {
       const token = config.token || getStoredToken();
       if (token) {
         setHeader(config, "Authorization", `Bearer ${token}`);
@@ -166,14 +158,14 @@ axiosInstance.interceptors.request.use(
 
     return config;
   },
-  (error) => Promise.reject(error)
+  (error) => Promise.reject(error),
 );
 
 /* ─── response interceptor ────────────────────────────────────────────────── */
 
 axiosInstance.interceptors.response.use(
   (response) => response,
-  (error) => Promise.reject(error)
+  (error) => Promise.reject(error),
 );
 
 export default axiosInstance;

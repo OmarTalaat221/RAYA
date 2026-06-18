@@ -10,10 +10,10 @@ export const fetchSiteInfo = createAsyncThunk(
       return response.data; // This is the 'data' object from the API response
     } catch (error) {
       return rejectWithValue(
-        error.response?.data?.message || "Failed to fetch site info"
+        error.response?.data?.message || "Failed to fetch site info",
       );
     }
-  }
+  },
 );
 
 const initialState = {
@@ -107,27 +107,49 @@ export const selectShippingPrice = (state, type = "inside") => {
   return details.price;
 };
 
-export const selectFreeShippingThreshold = (state) => {
+export const selectFreeShippingThreshold = (state, type = "inside") => {
   const siteData = state.site.data;
+  const shippingInfo = siteData.shippingInfo || [];
+  const info = shippingInfo.find((s) => s.type === type);
+  const targetCurrency = siteData.targetCurrency || "AED";
+
+  if (
+    info &&
+    typeof info.freeAboveOrder === "number" &&
+    info.freeAboveOrder > 0
+  ) {
+    return {
+      price: info.freeAboveOrder,
+      priceAed: info.freeAboveOrderAed || 0,
+      currency: info.currency || info.currancy || targetCurrency,
+    };
+  }
+
+  /* ── fallback to abovePriceFreeShipping if shipping info doesn't have threshold ── */
+  const fallback = siteData.abovePriceFreeShipping || {};
+  const fallbackPrice = Number(fallback.priceLocal);
+
   return {
-    price: siteData.abovePriceFreeShipping?.priceLocal || 400,
-    currency: siteData.abovePriceFreeShipping?.currency || siteData.targetCurrency || "AED",
+    price: fallbackPrice > 0 ? fallbackPrice : 0,
+    priceAed: 0,
+    currency: fallback.currency || targetCurrency,
   };
 };
 
 export const selectTopBarMessage = (state, locale, shippingType = "inside") => {
   const details = selectShippingDetails(state, shippingType);
-  const threshold = selectFreeShippingThreshold(state);
+  const threshold = selectFreeShippingThreshold(state, shippingType);
   const isAr = locale === "ar";
-  
+
   const thresholdStr = `${threshold.price} ${threshold.currency.toUpperCase()}`;
   const priceStr = `${details.price} ${details.currency.toUpperCase()}`;
-  
+
   if (isAr) {
-    const region = shippingType === "inside" ? "داخل الإمارات" : "خارج الإمارات";
+    const region =
+      shippingType === "inside" ? "داخل الإمارات" : "خارج الإمارات";
     return `شحن مجاني للطلبات فوق ${thresholdStr} | توصيل ${region} بـ ${priceStr}`;
   }
-  
+
   const region = shippingType === "inside" ? "UAE Delivery" : "Global Shipping";
   return `Free Shipping over ${thresholdStr} | ${region} for ${priceStr}`;
 };
