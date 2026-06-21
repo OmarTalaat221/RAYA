@@ -1,16 +1,26 @@
+"use client";
+
+import { useSelector } from "react-redux";
+import { useLocale, useTranslations } from "next-intl";
+import { ShieldCheck } from "lucide-react";
 import ProductPrice from "./ProductPrice";
 import ProductRating from "./ProductRating";
 import ProductCountdown from "./ProductCountdown";
 import ProductPurchaseActions from "./ProductPurchaseActions";
 import { getStockUi } from "./utils";
-import { useTranslations } from "next-intl";
+import { selectLocalizedSiteInfo } from "../../store/siteSlice";
 
 export default function ProductSummary({ product }) {
   const t = useTranslations("productDetails.stock");
+  const locale = useLocale();
   const stockUi = getStockUi(product.stockStatus);
 
+  const freeExchangeMessage = useSelector((s) =>
+    selectLocalizedSiteInfo(s, locale)
+  ).freeExchange;
+
   return (
-    <aside className="rounded-[32px] border border-black/5 bg-white p-6 shadow-[0_20px_60px_rgba(17,24,39,0.05)] sm:p-8">
+    <aside className="rounded-[32px] border border-black/5 bg-white p-6 sm:p-8">
       <div className="flex flex-wrap items-center gap-2">
         {product.brand ? (
           <span className="inline-flex items-center rounded-full bg-main/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-main">
@@ -62,8 +72,23 @@ export default function ProductSummary({ product }) {
         />
       </div>
 
+      {/* ── Free exchange notice ── */}
+      {freeExchangeMessage ? (
+        <div className="mt-4 flex items-center gap-3 rounded-2xl border border-main/15 bg-main/[0.04] p-4 sm:p-5">
+          <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-main/10 text-main">
+            <ShieldCheck size={18} strokeWidth={1.8} />
+          </div>
+          <div className="min-w-0">
+
+            <p className="font-poppins! mt-1 text-[13.5px] leading-6 text-soft-black">
+              {freeExchangeMessage}
+            </p>
+          </div>
+        </div>
+      ) : null}
+
       {product.limitedOffer?.enabled === true &&
-      product.limitedOffer?.endsAt ? (
+        product.limitedOffer?.endsAt ? (
         <div className="mt-5">
           <ProductCountdown endsAt={product.limitedOffer.endsAt} />
         </div>

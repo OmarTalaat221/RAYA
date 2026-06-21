@@ -132,7 +132,7 @@ export default async function BlogDetailsRoute({ params }) {
       name: SITE_NAME,
       logo: {
         "@type": "ImageObject",
-        url: absoluteUrl("/favicon.png"),
+        url: absoluteUrl("/favicon.webp"),
       },
     },
     mainEntityOfPage: {

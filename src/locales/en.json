@@ -19,6 +19,7 @@
       "brand": "Brands",
       "blog": "Blog",
       "contact": "Contact",
+      "about": "About Us",
       "offers": "Offers"
     }
   },
@@ -50,6 +51,7 @@
       "offers": "Offers",
       "blog": "Blog",
       "contact": "Contact",
+      "about": "About Us",
       "products": "Products",
       "brand": "Brands"
     },
@@ -429,5 +431,52 @@
     "defaultMessage": "Hello RDS Pharma, I have a question.",
     "tooltip": "Chat with us",
     "ariaLabel": "Chat with us on WhatsApp"
-  }
+  },
+"about": {
+  "title": "About Us",
+  "heading": "Al Reaya Al Owla",
+  "subtitle": "Trusted Partner in Health & Wellness",
+  "tagline": "Pharmaceutical excellence, since 2017",
+
+  
+    "banner": {
+  "title": "Trusted Care in the Heart of Sharjah",
+  "description": "From Al Quliah, Al Reaya Al Owla offers a trusted destination for pharmaceutical supplies, medical essentials, and everyday wellness products in a convenient location that keeps quality care within easy reach."
+},
+  "story": {
+    "eyebrow": "Our Story",
+    "title": "Built on Trust. Driven by Excellence.",
+    "p1": "Al Reaya Al Owla is one of the leading distributors of pharmaceutical supplies and medical equipment in the United Arab Emirates. We were established in 2017, and we are equipped with experienced and energetic employees committed to completing our vision — to excel in everything we do.",
+    "p2": "Al Reaya Al Owla is established and developed in the bones of trust and relationships. We organise and strive to maintain long-lasting partnerships, while continuously developing new ones. An excellent team is formed and nurtured to deliver the best quality services and values to our customers.",
+    "p3": "Today, we proudly serve thousands of customers across the UAE with a carefully curated selection of authentic skincare, wellness essentials, and medical products — backed by professional service, transparent pricing, and a commitment to your well-being."
+  },
+
+  "stats": {
+    "yearsLabel": "Years of Experience",
+    "yearsValue": "8+",
+    "productsLabel": "Authentic Products",
+    "productsValue": "1000+",
+    "customersLabel": "Happy Customers",
+    "customersValue": "10K+",
+    "supportLabel": "Customer Support",
+    "supportValue": "24/7"
+  },
+
+  "company": {
+    "eyebrow": "Company Information",
+    "title": "Registered & Trusted",
+    "subtitle": "A fully licensed entity operating under UAE regulations.",
+    "legalName": "Legal Entity Name",
+    "legalNameVal": "Al Reaya Al Owla Medicine and Medical Equipment Store LLC",
+    "regNumber": "Registration Number",
+    "regNumberVal": "749912",
+    "address": "Address",
+    "addressVal": "Salim Al Owais building, shop 2, Al Quliaha, Sharjah, UAE",
+    "country": "Country",
+    "countryVal": "United Arab Emirates"
+
+  },
+
+  "imageAlt": "Al Reaya Al Owla store"
+}
 }

@@ -34,21 +34,21 @@ const AboutBackgroundPattern = React.memo(function AboutBackgroundPattern() {
           prefersReducedMotion
             ? undefined
             : {
-                y: [0, -8, 0, 8, 0],
-              }
+              y: [0, -8, 0, 8, 0],
+            }
         }
         transition={
           prefersReducedMotion
             ? undefined
             : {
-                duration: 18,
-                repeat: Infinity,
-                ease: "easeInOut",
-              }
+              duration: 18,
+              repeat: Infinity,
+              ease: "easeInOut",
+            }
         }
       >
         <Image
-          src="/assets/image/pattern-1.png"
+          src="/assets/image/pattern-1.webp"
           alt=""
           fill
           quality={70}
@@ -272,7 +272,7 @@ function MobileSwiper({ items }) {
 
 // ─── Main Section ────────────────────────────────────────────────────────────
 export default function Collections() {
-   const t = useTranslations("home.collections");
+  const t = useTranslations("home.collections");
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");

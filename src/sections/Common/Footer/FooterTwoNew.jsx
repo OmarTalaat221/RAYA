@@ -189,7 +189,7 @@ const Footer = () => {
           <div className="col-span-1">
             <div className="flex justify-center w-fit">
               <img
-                src="/main-assets/img/logo.png"
+                src="/main-assets/img/logo.webp"
                 alt="ست الشام"
                 className="!h-[150px] object-contain"
               />

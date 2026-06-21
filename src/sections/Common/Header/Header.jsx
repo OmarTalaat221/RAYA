@@ -36,6 +36,7 @@ const NAV_ITEMS = [
   { key: "products", href: "/collections/all" },
   { key: "brand", href: "/collections" },
   { key: "blog", href: "/blog/news" },
+  { key: "about", href: "/about" },
   { key: "contact", href: "/contact" },
 ];
 
@@ -214,6 +215,28 @@ const HeaderIcons = memo(function HeaderIcons({
   onCartClick,
   cartCount,
 }) {
+  const [hasToken, setHasToken] = useState(false);
+
+  useEffect(() => {
+    try {
+      setHasToken(Boolean(localStorage.getItem("raya-token")));
+    } catch {
+      setHasToken(false);
+    }
+
+    /* ── Listen to token changes (other tabs / login / logout) ── */
+    const handleStorage = (e) => {
+      if (e.key === "raya-token") {
+        setHasToken(Boolean(e.newValue));
+      }
+    };
+    window.addEventListener("storage", handleStorage);
+    return () => window.removeEventListener("storage", handleStorage);
+  }, []);
+
+  const accountHref = hasToken ? "/profile" : "/login";
+  const accountLabel = hasToken ? "My Account" : "Login";
+
   return (
     <div className="flex items-center gap-3 sm:gap-4 flex-shrink-0">
       <button
@@ -225,14 +248,13 @@ const HeaderIcons = memo(function HeaderIcons({
         <Search size={22} strokeWidth={1.5} />
       </button>
 
-
-      {/* <Link
-        aria-label="My Account"
-        href="/login"
+      <Link
+        aria-label={accountLabel}
+        href={accountHref}
         className="text-soft-black hover:text-main! transition-colors duration-200"
       >
         <User size={22} strokeWidth={1.5} />
-      </Link> */}
+      </Link>
 
       <button
         type="button"

@@ -15,6 +15,7 @@ const primaryLinks = [
   { key: "brand", href: "/collections/" },
 
   { key: "blog", href: "/blog/news" },
+  { key: "about", href: "/about" },
   { key: "contact", href: "/contact" },
 ];
 

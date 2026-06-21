@@ -30,6 +30,15 @@ p {
   margin-bottom: 0 !important;
 }
 
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
 @theme {
   --color-main: #68bc52;
   --color-secondary: #93979a;

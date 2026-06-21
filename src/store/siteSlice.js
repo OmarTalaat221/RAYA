@@ -78,6 +78,7 @@ export const selectLocalizedSiteInfo = (state, locale) => {
   return {
     siteName: translation.siteName || siteData.siteName || "RDS Pharma",
     address: translation.address || siteData.address || "Dubai, UAE",
+    freeExchange: translation.freeExchage || translation.freeExchange || "",
   };
 };
 

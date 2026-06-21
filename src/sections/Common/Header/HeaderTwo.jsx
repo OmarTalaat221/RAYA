@@ -154,7 +154,7 @@ const HeaderTwo = () => {
                 <div className="media-img">
                   <Link href={`/blog-details`}>
                     <img
-                      src="/main-assets/img/blog/recent-post1.png"
+                      src="/main-assets/img/blog/recent-post1.webp"
                       alt="Blog Image"
                       width={100}
                       height={100}
@@ -184,7 +184,7 @@ const HeaderTwo = () => {
                 <div className="media-img">
                   <Link href={`/blog-details`}>
                     <img
-                      src="/main-assets/img/blog/recent-post2.png"
+                      src="/main-assets/img/blog/recent-post2.webp"
                       alt="Blog Image"
                       width={100}
                       height={100}
@@ -214,7 +214,7 @@ const HeaderTwo = () => {
                 <div className="media-img">
                   <Link href={`/blog-details`}>
                     <img
-                      src="/main-assets/img/blog/recent-post4.png"
+                      src="/main-assets/img/blog/recent-post4.webp"
                       alt="Blog Image"
                       width={100}
                       height={100}
@@ -261,7 +261,7 @@ const HeaderTwo = () => {
                   <div className="header-logo">
                     <Link href={`/`}>
                       <img
-                        src="/assets/image/WhatsApp_Image_2026-02-03_at_1.33.20_PM-removebg-preview.png"
+                        src="/assets/image/WhatsApp_Image_2026-02-03_at_1.33.20_PM-removebg-preview.webp"
                         className="w-20 h-16"
                         alt="logo"
                       />

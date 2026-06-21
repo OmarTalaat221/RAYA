@@ -1,4 +1,3 @@
-
 import {
   SITE_URL,
   SITE_NAME,
@@ -103,10 +102,10 @@ export const metadata = {
 
   icons: {
     icon: [
-      { rel: "icon", type: "image/png", sizes: "32x32", url: "/favicon.png" },
+      { rel: "icon", type: "image/png", sizes: "32x32", url: "/favicon.ico" },
     ],
-    apple: [{ rel: "apple-touch-icon", sizes: "180x180", url: "/favicon.png" }],
-    shortcut: [{ rel: "shortcut icon", url: "/favicon.png" }],
+    apple: [{ rel: "apple-touch-icon", sizes: "180x180", url: "/favicon.ico" }],
+    shortcut: [{ rel: "shortcut icon", url: "/favicon.ico" }],
   },
 };
 export default async function RootLayout({ children }) {
